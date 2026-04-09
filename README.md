@@ -1,6 +1,12 @@
-# Help Center Template
+# Helio — Help Center & Documentation Template
 
-A fully-featured, self-hosted help center built with [Astro](https://astro.build), React, and Tailwind CSS. Runs entirely on local data — no external API required. Deploy to Cloudflare Pages in minutes.
+Helio is a modern help center and documentation template built with [Astro](https://astro.build) for startups, SaaS products, and developers who want a fast, clean, and professional support site.
+
+It is designed to help you publish documentation, guides, FAQs, and support content with excellent performance and SEO from day one.
+
+If you need a proper help center like Stripe, Vercel, or Notion, Helio gives you the foundation without the complexity.
+
+---
 
 ## Features
 
@@ -8,10 +14,11 @@ A fully-featured, self-hosted help center built with [Astro](https://astro.build
 - 🔍 Full-text search modal (Cmd+K / Ctrl+K)
 - 🎨 Custom branding — colors, fonts, logo, dark mode
 - 💡 Composable content blocks (hero, text, code, FAQ, CTA, sidebar)
-- 📖 API reference viewer (OpenAPI / Scalar) — optional
+- 🗺️ Auto-generated sitemap.xml and robots.txt
+- 🔎 Full SEO — Open Graph, Twitter cards, JSON-LD structured data, canonical URLs
 - ⚡ Edge-rendered on Cloudflare Pages
 - 🌐 Custom domain support
-- 🗂️ Local MDX-style data — no database, no API calls
+- 🗂️ Local data — no database, no API, no external dependencies
 
 ---
 
@@ -22,7 +29,7 @@ npm install
 npm run dev
 ```
 
-Open [http://localhost:4321](http://localhost:4321) to see the help center.
+Open [http://localhost:4321](http://localhost:4321).
 
 ---
 
@@ -31,8 +38,8 @@ Open [http://localhost:4321](http://localhost:4321) to see the help center.
 ```
 src/
   data/                     ← all your content lives here
-    index.ts                ← central registry (import everything here)
-    config.ts               ← branding & portal settings
+    index.ts                ← central registry (register new content here)
+    config.ts               ← branding, fonts, SEO, portal settings
     faqs.ts                 ← home page FAQ accordion
     categories/             ← one file per category
       getting-started.ts
@@ -40,35 +47,25 @@ src/
       guides.ts
       api-reference.ts
       troubleshooting.ts
-    articles/               ← one file per article, grouped by category
+    articles/               ← one file per article, grouped by category folder
       getting-started/
-        welcome.ts
-        installation.ts
-        quick-start.ts
       components/
-        overview.ts
-        hero-block.ts
-        text-block.ts
-        code-block.ts
-        cta-block.ts
-        faq-block.ts
-        sidebar-block.ts
-        search-block.ts
       guides/
-        configuration.ts
-        theming.ts
-        adding-content.ts
       api-reference/
-        introduction.ts
-        authentication.ts
       troubleshooting/
-        common-errors.ts
-        performance.ts
   components/               ← React UI components
-  pages/                    ← Astro pages (index, article/[slug], category/[slug])
+  layouts/
+    BaseLayout.astro        ← full SEO head, fonts, structured data
+  pages/
+    index.astro             ← home page
+    article/[slug].astro    ← article page
+    category/[slug].astro   ← category page
+    sitemap.xml.ts          ← auto-generated sitemap
+    robots.txt.ts           ← auto-generated robots.txt
   lib/
-    localData.ts            ← data layer (replaces API calls)
+    localData.ts            ← data layer (no API calls)
   styles/
+    globals.css             ← Tailwind + Onest + Geist Mono fonts
 ```
 
 ---
@@ -110,9 +107,9 @@ export const categories = [
 export const myArticle = {
   id: 'my-article',
   title: 'My Article',
-  slug: 'my-article',         // URL: /article/my-article
-  excerpt: 'Short description shown in search results.',
-  category_id: 'my-category', // must match a category id
+  slug: 'my-article',          // URL: /article/my-article
+  excerpt: 'Short description shown in search and SEO.',
+  category_id: 'my-category',  // must match a category id
   is_published: true,
   display_order: 1,
   sidebar_title: null,
@@ -128,35 +125,17 @@ export const myArticle = {
 };
 ```
 
-2. Register it in `src/data/index.ts`:
-
-```ts
-import { myArticle } from './articles/my-category/my-article';
-
-export const articles = [
-  // ...existing
-  myArticle,
-];
-```
+2. Register it in `src/data/index.ts`.
 
 ### Add a FAQ
 
-Edit `src/data/faqs.ts` and add an entry to the array:
-
-```ts
-{
-  id: 'faq-4',
-  question: 'How do I do X?',
-  answer: 'You do X by doing Y.',
-  is_published: true,
-},
-```
+Edit `src/data/faqs.ts` and add an entry to the array.
 
 ---
 
 ## Configuration
 
-All branding and portal settings are in `src/data/config.ts`:
+All settings are in `src/data/config.ts`:
 
 | Option | Type | Description |
 |---|---|---|
@@ -166,34 +145,46 @@ All branding and portal settings are in `src/data/config.ts`:
 | `welcome_subtitle` | string | Hero section subheading |
 | `theme_mode` | `'light' \| 'dark' \| 'auto'` | Default color scheme |
 | `logo_url` | string \| null | Path or URL to your logo |
+| `heading_font` | string \| null | Font name for headings (default: Onest) |
+| `body_font` | string \| null | Font name for body text (default: Onest) |
 | `show_search` | boolean | Show/hide the search bar |
-| `sidebar_style` | string | Sidebar visual style (see below) |
-| `heading_font` | string \| null | Google Font name for headings |
-| `body_font` | string \| null | Google Font name for body text |
+| `sidebar_style` | string | Sidebar visual style |
 | `header_links` | array | Navigation links in the header |
 | `show_primary_button` | boolean | Show a CTA button in the header |
 | `primary_button_label` | string | CTA button text |
 | `primary_button_url` | string | CTA button destination URL |
 | `meta_title` | string | HTML `<title>` content |
 | `meta_description` | string | HTML meta description |
+| `og_image_url` | string \| null | Open Graph image URL |
 | `favicon_url` | string \| null | Path to favicon |
 
 ### Sidebar styles
 
-Set `sidebar_style` to one of: `default`, `minimal`, `compact`, `cards`, `modern`, `floating`, `bordered`, `gradient`, `accordion`
+`default` · `minimal` · `compact` · `cards` · `modern` · `floating` · `bordered` · `gradient` · `accordion`
 
 ---
 
-## Content Blocks
+## Fonts
 
-Articles are written as HTML strings in the `content` field. The `ArticleContentViewer` component renders them with:
+Helio ships with two fonts:
 
-- Tailwind `prose` typography
-- Syntax-highlighted code blocks with copy button (`language-*` class on `<code>`)
-- Auto-generated Table of Contents from `h2`/`h3` headings
-- Responsive images and tables
+- **Onest** — clean, modern sans-serif for headings and body text. Loaded from Google Fonts.
+- **Geist Mono** — monospace font for code blocks. Bundled locally in `public/Geist_Mono/`.
 
-See the **Template Components** category in the running help center for full documentation on each block.
+To change fonts, update `heading_font` and `body_font` in `src/data/config.ts`. Any Google Font name works.
+
+---
+
+## SEO
+
+Every page gets:
+
+- `<title>`, `<meta name="description">`, canonical URL
+- Open Graph tags (og:title, og:description, og:image, og:type)
+- Twitter card tags
+- JSON-LD structured data (WebSite, Article, BreadcrumbList, Organization)
+- `/sitemap.xml` — auto-generated from all published articles and categories
+- `/robots.txt` — allows all crawlers, blocks common scrapers
 
 ---
 
@@ -208,7 +199,7 @@ Or connect your repo to Cloudflare Pages:
 - Output directory: `dist`
 - Node version: 18+
 
-No environment variables are required for local data mode.
+No environment variables required.
 
 ---
 
@@ -218,6 +209,8 @@ No environment variables are required for local data mode.
 - [React](https://react.dev) — interactive components
 - [Tailwind CSS](https://tailwindcss.com) — styling
 - [Radix UI](https://www.radix-ui.com) — accessible primitives
+- [Onest](https://fonts.google.com/specimen/Onest) — heading & body font
+- [Geist Mono](https://vercel.com/font) — monospace / code font
 - [Cloudflare Pages](https://pages.cloudflare.com) — hosting & edge rendering
 
 ---

@@ -23,12 +23,10 @@ export function BaseLayoutWrapper({
 
   // Dynamically import AIChatPanel only on client side
   useEffect(() => {
-    if (config.ai_answer_enabled) {
-      import('./help-center/AIChatPanel').then(module => {
-        setAIChatPanel(() => module.AIChatPanel);
-      });
-    }
-  }, [config.ai_answer_enabled]);
+    import('./help-center/AIChatPanel').then(module => {
+      setAIChatPanel(() => module.AIChatPanel);
+    });
+  }, []);
 
   return (
     <div className="flex h-screen overflow-hidden">
@@ -41,7 +39,7 @@ export function BaseLayoutWrapper({
       <motion.div
         initial={false}
         animate={{
-          width: config.ai_answer_enabled && AIChatPanel && aiChatOpen ? 384 : 0, // 384px = w-96
+          width: AIChatPanel && aiChatOpen ? 384 : 0,
         }}
         transition={{
           type: "spring",
@@ -51,7 +49,7 @@ export function BaseLayoutWrapper({
         }}
         className="flex-shrink-0 overflow-hidden h-screen"
       >
-        {config.ai_answer_enabled && AIChatPanel && aiChatOpen && (
+        {AIChatPanel && aiChatOpen && (
           <AIChatPanel
             isOpen={aiChatOpen}
             onClose={onAiChatToggle}

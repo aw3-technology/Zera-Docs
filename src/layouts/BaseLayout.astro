@@ -66,9 +66,19 @@ const baseUrl = subPathDomain ? `${publicOrigin}${publicPathPrefix}` : (config.s
     
     <meta name="view-transition" content="same-origin" />
     
-    {/* Preload Google Fonts for better performance */}
+    {/* Preconnect to Google Fonts */}
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    {/* Preload Onest */}
+    <link
+      rel="preload"
+      as="style"
+      href="https://fonts.googleapis.com/css2?family=Onest:wght@100..900&display=swap"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Onest:wght@100..900&display=swap"
+    />
     
     {/* Prevent white flash during transitions */}
     <style is:inline>
@@ -232,7 +242,7 @@ const baseUrl = subPathDomain ? `${publicOrigin}${publicPathPrefix}` : (config.s
     {ogImageUrl && <meta property="og:image:width" content="1200" />}
     {ogImageUrl && <meta property="og:image:height" content="630" />}
     {ogLogoUrl && <meta property="og:logo" content={ogLogoUrl} />}
-    <meta property="og:site_name" content={config.portal_name || 'Help Center'} />
+    <meta property="og:site_name" content={config.portal_name || 'Helio'} />
     
     {/* Article-specific Open Graph tags */}
     {article && (
@@ -283,10 +293,6 @@ const baseUrl = subPathDomain ? `${publicOrigin}${publicPathPrefix}` : (config.s
     {/* Theme color */}
     <meta name="theme-color" content={primaryColor} />
     <meta name="msapplication-TileColor" content={primaryColor} />
-    
-    {/* Preconnect to external domains for performance */}
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     
     {/* DNS prefetch */}
     <link rel="dns-prefetch" href="https://fonts.googleapis.com" />

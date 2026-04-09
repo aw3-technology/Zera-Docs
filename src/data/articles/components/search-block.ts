@@ -1,8 +1,10 @@
+import { bn, h2, h3, p, bullet, codeBlock, callout, tabs, accordion, expandable, step, codeGroup } from '../../blocks';
+
 export const searchBlockArticle = {
   id: 'search-block',
-  title: 'Search Modal',
+  title: 'Expandable Block',
   slug: 'search-block',
-  excerpt: 'Full-text search across all articles, triggered by Cmd+K or the search bar.',
+  excerpt: 'Inline expandable sections for nested properties, optional parameters, and extra detail — without breaking the reading flow.',
   category_id: 'components',
   is_published: true,
   display_order: 8,
@@ -10,30 +12,54 @@ export const searchBlockArticle = {
   icon: null as string | null,
   created_at: '2024-01-17T00:00:00Z',
   updated_at: '2024-01-17T00:00:00Z',
-  content: `
-<h2>Search Modal</h2>
-<p>The search modal provides instant full-text search across all published articles. It opens as a centered overlay and filters results as you type.</p>
+  content: bn([
+    p('The Expandable block is a lightweight collapsible section. Unlike Accordion, it uses a small inline trigger with an arrow icon — designed to sit inside a larger section without breaking the reading flow.'),
 
-<h2>Triggering search</h2>
-<ul>
-  <li>Press <strong>Cmd+K</strong> (Mac) or <strong>Ctrl+K</strong> (Windows/Linux)</li>
-  <li>Click the search bar in the hero section on the home page</li>
-  <li>Click the search icon in the header</li>
-</ul>
+    h2('Live example'),
+    p('Here is an expandable showing optional configuration fields:'),
+    expandable('Show optional config fields', 'secondary_color (string) — secondary brand color used for hover states.\nheading_font (string | null) — Google Font name for headings. Defaults to Onest.\nbody_font (string | null) — Google Font name for body text. Defaults to Onest.\nfavicon_url (string | null) — path or URL to your favicon.\nog_image_url (string | null) — Open Graph image for social sharing.\nmeta_title (string) — HTML title tag content.\nmeta_description (string) — HTML meta description.'),
 
-<h2>How search works</h2>
-<p>Search is entirely client-side — no server or index required. It filters the <code>articles</code> array passed as a prop, matching against:</p>
-<ul>
-  <li>Article <code>title</code></li>
-  <li>Article <code>excerpt</code></li>
-  <li>Article <code>content</code> (stripped of HTML tags)</li>
-</ul>
+    p('And here is one showing nested API response fields:'),
+    expandable('Show metadata object fields', 'The metadata object can contain any key-value pairs. Keys must be strings. Values can be strings, numbers, or booleans. Maximum 50 keys per object. Maximum key length: 64 characters. Maximum value length: 512 characters.'),
 
-<h2>Enabling / disabling search</h2>
-<pre><code class="language-ts">// src/data/config.ts
-show_search: true,  // set to false to hide the search bar</code></pre>
+    h2('Usage'),
+    codeBlock(
+      `import { bn, expandable } from '../../blocks';\n\ncontent: bn([\n  expandable(\n    'Show advanced options',           // trigger text\n    'These options are rarely needed...',  // body text (shown when expanded)\n  ),\n])`,
+      'typescript'
+    ),
 
-<h2>Component location</h2>
-<p>Implemented in <code>src/components/SearchModal.tsx</code>. Uses a <code>Popover</code> from Radix UI for the overlay and keyboard trap.</p>
-  `.trim(),
+    h2('Function signature'),
+    codeBlock(
+      `expandable(\n  title: string,   // the clickable trigger text\n  body: string,    // plain text shown when expanded\n)`,
+      'typescript'
+    ),
+
+    callout('note', 'Expandable body is plain text. For expandables with code or structured content, use an Accordion block instead — it has a larger, more prominent UI that better suits rich content.'),
+
+    h2('When to use expandable vs accordion'),
+    tabs([
+      {
+        label: 'Use Expandable',
+        body: '• Nested object properties in API docs\n• Optional config fields\n• Advanced options that most readers won\'t need\n• Supplementary detail within a larger section\n• When you want a subtle, inline disclosure',
+      },
+      {
+        label: 'Use Accordion',
+        body: '• FAQ sections\n• Standalone question/answer pairs\n• Content that deserves its own visual weight\n• When the trigger text is a full question\n• When you want a prominent, bordered disclosure',
+      },
+    ]),
+
+    h2('Styling'),
+    p('The Expandable block renders with a left border accent and a small arrow icon that rotates 90° when expanded. The trigger text uses muted foreground color and transitions to foreground on hover.'),
+    p('The left border uses the CSS border-border variable, so it adapts to light and dark mode automatically.'),
+
+    h2('Combining with Param Field'),
+    p('A common pattern in API docs is to use Expandable after a Param Field to show nested object properties:'),
+    codeBlock(
+      `import { bn, paramField, expandable } from '../../blocks';\n\ncontent: bn([\n  paramField('metadata', 'object', false, 'Arbitrary key-value pairs.', 'body'),\n  expandable('Show metadata constraints', 'Keys: string, max 64 chars.\\nValues: string | number | boolean, max 512 chars.\\nMax 50 keys per object.'),\n\n  paramField('address', 'object', false, 'Billing address.', 'body'),\n  expandable('Show address fields', 'line1 (string, required)\\nline2 (string, optional)\\ncity (string, required)\\nstate (string, required)\\npostal_code (string, required)\\ncountry (string, required) — ISO 3166-1 alpha-2'),\n])`,
+      'typescript'
+    ),
+
+    accordion('Can I have multiple expandables open at once?', 'Yes. Each expandable block manages its own open/closed state independently. Multiple expandables on the same page can all be open simultaneously.'),
+    accordion('Can I nest expandables?', 'Not directly — the expandable body is a plain text string. For deeply nested structures, use multiple expandable blocks at the same level with descriptive trigger text.'),
+  ]),
 };

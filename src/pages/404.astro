@@ -1,49 +1,14 @@
 ---
 export const prerender = false;
 
-import { getArticles, getCategories, getHelpCenterConfig } from '../lib/api';
-import { getProjectIdFromRequest } from '../lib/projectContext';
+import { getArticles, getCategories, getHelpCenterConfig, getFolders } from '../lib/localData';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import NotFoundPage from '../components/NotFoundPage';
 
-let projectId: string = import.meta.env.PUBLIC_PROJECT_ID || '6da7042b-22c0-4568-801c-ec608649cd19';
-let articles: any[] = [];
-let categories: any[] = [];
-let folders: any[] = [];
-let configData: any = null;
-
-try {
-  try {
-    projectId = await getProjectIdFromRequest(Astro.url.href, Astro.request);
-  } catch {}
-
-  const results = await Promise.allSettled([
-    getArticles(projectId).catch(() => []),
-    getCategories(projectId).catch(() => []),
-    getHelpCenterConfig(projectId).catch(() => null),
-    fetch(`${import.meta.env.PUBLIC_API_URL || 'https://api.usegately.com/api'}/public/projects/${projectId}/help-folders`, {
-      signal: AbortSignal.timeout(5000)
-    }).then(r => r.json()).then(d => d.data?.folders || d.folders || []).catch(() => [])
-  ]);
-
-  articles   = results[0].status === 'fulfilled' ? results[0].value : [];
-  categories = results[1].status === 'fulfilled' ? results[1].value : [];
-  configData = results[2].status === 'fulfilled' ? results[2].value : null;
-  folders    = results[3].status === 'fulfilled' ? results[3].value : [];
-} catch {}
-
-const defaultConfig = {
-  portal_name: 'Help Center',
-  primary_color: '#3b82f6',
-  welcome_title: 'How can we help?',
-  welcome_subtitle: '',
-  theme_mode: 'light' as const,
-  show_search: true,
-  show_categories: true,
-  ai_answer_enabled: false,
-};
-
-const config = configData || defaultConfig;
+const [articles, categories, config, folders] = await Promise.all([
+  getArticles(), getCategories(), getHelpCenterConfig(), getFolders(),
+]);
+const projectId = 'local';
 ---
 
 <BaseLayout

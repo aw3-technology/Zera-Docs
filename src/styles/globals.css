@@ -1,7 +1,10 @@
+@import url('https://fonts.googleapis.com/css2?family=Onest:wght@100..900&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* Geist Mono — local variable font */
 @font-face {
   font-family: 'Geist Mono';
   src: url('/Geist_Mono/GeistMono-VariableFont_wght.ttf') format('truetype-variations');
@@ -88,6 +91,12 @@
   
   html {
     @apply bg-background;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Geist Mono', ui-monospace, monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
   }
   
   /* Disable all transitions and animations globally for instant theme switching */

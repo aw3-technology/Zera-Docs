@@ -164,18 +164,18 @@ export function HelpCenterHeader({
                 </button>
                 
                 {/* AI Assistant Button - Next to Search */}
-                {config.ai_answer_enabled && onAIOpen && (
+                {onAIOpen && (
                   <button
                     onClick={onAIOpen}
                     className={cn(
-                      "flex items-center gap-1.5 px-4 rounded-xl text-sm font-medium border flex-shrink-0 h-[38px] bg-transparent",
-                      isDark 
-                        ? "border-zinc-800/50 text-zinc-300 hover:border-zinc-700/50" 
-                        : "border-zinc-200 text-zinc-700 hover:border-zinc-300"
+                      "flex items-center gap-1.5 px-3 rounded-xl text-sm font-medium border flex-shrink-0 h-[38px] transition-colors",
+                      isDark
+                        ? "border-zinc-800/50 text-zinc-300 hover:border-zinc-700/50 hover:bg-zinc-800/50"
+                        : "border-zinc-200 text-zinc-700 hover:border-zinc-300 hover:bg-zinc-50"
                     )}
                   >
-                    <Icon icon="hugeicons:magic-wand-01" className="h-4 w-4" />
-                    Ask AI
+                    <Icon icon="hugeicons:ai-brain-01" className="h-4 w-4" style={{ color: config.primary_color }} />
+                    <span>Ask AI</span>
                   </button>
                 )}
               </>

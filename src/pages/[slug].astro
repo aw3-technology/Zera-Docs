@@ -2,51 +2,17 @@
 // Force server-side rendering for dynamic subdomain support
 export const prerender = false;
 
-import { getArticles, getCategories, getHelpCenterConfig, getFaqs, getOpenApiSpec } from '../lib/api';
-import { getProjectIdFromRequest } from '../lib/projectContext';
+import { getArticles, getCategories, getHelpCenterConfig, getFaqs, getOpenApiSpec, getFolders } from '../lib/localData';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import HelpCenterHome from '../components/HelpCenterHome.tsx';
 import CategoryPageWrapper from '../components/CategoryPageWrapper.tsx';
 import ArticlePageWrapper from '../components/ArticlePageWrapper.tsx';
 
-let projectId: string = import.meta.env.PUBLIC_PROJECT_ID || '6da7042b-22c0-4568-801c-ec608649cd19';
-let articles: any[] = [];
-let categories: any[] = [];
-let folders: any[] = [];
-let faqs: any[] = [];
-let configData: any = null;
-let apiSpecUrl: string | null = null;
-
-try {
-  try {
-    projectId = await getProjectIdFromRequest(Astro.url.href, Astro.request);
-  } catch (projectIdError) {
-    console.error('[Slug Page] Failed to resolve project ID:', projectIdError);
-  }
-
-  const fetchPromises = await Promise.allSettled([
-    getArticles(projectId),
-    getCategories(projectId),
-    getFaqs(projectId),
-    getHelpCenterConfig(projectId),
-    fetch(`${import.meta.env.PUBLIC_API_URL || 'https://api.usegately.com/api'}/public/projects/${projectId}/help-folders`)
-      .then(r => r.json())
-      .then(d => d.data?.folders || d.folders || [])
-      .catch(() => []),
-    getOpenApiSpec(projectId),
-  ]);
-
-  articles = fetchPromises[0].status === 'fulfilled' ? fetchPromises[0].value : [];
-  categories = fetchPromises[1].status === 'fulfilled' ? fetchPromises[1].value : [];
-  faqs = fetchPromises[2].status === 'fulfilled' ? fetchPromises[2].value : [];
-  configData = fetchPromises[3].status === 'fulfilled' ? fetchPromises[3].value : null;
-  folders = fetchPromises[4].status === 'fulfilled' ? fetchPromises[4].value : [];
-  if (fetchPromises[5].status === 'fulfilled' && fetchPromises[5].value !== null) {
-    apiSpecUrl = `${import.meta.env.PUBLIC_API_URL || 'https://api.usegately.com/api'}/public/projects/${projectId}/openapi`;
-  }
-} catch (e) {
-  console.error('[Slug Page] Unexpected error:', e);
-}
+const projectId = 'local';
+const apiSpecUrl: string | null = null;
+const [articles, categories, faqs, configData, folders] = await Promise.all([
+  getArticles(), getCategories(), getFaqs(), getHelpCenterConfig(), getFolders(),
+]);
 
 const { slug } = Astro.params;
 
@@ -102,18 +68,7 @@ const articleExcerpt = article?.excerpt || article?.title || '';
 const categoryName = article ? getCategoryName(article.category_id) : '';
 const articleUrl = article ? Astro.url.href : '';
 
-const defaultConfig = {
-  portal_name: 'Help Center',
-  primary_color: '#3b82f6',
-  welcome_title: 'How can we help?',
-  welcome_subtitle: 'Search our knowledge base or browse categories below',
-  theme_mode: 'light' as const,
-  show_search: true,
-  show_categories: true,
-  ai_answer_enabled: false,
-};
-
-const config = configData || defaultConfig;
+const config = configData;
 ---
 
 {folder && (

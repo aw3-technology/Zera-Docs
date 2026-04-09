@@ -10,7 +10,7 @@ import { AiTextArea } from './AiTextArea';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CodeBlock, InlineCode } from '../ui/code-block';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://api.usegately.com/api';
+const API_BASE_URL = ''; // local mode — no external API
 
 interface Message {
   id: string;
@@ -236,42 +236,57 @@ export function AIChatPanel({
       }, 1000);
     }
     try {
-      const aiResponse = await fetch(`${API_BASE_URL}/public/projects/${projectId}/help-center/ai-search`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          question: text,
-          conversationHistory: messages.slice(-6).map(m => ({
-            role: m.role,
-            content: m.content
-          }))
-        }),
-      });
+      // Local search — find relevant articles by matching keywords in title/excerpt/content
+      const query = text.toLowerCase();
+      const words = query.split(/\s+/).filter(w => w.length > 2);
 
-      if (!aiResponse.ok) throw new Error('Failed to get AI response');
+      // Dynamically import local data (avoids SSR issues)
+      const { articles: rawArticles } = await import('@/data/index');
 
-      const responseData = await aiResponse.json();
-      
-      // Keep search process visible if we showed steps and found articles
-      if (showSteps && responseData.searchResults && responseData.searchResults.articles.length > 0) {
-        setSearchProcessVisible(true);
+      const scored = rawArticles
+        .filter(a => a.is_published)
+        .map(a => {
+          const haystack = `${a.title} ${a.excerpt || ''} ${a.content}`.toLowerCase();
+          const score = words.reduce((s, w) => s + (haystack.split(w).length - 1), 0);
+          return { ...a, score };
+        })
+        .filter(a => a.score > 0)
+        .sort((a, b) => b.score - a.score)
+        .slice(0, 5);
+
+      // Build a simple answer from the top results
+      let answer = '';
+      if (scored.length === 0) {
+        answer = "I couldn't find any articles matching your question. Try browsing the categories or rephrasing your search.";
+      } else {
+        const top = scored[0];
+        // Strip HTML for a plain-text excerpt
+        const plain = top.content
+          .replace(/<[^>]+>/g, ' ')
+          .replace(/\s+/g, ' ')
+          .trim()
+          .slice(0, 400);
+        answer = `Based on **${top.title}**:\n\n${plain}${plain.length === 400 ? '…' : ''}\n\n`;
+        if (scored.length > 1) {
+          answer += `**Related articles:**\n${scored.slice(1).map(a => `- [${a.title}](/article/${a.slug})`).join('\n')}`;
+        }
       }
-      
-      // Set found articles after response is complete (only if showing steps)
-      if (showSteps && responseData.searchResults && responseData.searchResults.articles.length > 0) {
-        setFoundArticles(responseData.searchResults.articles.map((article: { title: string; slug: string; url?: string }) => ({
-          title: article.title,
-          slug: article.slug,
-          url: getArticleUrl(article.slug)
+
+      if (scored.length > 0) {
+        setSearchProcessVisible(true);
+        setFoundArticles(scored.map(a => ({
+          title: a.title,
+          slug: a.slug,
+          url: getArticleUrl(a.slug),
         })));
       }
-      
+
       setMessages(prev => [...prev, {
         id: `assistant-${Date.now()}`,
         role: 'assistant',
-        content: responseData.answer || 'I apologize, but I couldn\'t generate a response.',
+        content: answer,
         timestamp: new Date(),
-        links: responseData.links || [],
+        links: scored.map(a => ({ title: a.title, url: getArticleUrl(a.slug), slug: a.slug })),
       }]);
     } catch (error) {
       setMessages(prev => [...prev, {

@@ -621,9 +621,9 @@ export function ArticleContentViewer({
 
         .bn-viewer [data-content-type="heading"] {
           color: var(--foreground) !important;
-          text-transform: none !important;
-          letter-spacing: normal !important;
-          ${headingFont ? `font-family: ${headingFont} !important;` : ''}
+          text-transform: uppercase !important;
+          letter-spacing: 0.04em !important;
+          ${headingFont ? `font-family: ${headingFont} !important;` : "font-family: 'Geist Mono', ui-monospace, monospace !important;"}
         }
         .bn-viewer [data-content-type="heading"][data-level="1"] { font-size: 1.875rem; font-weight: 700; margin: 2rem 0 1rem; line-height: 1.2; }
         .bn-viewer [data-content-type="heading"][data-level="2"] { font-size: 1.5rem;   font-weight: 600; margin: 1.75rem 0 0.75rem; line-height: 1.3; }
