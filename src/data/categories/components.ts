@@ -4,6 +4,6 @@ export const componentsCategory = {
   description: 'All available content blocks and how to use them.',
   icon: 'hugeicons:layout-01',
   display_order: 2,
-  folder_id: null as string | null,
+  folder_id: 'docs' as string | null,
   parent_category_id: null as string | null,
 };

@@ -13,6 +13,7 @@ import {
   AccordionTrigger,
 } from './ui/accordion';
 import { useGoogleFonts } from '@/hooks/useGoogleFonts';
+import { useFolderSync } from '@/hooks/useFolderSync';
 
 interface Article {
   id: string;
@@ -99,7 +100,7 @@ export default function HelpCenterHome({
   
   const [isDark, setIsDark] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [activeFolderId, setActiveFolderId] = useState<string | null>(initialFolderId || null);
+  const { activeFolderId, setFolder: setActiveFolderId } = useFolderSync(initialFolderId);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchModalOpen, setSearchModalOpen] = useState(false);
   const [aiChatOpen, setAiChatOpen] = useState(false);
@@ -109,18 +110,7 @@ export default function HelpCenterHome({
   
   console.log(`[HOME] 📊 Props received: ${articles.length} articles, ${categories.length} categories`);
 
-  // Get active folder from URL or sessionStorage
-  useEffect(() => {
-    if (initialFolderId) {
-      setActiveFolderId(initialFolderId);
-      sessionStorage.setItem('active-folder-id', initialFolderId);
-    } else {
-      const savedFolderId = sessionStorage.getItem('active-folder-id');
-      if (savedFolderId) {
-        setActiveFolderId(savedFolderId);
-      }
-    }
-  }, [initialFolderId]);
+  // activeFolderId is managed by useFolderSync — synced via custom event across all components
 
   // Sort categories by display_order (nulls last), then by name
   const sortedCategories = [...clientCategories].sort((a, b) => {

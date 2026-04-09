@@ -1,12 +1,15 @@
 /**
  * Central data registry
- * Import categories and articles from their individual files and export
- * unified arrays that localData.ts consumes.
+ * Import categories, articles, and folders from their individual files.
+ * localData.ts consumes these exports.
  *
  * To add content:
- *   1. Create a file in src/data/categories/ or src/data/articles/<category>/
+ *   1. Create a file in src/data/categories/, src/data/articles/<category>/, or src/data/folders.ts
  *   2. Import and add it to the arrays below
  */
+
+// ─── Folders ──────────────────────────────────────────────────────────────────
+export { folders } from './folders';
 
 // ─── Categories ──────────────────────────────────────────────────────────────
 import { gettingStartedCategory } from './categories/getting-started';
@@ -14,6 +17,7 @@ import { componentsCategory } from './categories/components';
 import { guidesCategory } from './categories/guides';
 import { apiReferenceCategory } from './categories/api-reference';
 import { troubleshootingCategory } from './categories/troubleshooting';
+import { blogCategory } from './categories/blog';
 
 export const categories = [
   gettingStartedCategory,
@@ -21,6 +25,7 @@ export const categories = [
   guidesCategory,
   apiReferenceCategory,
   troubleshootingCategory,
+  blogCategory,
 ];
 
 // ─── Articles: Getting Started ────────────────────────────────────────────────
@@ -51,6 +56,14 @@ import { apiAuthenticationArticle } from './articles/api-reference/authenticatio
 import { commonErrorsArticle } from './articles/troubleshooting/common-errors';
 import { performanceArticle } from './articles/troubleshooting/performance';
 
+// ─── Articles: Blog ───────────────────────────────────────────────────────────
+import { introducingHelioArticle } from './articles/blog/introducing-helio';
+import { buildingDocsWithBlocksArticle } from './articles/blog/building-docs-with-blocks';
+import { seoForDocsArticle } from './articles/blog/seo-for-docs';
+import { deployingToCloudflareArticle } from './articles/blog/deploying-to-cloudflare';
+import { darkModeThemingArticle } from './articles/blog/dark-mode-theming';
+import { writingGreatDocsArticle } from './articles/blog/writing-great-docs';
+
 export const articles = [
   // Getting Started
   welcomeArticle,
@@ -75,4 +88,11 @@ export const articles = [
   // Troubleshooting
   commonErrorsArticle,
   performanceArticle,
+  // Blog
+  introducingHelioArticle,
+  buildingDocsWithBlocksArticle,
+  seoForDocsArticle,
+  deployingToCloudflareArticle,
+  darkModeThemingArticle,
+  writingGreatDocsArticle,
 ];

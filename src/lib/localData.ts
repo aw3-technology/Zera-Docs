@@ -4,7 +4,7 @@
  * can swap imports without changing anything else.
  */
 
-import { articles as rawArticles, categories as rawCategories } from '@/data/index';
+import { articles as rawArticles, categories as rawCategories, folders as rawFolders } from '@/data/index';
 import { faqs as rawFaqs } from '@/data/faqs';
 import { helpCenterConfig } from '@/data/config';
 
@@ -40,9 +40,9 @@ export async function getFaqs(_projectId?: string) {
   return rawFaqs.filter((f) => f.is_published);
 }
 
-/** No folders in local mode — returns empty array */
+/** Returns all folders */
 export async function getFolders(_projectId?: string) {
-  return [] as any[];
+  return [...rawFolders].sort((a, b) => (a.display_order ?? 999) - (b.display_order ?? 999));
 }
 
 /** No OpenAPI spec in local mode — returns null */

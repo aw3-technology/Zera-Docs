@@ -3,7 +3,7 @@ export const troubleshootingCategory = {
   name: 'Troubleshooting',
   description: 'Common issues and how to fix them.',
   icon: 'hugeicons:wrench-01',
-  display_order: 5,
-  folder_id: null as string | null,
+  display_order: 2,
+  folder_id: 'api-reference' as string | null,
   parent_category_id: null as string | null,
 };

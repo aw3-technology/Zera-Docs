@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { cn, getBasePath } from '@/lib/utils';
 import { Icon } from './ui/icon';
+import { useFolderSync } from '@/hooks/useFolderSync';
 
 interface Folder {
   id: string;
@@ -39,22 +40,13 @@ export function HelpCenterHeader({
   articles = [],
   categories = [],
 }: HelpCenterHeaderProps) {
-  const [localActiveFolderId, setLocalActiveFolderId] = useState<string | null>(activeFolderId);
+  const { activeFolderId: syncedFolderId, setFolder } = useFolderSync(activeFolderId);
+  const localActiveFolderId = syncedFolderId;
 
-  // Sync with prop changes
+  // Sync when prop changes (e.g. initial page load with a folder)
   useEffect(() => {
-    setLocalActiveFolderId(activeFolderId);
-  }, [activeFolderId]);
-
-  // Restore folder selection from sessionStorage on mount if not provided
-  useEffect(() => {
-    if (!activeFolderId) {
-      const savedFolderId = sessionStorage.getItem('active-folder-id');
-      if (savedFolderId) {
-        setLocalActiveFolderId(savedFolderId);
-      }
-    }
-  }, [activeFolderId]);
+    if (activeFolderId) setFolder(activeFolderId);
+  }, [activeFolderId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Get first article in a folder
   const getFirstArticleInFolder = (folderId: string, isDefault: boolean) => {
@@ -80,15 +72,8 @@ export function HelpCenterHeader({
   };
 
   const handleFolderSelect = (folderId: string | null) => {
-    setLocalActiveFolderId(folderId);
-    if (onFolderChange) {
-      onFolderChange(folderId);
-    }
-    if (folderId) {
-      sessionStorage.setItem('active-folder-id', folderId);
-    } else {
-      sessionStorage.removeItem('active-folder-id');
-    }
+    setFolder(folderId);
+    if (onFolderChange) onFolderChange(folderId);
   };
   
   return (
@@ -187,7 +172,7 @@ export function HelpCenterHeader({
             {/* Header Links (max 2) */}
             {config.header_links && config.header_links.length > 0 && (
               <nav className="flex items-center gap-1">
-                {config.header_links.slice(0, 2).filter((link: any) => link.label && link.url).map((link: any, index: number) => (
+                {config.header_links.slice(0, 3).filter((link: any) => link.label && link.url).map((link: any, index: number) => (
                   <a
                     key={index}
                     href={link.url}

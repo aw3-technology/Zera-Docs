@@ -495,51 +495,72 @@ export function ArticleContentViewer({
 
     const addCopyButtons = () => {
       const codeBlocks = el.querySelectorAll('pre:not(.copy-button-added)');
-      
+
       codeBlocks.forEach((pre) => {
+        // Skip pre elements inside code groups — they have their own copy button
+        if (pre.closest('[data-code-group]')) return;
+
         pre.classList.add('copy-button-added');
-        
-        // Create wrapper if not already wrapped
-        if (!pre.parentElement?.classList.contains('code-block-wrapper')) {
-          const wrapper = document.createElement('div');
-          wrapper.className = 'code-block-wrapper';
-          pre.parentNode?.insertBefore(wrapper, pre);
-          wrapper.appendChild(pre);
-        }
-        
-        const wrapper = pre.parentElement as HTMLElement;
-        
-        // Create copy button
+
+        // Skip if already wrapped
+        if (pre.parentElement?.classList.contains('code-block-wrapper')) return;
+
+        // Detect language from <code class="language-*">
+        const codeEl = pre.querySelector('code');
+        const langClass = codeEl?.className?.match(/language-(\w+)/)?.[1] || '';
+
+        // Build wrapper
+        const wrapper = document.createElement('div');
+        wrapper.className = 'code-block-wrapper';
+
+        // Build header bar
+        const header = document.createElement('div');
+        header.className = 'code-block-header';
+
+        const langLabel = document.createElement('span');
+        langLabel.className = 'code-block-lang';
+        langLabel.textContent = langClass || '';
+
         const button = document.createElement('button');
         button.className = 'code-copy-button';
         button.innerHTML = `
-          <svg class="copy-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <svg class="copy-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
             <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
           </svg>
-          <svg class="check-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: none;">
+          <svg class="check-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none">
             <polyline points="20 6 9 17 4 12"></polyline>
           </svg>
+          <span class="copy-label">Copy</span>
         `;
-        
+
         button.addEventListener('click', async () => {
-          const code = pre.querySelector('code')?.textContent || pre.textContent || '';
+          const code = codeEl?.textContent || pre.textContent || '';
           try {
             await navigator.clipboard.writeText(code);
             const copyIcon = button.querySelector('.copy-icon') as HTMLElement;
             const checkIcon = button.querySelector('.check-icon') as HTMLElement;
+            const label = button.querySelector('.copy-label') as HTMLElement;
             copyIcon.style.display = 'none';
             checkIcon.style.display = 'block';
+            if (label) label.textContent = 'Copied!';
             setTimeout(() => {
               copyIcon.style.display = 'block';
               checkIcon.style.display = 'none';
+              if (label) label.textContent = 'Copy';
             }, 2000);
           } catch (err) {
             console.error('Failed to copy code:', err);
           }
         });
-        
-        wrapper.appendChild(button);
+
+        header.appendChild(langLabel);
+        header.appendChild(button);
+
+        // Insert wrapper around pre
+        pre.parentNode?.insertBefore(wrapper, pre);
+        wrapper.appendChild(header);
+        wrapper.appendChild(pre);
       });
     };
 
@@ -635,84 +656,149 @@ export function ArticleContentViewer({
         .bn-viewer [data-content-type] a { color: ${primaryColor} !important; }
 
         /* ── Quote ── */
-        .bn-viewer .bn-block-outer:has([data-content-type="quote"]) .bn-block-content,
+        .bn-viewer .bn-block-outer:has([data-content-type="quote"]) {
+          margin: 1rem 0 !important;
+        }
+        .bn-viewer .bn-block-outer:has([data-content-type="quote"]) .bn-block-content {
+          border: none !important;
+          background: transparent !important;
+          padding: 0 !important;
+          margin: 0 !important;
+        }
         .bn-viewer [data-content-type="quote"] {
+          border: none !important;
           border-left: 3px solid ${primaryColor} !important;
-          border-top: none !important;
-          border-right: none !important;
-          border-bottom: none !important;
           padding: 0.5rem 1.25rem !important;
           margin: 0 !important;
           background: ${isDark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.03)'} !important;
           border-radius: 0 0.75rem 0.75rem 0 !important;
           color: var(--muted-foreground) !important;
           font-style: italic !important;
-        }
-        .bn-viewer .bn-block-outer:has([data-content-type="quote"]) {
-          margin: 1rem 0 !important;
+          display: block !important;
         }
 
-        .bn-viewer [data-content-type="codeBlock"] { padding: 0 !important; background: transparent !important; border: none !important; border-radius: 0 !important; }
-        
-        /* Code block wrapper for copy button */
-        .bn-viewer .code-block-wrapper {
-          position: relative;
-          margin: 1rem 0 !important;
-          width: 100%;
+        /* ── Checklist ── */
+        .bn-viewer [data-content-type="checkListItem"] {
+          display: flex !important;
+          align-items: flex-start !important;
+          gap: 0.625rem !important;
+          padding: 0.125rem 0 !important;
+          line-height: 1.6 !important;
+        }
+        .bn-viewer [data-content-type="checkListItem"] input[type="checkbox"] {
+          appearance: none !important;
+          -webkit-appearance: none !important;
+          width: 1rem !important;
+          height: 1rem !important;
+          min-width: 1rem !important;
+          border: 1.5px solid hsl(var(--border)) !important;
+          border-radius: 0.25rem !important;
+          margin-top: 0.2rem !important;
+          cursor: default !important;
+          background: transparent !important;
+          position: relative !important;
+          flex-shrink: 0 !important;
+        }
+        .bn-viewer [data-content-type="checkListItem"] input[type="checkbox"]:checked {
+          background: ${primaryColor} !important;
+          border-color: ${primaryColor} !important;
+        }
+        .bn-viewer [data-content-type="checkListItem"] input[type="checkbox"]:checked::after {
+          content: '' !important;
+          position: absolute !important;
+          left: 0.2rem !important;
+          top: 0.05rem !important;
+          width: 0.35rem !important;
+          height: 0.6rem !important;
+          border: 2px solid #fff !important;
+          border-top: none !important;
+          border-left: none !important;
+          transform: rotate(45deg) !important;
+        }
+        .bn-viewer [data-content-type="checkListItem"][data-checked="true"] .bn-inline-content {
+          text-decoration: line-through !important;
+          color: var(--muted-foreground) !important;
+          opacity: 0.7 !important;
         }
         
+        /* ── Code Block ── */
+        .bn-viewer [data-content-type="codeBlock"] { padding: 0 !important; background: transparent !important; border: none !important; border-radius: 0 !important; }
+
+        .bn-viewer .code-block-wrapper {
+          position: relative;
+          margin: 1.25rem 0 !important;
+          width: 100%;
+          border-radius: 0.75rem;
+          overflow: hidden;
+          border: 1px solid var(--code-block-border, hsl(var(--border)));
+        }
+
+        /* Header bar — language label + copy button */
+        .bn-viewer .code-block-header {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 0.5rem 1rem;
+          background: var(--code-block-header-bg, hsl(var(--muted)));
+          border-bottom: 1px solid var(--code-block-border, hsl(var(--border)));
+          min-height: 2.25rem;
+        }
+
+        .bn-viewer .code-block-lang {
+          font-family: ${mono};
+          font-size: 0.6875rem;
+          font-weight: 600;
+          text-transform: uppercase;
+          letter-spacing: 0.08em;
+          color: hsl(var(--muted-foreground));
+        }
+
+        .bn-viewer .code-copy-button {
+          display: flex;
+          align-items: center;
+          gap: 0.375rem;
+          padding: 0.25rem 0.625rem;
+          background: transparent;
+          border: 1px solid hsl(var(--border));
+          border-radius: 0.375rem;
+          cursor: pointer;
+          font-size: 0.6875rem;
+          font-weight: 500;
+          color: hsl(var(--muted-foreground));
+          transition: background 0.15s, color 0.15s;
+          font-family: ${mono};
+        }
+
+        .bn-viewer .code-copy-button:hover {
+          background: hsl(var(--accent));
+          color: hsl(var(--foreground));
+        }
+
+        .bn-viewer .code-copy-button svg {
+          width: 13px;
+          height: 13px;
+          flex-shrink: 0;
+        }
+
         .bn-viewer .code-block-wrapper pre {
           margin: 0 !important;
           width: 100%;
+          border: none !important;
+          border-radius: 0 !important;
         }
-        
+
         .bn-viewer pre {
-          background: hsl(var(--muted)) !important;
-          border: 1px solid hsl(var(--border)) !important;
-          border-radius: 1rem !important;
+          background: var(--code-block-bg, hsl(var(--muted) / 0.5)) !important;
           padding: 1rem 1.25rem !important;
-          padding-right: 3rem !important;
           font-family: ${mono} !important;
           font-size: 0.8125rem !important;
-          line-height: 1.7 !important;
+          line-height: 1.75 !important;
           overflow-x: auto;
           color: var(--foreground) !important;
           width: 100%;
           box-sizing: border-box;
         }
-        
-        /* Copy button */
-        .bn-viewer .code-copy-button {
-          position: absolute;
-          top: 0.75rem;
-          right: 0.75rem;
-          padding: 0.375rem;
-          background: hsl(var(--background));
-          border: 1px solid hsl(var(--border));
-          border-radius: 0.375rem;
-          cursor: pointer;
-          opacity: 0;
-          transition: opacity 0.2s, background 0.2s;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          color: hsl(var(--muted-foreground));
-        }
-        
-        .bn-viewer .code-block-wrapper:hover .code-copy-button {
-          opacity: 1;
-        }
-        
-        .bn-viewer .code-copy-button:hover {
-          background: hsl(var(--muted));
-          color: hsl(var(--foreground));
-        }
-        
-        .bn-viewer .code-copy-button svg {
-          width: 16px;
-          height: 16px;
-        }
-        
+
         .bn-viewer code { font-family: ${mono} !important; background: hsl(var(--muted)); border: 1px solid hsl(var(--border)); padding: 0.125rem 0.375rem; border-radius: 0.25rem; font-size: 0.75em; }
         .bn-viewer pre code { background: none !important; border: none !important; padding: 0 !important; font-size: inherit !important; }
         

@@ -9,6 +9,7 @@ import { ArticleFeedback } from './help-center/ArticleFeedback';
 import { CopyDropdown } from './help-center/CopyDropdown';
 import { Icon } from './ui/icon';
 import { useGoogleFonts } from '@/hooks/useGoogleFonts';
+import { useFolderSync } from '@/hooks/useFolderSync';
 import { NavigationLoadingBar } from './NavigationLoadingBar';
 import { BaseLayoutWrapper } from './BaseLayoutWrapper';
 import { SearchModal } from './SearchModal';
@@ -77,16 +78,8 @@ export default function ArticlePageWrapper({
   const [isDark, setIsDark] = useState(false);
   const [aiChatOpen, setAiChatOpen] = useState(false);
   const [searchModalOpen, setSearchModalOpen] = useState(false);
-  const [activeFolderId, setActiveFolderId] = useState<string | null>(null);
+  const { activeFolderId, setFolder: setActiveFolderId } = useFolderSync();
   const [tryItModalOpen, setTryItModalOpen] = useState(false);
-
-  // Get active folder from sessionStorage on mount
-  useEffect(() => {
-    const savedFolderId = sessionStorage.getItem('active-folder-id');
-    if (savedFolderId) {
-      setActiveFolderId(savedFolderId);
-    }
-  }, []);
 
   // Handle Cmd+K / Ctrl+K to open search
   useEffect(() => {
@@ -429,10 +422,9 @@ export default function ArticlePageWrapper({
                 )}
               </div>
 
-              {/* Copy Options - Right Aligned */}
-              {config.llm_copy_enabled && (
-                <div className="flex-shrink-0">
-                  <CopyDropdown
+              {/* Copy as Markdown — always visible */}
+              <div className="flex-shrink-0">
+                <CopyDropdown
                     article={article}
                     categoryName={categoryName}
                     articleUrl={articleUrl}
@@ -444,8 +436,7 @@ export default function ArticlePageWrapper({
                     allArticles={allArticles}
                     categories={sortedCategories}
                   />
-                </div>
-              )}
+              </div>
             </div>
 
             {/* API Reference: Show excerpt and Try It button */}

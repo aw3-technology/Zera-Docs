@@ -3,7 +3,7 @@ export const apiReferenceCategory = {
   name: 'API Reference',
   description: 'Full API documentation and examples.',
   icon: 'hugeicons:code',
-  display_order: 4,
-  folder_id: null as string | null,
+  display_order: 1,
+  folder_id: 'api-reference' as string | null,
   parent_category_id: null as string | null,
 };

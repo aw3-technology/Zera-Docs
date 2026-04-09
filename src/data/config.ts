@@ -10,8 +10,8 @@ export const helpCenterConfig = {
   welcome_title: 'How can we help you?',
   welcome_subtitle: 'Search our documentation or browse categories below.',
   theme_mode: 'auto' as 'light' | 'dark' | 'auto',
-  logo_url: null as string | null,
-  favicon_url: null as string | null,
+  logo_url: '/Helio_logo.png' as string | null,
+  favicon_url: '/Helio_logo.png' as string | null,
 
   // Layout
   show_search: true,
@@ -26,6 +26,8 @@ export const helpCenterConfig = {
   // Header
   header_links: [
     { label: 'Home', url: '/' },
+    { label: 'GitHub', url: 'https://github.com' },
+    { label: 'Website', url: 'https://usegately.com' },
   ],
   show_primary_button: true,
   primary_button_label: 'Get Started',

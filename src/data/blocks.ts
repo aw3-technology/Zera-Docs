@@ -64,6 +64,12 @@ export const quote = (text: string) => ({
   content: [{ type: 'text', text, styles: {} }], children: [],
 });
 
+export const checkItem = (text: string, checked = false) => ({
+  id: uid(), type: 'checkListItem',
+  props: { checked, textColor: 'default', backgroundColor: 'default', textAlignment: 'left' },
+  content: [{ type: 'text', text, styles: {} }], children: [],
+});
+
 export const codeBlock = (code: string, language = 'typescript') => ({
   id: uid(), type: 'codeBlock',
   props: { language, textColor: 'default', backgroundColor: 'default', textAlignment: 'left' },

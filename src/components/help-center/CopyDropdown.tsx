@@ -49,12 +49,7 @@ export function CopyDropdown({
 }: CopyDropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [showToast, setShowToast] = useState(false);
-  const [isMounted, setIsMounted] = useState(false);
-
-  // Ensure component is mounted before rendering
-  useState(() => {
-    setIsMounted(true);
-  });
+  const isMounted = true;
 
   const stripHtml = (html: string) => {
     return html
@@ -70,7 +65,6 @@ export function CopyDropdown({
     const url = articleUrl;
     const cleanContent = stripHtml(article.content);
     const markdown = `---\nURL: ${url}\nTitle: ${title}\nCategory: ${category}\n---\n\n${cleanContent}`;
-
     navigator.clipboard.writeText(markdown);
     setShowToast(true);
     setIsOpen(false);
@@ -90,11 +84,7 @@ export function CopyDropdown({
     setIsOpen(false);
   };
 
-  if (!isMounted) {
-    return (
-      <div className="h-8 w-[120px] rounded-xl border bg-transparent animate-pulse" />
-    );
-  }
+  if (!isMounted) return null;
 
   return (
     <>
@@ -102,17 +92,25 @@ export function CopyDropdown({
         <DropdownMenuTrigger asChild>
           <button
             className={cn(
-              "flex items-center h-[30px] rounded-xl border text-xs font-semibold shadow-sm hover:bg-accent focus:outline-none focus:ring-2 focus:ring-primary/20",
+              "flex items-center h-[30px] rounded-xl border text-xs font-semibold shadow-sm hover:bg-accent focus:outline-none",
               isDark
                 ? 'bg-background border-border/50 text-foreground'
                 : 'bg-card border-border/50 text-foreground'
             )}
           >
-            <div className="flex items-center gap-2 px-3">
-              <Icon icon="hugeicons:copy-01" className="h-4 w-4" />
-              <span>Copy page</span>
+            {/* Left: direct copy action */}
+            <div
+              className="flex items-center gap-2 px-3 h-full hover:bg-accent/60 rounded-l-xl transition-colors"
+              onClick={(e) => { e.stopPropagation(); copyAsMarkdown(); }}
+            >
+              {showToast
+                ? <Icon icon="hugeicons:checkmark-01" className="h-3.5 w-3.5 text-green-500" />
+                : <Icon icon="hugeicons:copy-01" className="h-3.5 w-3.5" />
+              }
+              <span>{showToast ? 'Copied!' : 'Copy as Markdown'}</span>
             </div>
-            <div className="border-l px-2 h-full flex items-center border-border/50">
+            {/* Right: open dropdown */}
+            <div className="border-l px-2 h-full flex items-center border-border/50 hover:bg-accent/60 rounded-r-xl transition-colors">
               <Icon icon="hugeicons:arrow-down-01" className="h-3 w-3" />
             </div>
           </button>
@@ -181,16 +179,12 @@ export function CopyDropdown({
         </DropdownMenuContent>
       </DropdownMenu>
 
-      {/* Toast Notification */}
+      {/* Toast for dropdown-triggered copy */}
       {showToast && (
-        <div
-          className={`fixed bottom-4 right-4 px-4 py-2 rounded-lg shadow-lg text-sm font-medium z-50 ${
-            isDark
-              ? 'bg-zinc-800 text-white'
-              : 'bg-white text-zinc-900 border border-zinc-200'
-          }`}
-        >
-          Copied as Markdown
+        <div className={`fixed bottom-4 right-4 px-4 py-2 rounded-lg shadow-lg text-sm font-medium z-50 ${
+          isDark ? 'bg-zinc-800 text-white' : 'bg-white text-zinc-900 border border-zinc-200'
+        }`}>
+          Copied as Markdown ✓
         </div>
       )}
     </>

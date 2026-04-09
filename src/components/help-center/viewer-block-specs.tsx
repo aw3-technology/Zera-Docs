@@ -175,7 +175,16 @@ export const stepsBlockSpec = createReactBlockSpec(
       return (
         <div className="flex gap-4 my-4 w-full">
           <div className="flex flex-col items-center flex-shrink-0">
-            <div className="w-7 h-7 rounded-full bg-muted flex items-center justify-content text-xs font-bold text-muted-foreground">
+            <div
+              className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0"
+              style={{
+                backgroundColor: 'var(--viewer-primary, #ea4e1e)',
+                color: '#fff',
+                minWidth: '1.75rem',
+                minHeight: '1.75rem',
+                lineHeight: 1,
+              }}
+            >
               {num}
             </div>
             <div className="w-px flex-1 bg-border mt-1" />
@@ -308,53 +317,61 @@ export const codeGroupBlockSpec = createReactBlockSpec(
               font-family: 'Geist Mono', ui-monospace, SFMono-Regular, "SF Mono", Monaco, Consolas, "Liberation Mono", "Courier New", monospace !important;
             }
           `}</style>
-          <div className="w-full rounded-xl border overflow-hidden my-4" style={{ 
-            borderColor: 'var(--code-block-border, hsl(0 0% 93%))',
-            backgroundColor: 'var(--code-block-bg, hsl(0 0% 97%))'
+          <div className="w-full rounded-xl overflow-hidden my-4" data-code-group="" style={{
+            border: '1px solid var(--code-block-border, hsl(0 0% 15%))',
           }}>
-            {/* Tabs */}
-            <div className="flex items-center border-b" style={{ 
-              borderColor: 'var(--code-block-border, hsl(0 0% 93%))',
-              backgroundColor: 'var(--code-block-header-bg, hsl(0 0% 100%))'
+            {/* Tab bar */}
+            <div className="flex items-center justify-between border-b" style={{
+              borderColor: 'var(--code-block-border, hsl(0 0% 15%))',
+              backgroundColor: 'var(--code-block-header-bg, hsl(0 0% 9%))',
+              minHeight: '2.25rem',
+              padding: '0 0.25rem',
             }}>
-              {tabs.map((tab, idx) => (
-                <button
-                  key={idx}
-                  type="button"
-                  onClick={() => setActiveTab(idx)}
-                  className={`px-4 py-2.5 text-xs font-medium border-b-2 transition-colors code-group-mono ${
-                    activeTab === idx
-                      ? 'text-foreground'
-                      : 'border-transparent text-muted-foreground hover:text-foreground'
-                  }`}
-                  style={activeTab === idx ? {
-                    borderBottomColor: '#f97316',
-                    color: 'var(--foreground)',
-                    backgroundColor: 'var(--code-block-bg, hsl(0 0% 97%))'
-                  } : {}}
-                >
-                  {tab.label}
-                </button>
-              ))}
-            </div>
-
-            {/* Code */}
-            <div className="relative">
-              <pre className="p-4 text-xs code-group-mono overflow-x-auto leading-relaxed max-h-[400px] overflow-y-auto" style={{
-                backgroundColor: 'var(--code-block-bg, hsl(0 0% 97%))',
-                color: 'var(--foreground)'
-              }}>
-                {tabs[activeTab]?.code}
-              </pre>
+              {/* Tabs */}
+              <div className="flex items-center">
+                {tabs.map((tab, idx) => (
+                  <button
+                    key={idx}
+                    type="button"
+                    onClick={() => setActiveTab(idx)}
+                    className="code-group-mono px-3 py-2 text-xs font-semibold border-b-2 transition-colors whitespace-nowrap"
+                    style={{
+                      borderBottomColor: activeTab === idx ? 'var(--viewer-primary, #ea4e1e)' : 'transparent',
+                      color: activeTab === idx ? 'var(--foreground)' : 'hsl(var(--muted-foreground))',
+                      background: 'transparent',
+                      letterSpacing: '0.06em',
+                      textTransform: 'uppercase',
+                    }}
+                  >
+                    {tab.label}
+                  </button>
+                ))}
+              </div>
+              {/* Copy button */}
               <button
                 type="button"
                 onClick={() => navigator.clipboard?.writeText(tabs[activeTab]?.code || '')}
-                className="absolute top-2 right-2 p-1.5 rounded-md bg-muted hover:bg-muted/80 text-muted-foreground transition-colors"
-                title="Copy code"
+                className="code-group-mono flex items-center gap-1.5 mr-2 px-2.5 py-1 rounded text-xs font-medium transition-colors"
+                style={{
+                  border: '1px solid hsl(var(--border))',
+                  color: 'hsl(var(--muted-foreground))',
+                  background: 'transparent',
+                  fontSize: '0.6875rem',
+                }}
               >
-                <iconify-icon icon="hugeicons:copy-01" width="14" height="14" />
+                <iconify-icon icon="hugeicons:copy-01" width="12" height="12" />
+                Copy
               </button>
             </div>
+
+            {/* Code */}
+            <pre className="p-4 text-xs code-group-mono overflow-x-auto leading-relaxed max-h-[400px] overflow-y-auto m-0" style={{
+              backgroundColor: 'var(--code-block-bg, hsl(0 0% 7%))',
+              color: 'var(--foreground)',
+              borderRadius: 0,
+            }}>
+              {tabs[activeTab]?.code}
+            </pre>
           </div>
         </>
       );

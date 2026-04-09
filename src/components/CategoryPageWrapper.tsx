@@ -4,6 +4,7 @@ import { HelpCenterSidebar } from './HelpCenterSidebar';
 import { HelpCenterHeader } from './HelpCenterHeader';
 import { Icon } from './ui/icon';
 import { useGoogleFonts } from '@/hooks/useGoogleFonts';
+import { useFolderSync } from '@/hooks/useFolderSync';
 import { NavigationLoadingBar } from './NavigationLoadingBar';
 import { BaseLayoutWrapper } from './BaseLayoutWrapper';
 
@@ -59,15 +60,7 @@ export default function CategoryPageWrapper({
 }: CategoryPageWrapperProps) {
   const [isDark, setIsDark] = useState(false);
   const [aiChatOpen, setAiChatOpen] = useState(false);
-  const [activeFolderId, setActiveFolderId] = useState<string | null>(null);
-
-  // Get active folder from sessionStorage on mount
-  useEffect(() => {
-    const savedFolderId = sessionStorage.getItem('active-folder-id');
-    if (savedFolderId) {
-      setActiveFolderId(savedFolderId);
-    }
-  }, []);
+  const { activeFolderId, setFolder: setActiveFolderId } = useFolderSync();
 
   // Sort categories by display_order
   const sortedCategories = [...allCategories].sort((a, b) => {
