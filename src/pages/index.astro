@@ -1,0 +1,116 @@
+---
+// Force server-side rendering for dynamic subdomain support
+export const prerender = false;
+
+// Custom domains use this page directly
+// Subdomains get redirected to /help by middleware
+import { getArticles, getCategories, getHelpCenterConfig, getFaqs } from '../lib/api';
+import { getProjectIdFromRequest } from '../lib/projectContext';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import HelpCenterHome from '../components/HelpCenterHome';
+
+console.log('[INDEX] ⏱️ Page load started');
+const startTime = Date.now();
+
+let projectId: string = import.meta.env.PUBLIC_PROJECT_ID || '6da7042b-22c0-4568-801c-ec608649cd19';
+let articles: any[] = [];
+let categories: any[] = [];
+let folders: any[] = [];
+let faqs: any[] = [];
+let configData: any = null;
+
+try {
+  // Get project ID with simplified logic to avoid worker timeouts
+  const projectIdStart = Date.now();
+  try {
+    projectId = await getProjectIdFromRequest(Astro.url.href, Astro.request);
+    console.log(`[INDEX] ✅ Project ID resolved in ${Date.now() - projectIdStart}ms: ${projectId}`);
+  } catch (projectIdError) {
+    console.log(`[INDEX] ⚠️ Project ID resolution failed after ${Date.now() - projectIdStart}ms, using default:`, projectIdError);
+    // Use default project ID
+  }
+
+  // Fetch data with shorter timeouts and better error handling
+  console.log('[INDEX] 🔄 Starting parallel data fetch...');
+  const fetchStart = Date.now();
+  
+  const fetchPromises = await Promise.allSettled([
+    getArticles(projectId).catch(() => []),
+    getCategories(projectId).catch(() => []),
+    getFaqs(projectId).catch(() => []),
+    getHelpCenterConfig(projectId).catch(() => null),
+    fetch(`${import.meta.env.PUBLIC_API_URL || 'https://api.usegately.com/api'}/public/projects/${projectId}/help-folders`, {
+      signal: AbortSignal.timeout(5000),
+      // @ts-ignore — Cloudflare Workers cf cache hint
+      cf: { cacheTtl: 300, cacheEverything: true },
+    }).then(r => r.json()).then(d => d.data?.folders || d.folders || []).catch(() => [])
+  ]);
+
+  console.log(`[INDEX] ✅ All fetches completed in ${Date.now() - fetchStart}ms`);
+
+  articles = fetchPromises[0].status === 'fulfilled' ? fetchPromises[0].value : [];
+  categories = fetchPromises[1].status === 'fulfilled' ? fetchPromises[1].value : [];
+  faqs = fetchPromises[2].status === 'fulfilled' ? fetchPromises[2].value : [];
+  configData = fetchPromises[3].status === 'fulfilled' ? fetchPromises[3].value : null;
+  folders = fetchPromises[4].status === 'fulfilled' ? fetchPromises[4].value : [];
+
+  console.log(`[INDEX] 📊 Data loaded: ${articles.length} articles, ${categories.length} categories, ${faqs.length} FAQs, ${folders.length} folders`);
+
+  // Log individual fetch results
+  fetchPromises.forEach((result, index) => {
+    const names = ['articles', 'categories', 'faqs', 'config', 'folders'];
+    if (result.status === 'rejected') {
+      console.log(`[INDEX] ❌ ${names[index]} fetch failed:`, result.reason);
+    }
+  });
+
+  // Ensure categories is always an array
+  if (!Array.isArray(categories)) {
+    categories = [];
+  }
+
+} catch (e) {
+  console.log('[INDEX] ❌ Data fetching failed, using defaults:', e);
+  // Use empty defaults
+}
+
+console.log(`[INDEX] ⏱️ Total server-side time: ${Date.now() - startTime}ms`);
+
+const defaultConfig = {
+  portal_name: 'Help Center',
+  primary_color: '#3b82f6',
+  welcome_title: 'How can we help you?',
+  welcome_subtitle: 'Search our knowledge base or browse categories below',
+  theme_mode: 'light' as const,
+  show_search: true,
+  show_categories: true,
+  ai_answer_enabled: false,
+};
+
+const config = configData || defaultConfig;
+
+// The default folder is the one marked is_default — its categories show on the root page
+const defaultFolder = folders.find((f: any) => f.is_default) || folders[0] || null;
+---
+
+<BaseLayout 
+  title={`${config.portal_name} | ${config.meta_title || 'Help Center'}`}
+  description={config.meta_description || config.welcome_subtitle}
+  config={config}
+  projectId={projectId}
+  folders={folders}
+  ogImage={config.og_image_url}
+  ogType="website"
+>
+  <HelpCenterHome
+    client:only="react"
+    transition:persist="help-center-home"
+    config={config}
+    articles={articles}
+    categories={categories}
+    folders={folders}
+    faqs={faqs}
+    projectId={projectId}
+    initialFolderId={defaultFolder?.id}
+  />
+</BaseLayout>

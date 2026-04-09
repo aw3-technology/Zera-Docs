@@ -1,0 +1,102 @@
+---
+// Force server-side rendering for dynamic subdomain support
+export const prerender = false;
+
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import CategoryPageWrapper from '../../components/CategoryPageWrapper';
+import { getArticles, getCategories, getHelpCenterConfig } from '../../lib/api';
+import { getProjectIdFromRequest } from '../../lib/projectContext';
+
+let projectId: string = import.meta.env.PUBLIC_PROJECT_ID || '6da7042b-22c0-4568-801c-ec608649cd19';
+let articles: any[] = [];
+let categories: any[] = [];
+let folders: any[] = [];
+let configData: any = null;
+
+try {
+  // Get project ID from domain/subdomain
+  try {
+    projectId = await getProjectIdFromRequest(Astro.url.href, Astro.request);
+    console.log('[Category Page] Resolved project ID:', projectId);
+  } catch (projectIdError) {
+    console.error('[Category Page] Failed to resolve project ID:', projectIdError);
+    // projectId already has fallback value
+  }
+
+  // Fetch all data with individual error handling
+  const fetchPromises = await Promise.allSettled([
+    getArticles(projectId),
+    getCategories(projectId),
+    getHelpCenterConfig(projectId),
+    fetch(`${import.meta.env.PUBLIC_API_URL || 'https://api.usegately.com/api'}/public/projects/${projectId}/help-folders`).then(r => r.json()).then(d => d.data?.folders || d.folders || []).catch(() => [])
+  ]);
+
+  articles = fetchPromises[0].status === 'fulfilled' ? fetchPromises[0].value : [];
+  categories = fetchPromises[1].status === 'fulfilled' ? fetchPromises[1].value : [];
+  configData = fetchPromises[2].status === 'fulfilled' ? fetchPromises[2].value : null;
+  folders = fetchPromises[3].status === 'fulfilled' ? fetchPromises[3].value : [];
+  
+  // Log any failures
+  fetchPromises.forEach((result, index) => {
+    if (result.status === 'rejected') {
+      const names = ['articles', 'categories', 'config', 'folders'];
+      console.error(`[Category Page] Failed to fetch ${names[index]}:`, result.reason);
+    }
+  });
+} catch (e) {
+  console.error('[Category Page] Unexpected error:', e);
+  // Continue with empty data
+}
+
+const { slug } = Astro.params;
+
+// Find category by slug, id, or name-derived slug (backward compatible)
+const category = categories.find(c => 
+  c.slug === slug ||
+  c.id === slug ||
+  c.name.toLowerCase().replace(/\s+/g, '-') === slug ||
+  c.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') === slug
+);
+
+// Handle case where category is not found
+if (!category) {
+  return new Response(null, {
+    status: 404,
+    statusText: 'Not found'
+  });
+}
+
+// Get articles for this category
+const categoryArticles = articles.filter(a => a.category_id === category.id);
+
+const defaultConfig = {
+  portal_name: 'Help Center',
+  primary_color: '#3b82f6',
+  theme_mode: 'light' as const,
+};
+
+const config = configData || defaultConfig;
+
+// Get category name for breadcrumb
+const categoryName = category.name;
+---
+
+<BaseLayout 
+  title={`${categoryName} - ${config.portal_name}`}
+  description={category.description || `Browse ${categoryName} articles`}
+  config={config}
+  projectId={projectId}
+  folders={folders}
+>
+  <CategoryPageWrapper
+    client:only="react"
+    transition:persist="category-page-wrapper"
+    config={config}
+    category={category}
+    articles={categoryArticles}
+    allCategories={categories}
+    allArticles={articles}
+    projectId={projectId}
+    folders={folders}
+  />
+</BaseLayout>

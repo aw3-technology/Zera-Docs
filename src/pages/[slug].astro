@@ -1,0 +1,197 @@
+---
+// Force server-side rendering for dynamic subdomain support
+export const prerender = false;
+
+import { getArticles, getCategories, getHelpCenterConfig, getFaqs, getOpenApiSpec } from '../lib/api';
+import { getProjectIdFromRequest } from '../lib/projectContext';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import HelpCenterHome from '../components/HelpCenterHome.tsx';
+import CategoryPageWrapper from '../components/CategoryPageWrapper.tsx';
+import ArticlePageWrapper from '../components/ArticlePageWrapper.tsx';
+
+let projectId: string = import.meta.env.PUBLIC_PROJECT_ID || '6da7042b-22c0-4568-801c-ec608649cd19';
+let articles: any[] = [];
+let categories: any[] = [];
+let folders: any[] = [];
+let faqs: any[] = [];
+let configData: any = null;
+let apiSpecUrl: string | null = null;
+
+try {
+  try {
+    projectId = await getProjectIdFromRequest(Astro.url.href, Astro.request);
+  } catch (projectIdError) {
+    console.error('[Slug Page] Failed to resolve project ID:', projectIdError);
+  }
+
+  const fetchPromises = await Promise.allSettled([
+    getArticles(projectId),
+    getCategories(projectId),
+    getFaqs(projectId),
+    getHelpCenterConfig(projectId),
+    fetch(`${import.meta.env.PUBLIC_API_URL || 'https://api.usegately.com/api'}/public/projects/${projectId}/help-folders`)
+      .then(r => r.json())
+      .then(d => d.data?.folders || d.folders || [])
+      .catch(() => []),
+    getOpenApiSpec(projectId),
+  ]);
+
+  articles = fetchPromises[0].status === 'fulfilled' ? fetchPromises[0].value : [];
+  categories = fetchPromises[1].status === 'fulfilled' ? fetchPromises[1].value : [];
+  faqs = fetchPromises[2].status === 'fulfilled' ? fetchPromises[2].value : [];
+  configData = fetchPromises[3].status === 'fulfilled' ? fetchPromises[3].value : null;
+  folders = fetchPromises[4].status === 'fulfilled' ? fetchPromises[4].value : [];
+  if (fetchPromises[5].status === 'fulfilled' && fetchPromises[5].value !== null) {
+    apiSpecUrl = `${import.meta.env.PUBLIC_API_URL || 'https://api.usegately.com/api'}/public/projects/${projectId}/openapi`;
+  }
+} catch (e) {
+  console.error('[Slug Page] Unexpected error:', e);
+}
+
+const { slug } = Astro.params;
+
+// Helper: match category by slug, id, or name-derived slug
+const findCategory = (s: string) => categories.find(c =>
+  c.slug === s ||
+  c.id === s ||
+  c.name?.toLowerCase().replace(/\s+/g, '-') === s ||
+  c.name?.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') === s
+);
+
+// Try folder first (must have a name to be valid), then category, then article
+const folder = folders.find((f: any) => f.slug === slug && f.name);
+const category = !folder ? findCategory(slug!) : null;
+const article = !folder && !category ? articles.find((a: any) => a.slug === slug) : null;
+
+if (!folder && !category && !article) {
+  return new Response(null, { status: 404, statusText: 'Not found' });
+}
+
+// Non-default folders redirect to their first article instead of showing the home page
+if (folder && !folder.is_default) {
+  // Find categories belonging to this folder, sorted by display_order
+  const folderCategories = categories
+    .filter((c: any) => c.folder_id === folder.id)
+    .sort((a: any, b: any) => (a.display_order ?? 999) - (b.display_order ?? 999));
+
+  // Find the first article across those categories (in category order)
+  let firstArticle: any = null;
+  for (const cat of folderCategories) {
+    const catArticles = articles.filter((a: any) => a.category_id === cat.id);
+    if (catArticles.length > 0) {
+      firstArticle = catArticles[0];
+      break;
+    }
+  }
+
+  if (firstArticle) {
+    return Astro.redirect(`/${folder.slug}/article/${firstArticle.slug}`, 302);
+  }
+  // If no articles found, fall through and render the home page for this folder
+}
+
+// Article helpers (only needed when article matched)
+const getCategoryName = (categoryId: string | null) => {
+  if (!categoryId) return 'General';
+  return categories.find((c: any) => c.id === categoryId)?.name || 'General';
+};
+const formattedDate = article?.created_at
+  ? new Date(article.created_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+  : '';
+const articleExcerpt = article?.excerpt || article?.title || '';
+const categoryName = article ? getCategoryName(article.category_id) : '';
+const articleUrl = article ? Astro.url.href : '';
+
+const defaultConfig = {
+  portal_name: 'Help Center',
+  primary_color: '#3b82f6',
+  welcome_title: 'How can we help?',
+  welcome_subtitle: 'Search our knowledge base or browse categories below',
+  theme_mode: 'light' as const,
+  show_search: true,
+  show_categories: true,
+  ai_answer_enabled: false,
+};
+
+const config = configData || defaultConfig;
+---
+
+{folder && (
+  <BaseLayout 
+    title={`${folder.name} - ${config.portal_name}`}
+    description={folder.description || `Browse ${folder.name} articles`}
+    config={config}
+    projectId={projectId}
+    folders={folders}
+    ogImage={config.og_image_url}
+    ogType="website"
+  >
+    <HelpCenterHome
+      client:only="react"
+      transition:persist="help-center-home"
+      config={config}
+      articles={articles}
+      categories={categories}
+      folders={folders}
+      faqs={faqs}
+      projectId={projectId}
+      initialFolderId={folder.id}
+    />
+  </BaseLayout>
+)}
+
+{category && (
+  <BaseLayout
+    title={`${category.name} - ${config.portal_name}`}
+    description={category.description || `Browse ${category.name} articles`}
+    config={config}
+    projectId={projectId}
+    folders={folders}
+  >
+    <CategoryPageWrapper
+      client:only="react"
+      transition:persist="category-page-wrapper"
+      config={config}
+      category={category}
+      articles={articles.filter((a: any) => a.category_id === category.id)}
+      allCategories={categories}
+      allArticles={articles}
+      projectId={projectId}
+      folders={folders}
+    />
+  </BaseLayout>
+)}
+
+
+{article && (
+  <BaseLayout
+    title={article.title}
+    description={articleExcerpt}
+    config={config}
+    projectId={projectId}
+    folders={folders}
+    ogImage={config.og_image_url}
+    ogType="article"
+    article={{
+      publishedTime: article.created_at,
+      modifiedTime: article.updated_at,
+      author: config.portal_name,
+      section: categoryName !== 'General' ? categoryName : undefined
+    }}
+  >
+    <ArticlePageWrapper
+      client:only="react"
+      transition:persist="article-page-wrapper"
+      config={config}
+      article={article}
+      categories={categories}
+      allArticles={articles}
+      categoryName={categoryName}
+      articleUrl={articleUrl}
+      formattedDate={formattedDate}
+      projectId={projectId}
+      folders={folders}
+      apiSpecUrl={apiSpecUrl}
+    />
+  </BaseLayout>
+)}
