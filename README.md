@@ -514,8 +514,4 @@ No environment variables are required for local data mode.
 - [Radix UI](https://www.radix-ui.com) — accessible primitives
 - [Cloudflare Pages](https://pages.cloudflare.com) — hosting and edge rendering
 
----
 
-## License
-
-MIT

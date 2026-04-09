@@ -12,7 +12,6 @@ export const GET: APIRoute = async ({ request, url }) => {
 User-agent: *
 Allow: /
 Disallow: /api/
-Disallow: /_gately/
 
 # Sitemap
 Sitemap: ${baseUrl}/sitemap.xml

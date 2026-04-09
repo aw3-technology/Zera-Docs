@@ -1,32 +1,23 @@
 /**
- * API integration to fetch content from your existing Gately API
- * This allows you to use your existing help center content
- * 
- * Uses Cloudflare Functions to proxy API requests from the same domain
+ * Legacy API integration — kept for reference if switching to a remote data source.
+ * In local mode, src/lib/localData.ts is used instead.
  */
 
 import { getCached } from './cache';
 
-// Get API base URL - use relative path for client-side, direct API for server-side
 function getApiBaseUrl(): string {
-  if (typeof window !== 'undefined') {
-    // Client-side: use relative path (proxied by Cloudflare Functions)
-    return '/api';
-  }
-  
-  // Server-side: use direct API URL
+  if (typeof window !== 'undefined') return '/api';
   try {
-    return import.meta.env.PUBLIC_API_URL || 'https://api.usegately.com/api';
+    return import.meta.env.PUBLIC_API_URL || 'https://api.example.com/api';
   } catch {
-    return 'https://api.usegately.com/api';
+    return 'https://api.example.com/api';
   }
 }
 
-// Build fetch options with Cloudflare edge cache hints (server-side only)
 function cfFetch(url: string, ttl: number, signal?: AbortSignal): Promise<Response> {
   const opts: RequestInit & { cf?: Record<string, unknown> } = {
     signal,
-    headers: { 'User-Agent': 'Gately-HelpCenter/1.0' },
+    headers: { 'User-Agent': 'Helio-HelpCenter/1.0' },
     cf: { cacheTtl: ttl, cacheEverything: true },
   };
   return fetch(url, opts);

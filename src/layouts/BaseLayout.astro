@@ -38,7 +38,7 @@ const actualOrigin = forwardedHost ? `${Astro.url.protocol}//${forwardedHost}` :
 // the stripped path (e.g. /getting-started, not /docs/getting-started).
 // Also read X-Gately-Sub-Path header sent by the worker as a reliable fallback.
 const subPathDomain = config.sub_path_domain || null;
-const subPath = config.sub_path || Astro.request.headers.get('X-Gately-Sub-Path') || '';
+const subPath = config.sub_path || '';
 const publicOrigin = subPathDomain
   ? `${Astro.url.protocol}//${subPathDomain}`
   : actualOrigin;
