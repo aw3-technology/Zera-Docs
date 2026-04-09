@@ -1,6 +1,5 @@
 import type { APIRoute } from 'astro';
 import { getArticles, getCategories } from '../lib/localData';
-import { helpCenterConfig } from '../data/config';
 
 export const GET: APIRoute = async ({ request, url }) => {
   const [articles, categories] = await Promise.all([

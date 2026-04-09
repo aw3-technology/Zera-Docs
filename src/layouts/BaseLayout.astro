@@ -29,7 +29,6 @@ const isDark = config.theme_mode === 'dark';
 
 // Get the original domain from headers (for proxied custom domains)
 const forwardedHost = Astro.request.headers.get('X-Forwarded-Host') || Astro.request.headers.get('X-Original-Host');
-const actualHostname = forwardedHost || Astro.url.hostname;
 const actualOrigin = forwardedHost ? `${Astro.url.protocol}//${forwardedHost}` : Astro.url.origin;
 
 // If the user has configured a sub-path deployment (e.g. yourdomain.com/docs),

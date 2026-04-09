@@ -2,7 +2,7 @@
 // Force server-side rendering for dynamic subdomain support
 export const prerender = false;
 
-import { getArticles, getCategories, getHelpCenterConfig, getFaqs, getOpenApiSpec, getFolders } from '../lib/localData';
+import { getArticles, getCategories, getHelpCenterConfig, getFaqs, getFolders } from '../lib/localData';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import HelpCenterHome from '../components/HelpCenterHome.tsx';
 import ArticlePageWrapper from '../components/ArticlePageWrapper.tsx';
@@ -30,7 +30,7 @@ const findCategory = (slugPart: string, folderId?: string) => {
   return categories.find(c => {
     const nameSlug = c.name.toLowerCase().replace(/\s+/g, '-');
     const nameSlugStrict = c.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-    const matches = c.slug === slugPart || c.id === slugPart || nameSlug === slugPart || nameSlugStrict === slugPart;
+    const matches = c.id === slugPart || nameSlug === slugPart || nameSlugStrict === slugPart;
     if (folderId) return matches && c.folder_id === folderId;
     return matches;
   });
@@ -171,7 +171,7 @@ const articleUrl = article ? `${Astro.url.origin}${Astro.url.pathname}` : '';
     config={helpCenterConfig}
     projectId={projectId}
     folders={folders}
-    ogImage={helpCenterConfig.og_image_url}
+    ogImage={helpCenterConfig.og_image_url ?? undefined}
     ogType="website"
   >
     <HelpCenterHome
@@ -195,7 +195,7 @@ const articleUrl = article ? `${Astro.url.origin}${Astro.url.pathname}` : '';
     config={helpCenterConfig}
     projectId={projectId}
     folders={folders}
-    ogImage={helpCenterConfig.og_image_url}
+    ogImage={helpCenterConfig.og_image_url ?? undefined}
     ogType="article"
     article={{
       publishedTime: article.created_at,

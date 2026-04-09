@@ -19,7 +19,6 @@ const { slug } = Astro.params;
 
 // Find category by slug, id, or name-derived slug (backward compatible)
 const category = categories.find(c => 
-  c.slug === slug ||
   c.id === slug ||
   c.name.toLowerCase().replace(/\s+/g, '-') === slug ||
   c.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') === slug

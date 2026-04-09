@@ -28,7 +28,7 @@ const defaultFolder = folders.find((f: any) => f.is_default) || folders[0] || nu
   config={config}
   projectId={projectId}
   folders={folders}
-  ogImage={config.og_image_url}
+  ogImage={config.og_image_url ?? undefined}
   ogType="website"
 >
   <HelpCenterHome

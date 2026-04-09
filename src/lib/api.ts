@@ -67,7 +67,6 @@ export async function getArticles(projectId: string): Promise<Article[]> {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 10000); // Increased to 10s
       
-      const fetchStart = Date.now();
       const response = typeof window === 'undefined'
         ? await cfFetch(`${API_BASE_URL}/public/projects/${projectId}/help-articles?limit=500`, 120, controller.signal)
         : await fetch(`${API_BASE_URL}/public/projects/${projectId}/help-articles?limit=500`, {

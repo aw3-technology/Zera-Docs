@@ -16,7 +16,7 @@ const projectId = 'local';
   description={config.meta_description || config.welcome_subtitle}
   config={config}
   projectId={projectId}
-  ogImage={config.og_image_url}
+  ogImage={config.og_image_url ?? undefined}
   ogType="website"
 >
   <HelpCenterHome
