@@ -173,13 +173,25 @@ export default function CategoryPageWrapper({
           folders={folders}
           articles={allArticles}
           categories={allCategories}
+          mobileSidebar={
+            <HelpCenterSidebar
+              config={config}
+              categories={filteredCategories}
+              articles={allArticles}
+              selectedCategory={category.id}
+              isDark={isDark}
+              onThemeToggle={handleThemeToggle}
+              getArticleCount={(categoryId) => allArticles.filter(a => a.category_id === categoryId).length}
+              folders={folders}
+            />
+          }
         />
       </div>
 
       {/* Main Content with Sidebar inside max-width */}
       <div className="flex-1 overflow-hidden">
-        <div className="flex mx-auto gap-8 h-full" style={{ maxWidth: '1400px' }}>
-          {/* Sidebar - Left Column */}
+        <div className="flex mx-auto gap-8 h-full pr-4 md:pr-8" style={{ maxWidth: '1400px' }}>
+          {/* Sidebar - Left Column — desktop only */}
           <div data-astro-transition-persist="sidebar" className="hidden lg:block">
             <HelpCenterSidebar
               config={config}
@@ -194,29 +206,24 @@ export default function CategoryPageWrapper({
           </div>
 
           {/* Main Content - Center Column - Scrollable */}
-          <div className="flex-1 min-w-0 pt-8 pb-12 max-w-3xl overflow-y-auto scrollbar-hide">
+          <div className="flex-1 min-w-0 pt-6 md:pt-8 pb-12 max-w-3xl overflow-y-auto scrollbar-hide pl-4 lg:pl-0">
             {/* Breadcrumb */}
-            <nav className={cn(
-              "flex items-center gap-2 text-sm mb-6",
-              isDark ? "text-zinc-400" : "text-zinc-500"
-            )}>
+            <nav className={cn("flex items-center gap-2 text-sm mb-6", isDark ? "text-zinc-400" : "text-zinc-500")}>
               <a href={getBasePath()} className="hover:underline">Home</a>
               <Icon icon="hugeicons:arrow-right-01" className="h-3 w-3" />
-              <span className={cn(isDark ? "text-zinc-200" : "text-zinc-900")}>
-                {category.name}
-              </span>
+              <span className={cn(isDark ? "text-zinc-200" : "text-zinc-900")}>{category.name}</span>
             </nav>
 
             {/* Category Header */}
             <div className="mb-8">
               <div className="flex items-center gap-3 mb-3">
                 {renderCategoryIcon(category.icon)}
-                <h1 className="text-3xl font-bold" style={{ fontFamily: config.heading_font || 'system-ui, sans-serif' }}>
+                <h1 className="text-2xl md:text-3xl font-bold" style={{ fontFamily: config.heading_font || 'system-ui, sans-serif' }}>
                   {category.name}
                 </h1>
               </div>
               {category.description && (
-                <p className={cn("text-lg", isDark ? "text-zinc-400" : "text-zinc-600")}>
+                <p className={cn("text-base md:text-lg", isDark ? "text-zinc-400" : "text-zinc-600")}>
                   {category.description}
                 </p>
               )}

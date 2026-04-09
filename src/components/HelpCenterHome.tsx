@@ -95,9 +95,6 @@ export default function HelpCenterHome({
   projectId,
   initialFolderId,
 }: HelpCenterHomeProps) {
-  console.log('[HOME] 🎨 Component rendering started');
-  const renderStart = Date.now();
-  
   const [isDark, setIsDark] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const { activeFolderId, setFolder: setActiveFolderId } = useFolderSync(initialFolderId);
@@ -108,8 +105,6 @@ export default function HelpCenterHome({
   const [clientArticles, setClientArticles] = useState(articles);
   const hasFetchedRef = useRef(false);
   
-  console.log(`[HOME] 📊 Props received: ${articles.length} articles, ${categories.length} categories`);
-
   // activeFolderId is managed by useFolderSync — synced via custom event across all components
 
   // Sort categories by display_order (nulls last), then by name
@@ -314,13 +309,26 @@ export default function HelpCenterHome({
           onFolderChange={setActiveFolderId}
           articles={clientArticles}
           categories={clientCategories}
+          mobileSidebar={
+            <HelpCenterSidebar
+              config={config}
+              categories={filteredCategories}
+              articles={clientArticles}
+              selectedCategory={selectedCategory}
+              isDark={isDark}
+              onCategorySelect={setSelectedCategory}
+              onThemeToggle={handleThemeToggle}
+              getArticleCount={(categoryId) => getArticlesForCategory(categoryId).length}
+              folders={folders}
+            />
+          }
         />
       </div>
 
       {/* Main Content with Sidebar inside max-width */}
       <div className="flex-1 overflow-y-scroll custom-scrollbar-always">
-        <div className="flex mx-auto gap-8" style={{ maxWidth: '1400px' }}>
-          {/* Sidebar - Left Column */}
+        <div className="flex mx-auto gap-8 pr-4 md:pr-8" style={{ maxWidth: '1400px' }}>
+          {/* Sidebar - Left Column — desktop only */}
           <div data-astro-transition-persist="sidebar" className="hidden lg:block">
             <HelpCenterSidebar
               config={config}
@@ -336,7 +344,7 @@ export default function HelpCenterHome({
           </div>
 
           {/* Main Content - Center Column */}
-          <div className="flex-1 min-w-0 pt-6 pb-12">
+          <div className="flex-1 min-w-0 pt-6 pb-12 pl-4 lg:pl-0">
             <div className="flex gap-8">
               {/* Center Content */}
               <div className="flex-1 max-w-3xl">
@@ -390,9 +398,9 @@ export default function HelpCenterHome({
               /* Home View */
               <>
                 {/* Hero Section */}
-                <div className="py-12">
+                <div className="py-8 md:py-12">
                   <div className="max-w-2xl text-left">
-                    <h1 className="text-4xl font-bold tracking-tight mb-3" style={{ fontFamily: config.heading_font || 'system-ui, sans-serif' }}>
+                    <h1 className="text-2xl md:text-4xl font-bold tracking-tight mb-3" style={{ fontFamily: config.heading_font || 'system-ui, sans-serif' }}>
                       {config.welcome_title}
                     </h1>
                     <p className={cn("text-lg mb-6", isDark ? "text-zinc-400" : "text-zinc-600")}>

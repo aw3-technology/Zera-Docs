@@ -455,12 +455,10 @@ export function HelpCenterSidebar({
 
   return (
     <aside className={cn(
-      'w-64 flex-shrink-0 flex flex-col border-r overflow-hidden sticky top-0',
+      'w-full lg:w-64 flex-shrink-0 flex flex-col lg:border-r overflow-hidden sticky top-0',
       'border-border/50 bg-transparent'
     )}
-    style={{ 
-      height: '100vh',
-    }}
+    style={{ height: '100vh' }}
     >
       {/* Top fade overlay */}
       <div
@@ -472,7 +470,7 @@ export function HelpCenterSidebar({
         }}
       />
       <div
-        className="flex-1 overflow-y-auto pt-2 pb-24 pr-3 custom-scrollbar"
+        className="flex-1 overflow-y-auto pt-2 pb-24 pl-3 pr-3 custom-scrollbar"
         style={{
           scrollbarWidth: 'thin',
           scrollbarColor: isDark ? 'rgb(63 63 70) transparent' : 'rgb(212 212 216) transparent',

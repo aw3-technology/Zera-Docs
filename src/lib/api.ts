@@ -69,7 +69,6 @@ export interface Faq {
  */
 export async function getArticles(projectId: string): Promise<Article[]> {
   const startTime = Date.now();
-  console.log(`[API] 🔄 Fetching articles for project ${projectId}...`);
   
   return getCached(`articles-${projectId}`, async () => {
     try {
@@ -86,20 +85,16 @@ export async function getArticles(projectId: string): Promise<Article[]> {
           });
       
       clearTimeout(timeoutId);
-      console.log(`[API] ✅ Articles fetch completed in ${Date.now() - fetchStart}ms (status: ${response.status})`);
       
       if (!response.ok) {
         console.error(`[API] ❌ Failed to fetch articles: ${response.status} ${response.statusText}`);
         return [];
       }
       
-      const parseStart = Date.now();
       const data = await response.json();
-      console.log(`[API] ✅ Articles parsed in ${Date.now() - parseStart}ms`);
       
       const allArticles = data.data?.articles || data.articles || data.data || [];
       const published = allArticles.filter((a: Article) => a.is_published);
-      console.log(`[API] 📊 Articles: ${allArticles.length} total, ${published.length} published (total time: ${Date.now() - startTime}ms)`);
       return published;
     } catch (error) {
       console.error(`[API] ❌ Error fetching articles after ${Date.now() - startTime}ms:`, error);
@@ -113,7 +108,6 @@ export async function getArticles(projectId: string): Promise<Article[]> {
  */
 export async function getCategories(projectId: string): Promise<Category[]> {
   const startTime = Date.now();
-  console.log(`[API] 🔄 Fetching categories for project ${projectId}...`);
   
   const cacheKey = `categories-${projectId}`;
 
@@ -163,23 +157,19 @@ export async function getCategories(projectId: string): Promise<Category[]> {
 
   for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
     const attemptStart = Date.now();
-    console.log(`[API] 🔄 Categories attempt ${attempt}/${MAX_RETRIES}...`);
     
     try {
       const result = await fetchCategories();
-      console.log(`[API] ✅ Categories attempt ${attempt} completed in ${Date.now() - attemptStart}ms`);
 
       // Don't cache an empty result — it may be a transient API failure
       if (result.length === 0) {
         console.warn(`[API] ⚠️ Categories returned empty on attempt ${attempt}/${MAX_RETRIES}`);
         if (attempt < MAX_RETRIES) continue;
         // On final attempt return empty without caching so next request retries
-        console.log(`[API] 📊 Categories: 0 found (total time: ${Date.now() - startTime}ms)`);
         return [];
       }
 
       // Got real data — store in cache and return
-      console.log(`[API] 📊 Categories: ${result.length} found (total time: ${Date.now() - startTime}ms)`);
       return getCached(cacheKey, () => Promise.resolve(result));
     } catch (error) {
       lastError = error;
@@ -222,7 +212,6 @@ export async function getHelpCenterConfig(projectId: string) {
     }
     
     const data = await response.json();
-    console.log('[API] Raw config response:', data);
     
     // The API returns { data: { config: {...}, categories: [...] } }
     // We only want the config part
@@ -249,11 +238,8 @@ export async function getFaqs(projectId: string): Promise<Faq[]> {
     }
     
     const data = await response.json();
-    console.log('[API] Raw FAQs response:', data);
     const allFaqs = data.data?.faqs || data.faqs || data.data || [];
-    console.log('[API] All FAQs:', allFaqs.length);
     const published = allFaqs.filter((f: Faq) => f.is_published);
-    console.log('[API] Published FAQs:', published.length);
     return published;
   } catch (error) {
     console.error('Error fetching FAQs:', error);

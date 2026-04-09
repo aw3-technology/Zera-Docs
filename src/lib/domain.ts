@@ -28,7 +28,6 @@ async function resolveHostnameToProjectId(hostname: string): Promise<string | nu
   // Return cached result if still fresh
   const cached = domainCache.get(hostname);
   if (cached && Date.now() < cached.expiresAt) {
-    console.log('[Domain] Cache hit for hostname:', hostname, '->', cached.projectId);
     return cached.projectId;
   }
 
@@ -40,7 +39,6 @@ async function resolveHostnameToProjectId(hostname: string): Promise<string | nu
     const timeoutId = setTimeout(() => controller.abort(), 6000);
 
     const apiUrl = `${apiBase}/public/help-center/resolve-domain?domain=${encodeURIComponent(hostname)}`;
-    console.log('[Domain] Calling resolve API:', apiUrl);
 
     const response = await fetch(apiUrl, {
       signal: controller.signal,
@@ -48,16 +46,11 @@ async function resolveHostnameToProjectId(hostname: string): Promise<string | nu
     });
     clearTimeout(timeoutId);
 
-    console.log('[Domain] resolve-domain status:', response.status);
-
     if (response.ok) {
       const data = await response.json();
-      console.log('[Domain] resolve-domain response:', JSON.stringify(data));
       const resolved = data.data?.projectId || data.projectId;
       if (resolved && isUUID(resolved)) {
         projectId = resolved;
-      } else {
-        console.log('[Domain] No valid UUID in response:', resolved);
       }
     }
   } catch (error) {
@@ -85,13 +78,11 @@ function getEffectiveHostname(url: string, request?: Request): string {
       request.headers.get('x-forwarded-host');
 
     if (forwardedHost) {
-      console.log('[Domain] Using forwarded host:', forwardedHost);
       return forwardedHost;
     }
   }
 
   const hostname = new URL(url).hostname;
-  console.log('[Domain] Using URL hostname:', hostname);
   return hostname;
 }
 
@@ -112,23 +103,20 @@ export async function resolveProjectId(url: string, request?: Request): Promise<
       request.headers.get('X-Gately-Project-Id') ||
       request.headers.get('x-gately-project-id');
     if (explicitId && isUUID(explicitId)) {
-      console.log('[Domain] Using X-Gately-Project-Id header:', explicitId);
       return explicitId;
     }
   }
 
   const hostname = getEffectiveHostname(url, request);
-  console.log('[Domain] Resolving project for hostname:', hostname);
 
   // Skip resolution for pages.dev or reserved usegately.com system domains
   const reservedHostnames = ['usegately.com', 'www.usegately.com', 'app.usegately.com', 'api.usegately.com'];
   if (hostname.endsWith('.pages.dev') || reservedHostnames.includes(hostname)) {
-    console.log('[Domain] System/pages.dev hostname, skipping API resolution:', hostname);
+    // system/pages.dev hostname, skipping API resolution
   } else {
     // For any usegately.com subdomain or custom domain, call the API
     const resolved = await resolveHostnameToProjectId(hostname);
     if (resolved) {
-      console.log('[Domain] Resolved project ID:', resolved);
       return resolved;
     }
   }
@@ -136,11 +124,9 @@ export async function resolveProjectId(url: string, request?: Request): Promise<
   // Fallback to env variable
   const envId = import.meta.env.PUBLIC_PROJECT_ID;
   if (envId && isUUID(envId)) {
-    console.log('[Domain] Using PUBLIC_PROJECT_ID env:', envId);
     return envId;
   }
 
-  console.log('[Domain] Using hardcoded default');
   return '6da7042b-22c0-4568-801c-ec608649cd19';
 }
 

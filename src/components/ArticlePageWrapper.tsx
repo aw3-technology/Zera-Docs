@@ -368,13 +368,25 @@ export default function ArticlePageWrapper({
           folders={folders}
           articles={allArticles}
           categories={categories}
+          mobileSidebar={
+            <HelpCenterSidebar
+              config={config}
+              categories={filteredCategories}
+              articles={allArticles}
+              selectedCategory={article.category_id}
+              selectedArticle={article}
+              isDark={isDark}
+              onThemeToggle={handleThemeToggle}
+              getArticleCount={(categoryId) => allArticles.filter(a => a.category_id === categoryId).length}
+            />
+          }
         />
       </div>
 
       {/* Main Content with Sidebar inside max-width */}
       <div className="flex-1 overflow-hidden">
-        <div className="flex mx-auto gap-8 h-full" style={{ maxWidth: '1400px' }}>
-          {/* Sidebar - Left Column */}
+        <div className="flex mx-auto gap-8 h-full pr-4 md:pr-8" style={{ maxWidth: '1400px' }}>
+          {/* Sidebar - Left Column — desktop only */}
           <div data-astro-transition-persist="sidebar" className="hidden lg:block">
             <HelpCenterSidebar
               config={config}
@@ -390,33 +402,27 @@ export default function ArticlePageWrapper({
 
           {/* Article Content - Center Column - Scrollable */}
           <div className={cn(
-            "flex-1 min-w-0 pt-8 pb-12 overflow-y-auto scrollbar-hide",
+            "flex-1 min-w-0 pt-6 md:pt-8 pb-12 overflow-y-auto scrollbar-hide pl-4 lg:pl-0",
             !isApiRefArticle && "max-w-[720px]"
           )} id="article-scroll-container">
             {/* Article Header with Copy Options */}
-            <div className="flex items-start justify-between gap-4 mb-6">
+            <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 mb-6">
               {/* Category Badge and Title */}
               <div className="flex-1 min-w-0">
                 <span
                   className="inline-block text-xs font-medium px-2.5 py-1 rounded-full mb-3"
-                  style={{ 
-                    backgroundColor: `${config.primary_color}15`, 
-                    color: config.primary_color 
-                  }}
+                  style={{ backgroundColor: `${config.primary_color}15`, color: config.primary_color }}
                 >
                   {categoryName}
                 </span>
-                <h1 
-                  className="text-3xl font-bold mb-2" 
+                <h1
+                  className="text-2xl md:text-3xl font-bold mb-2"
                   style={{ fontFamily: config.heading_font || 'system-ui, sans-serif' }}
                 >
                   {article.title}
                 </h1>
                 {article.excerpt && !isApiRefArticle && (
-                  <p className={cn(
-                    "text-base mt-2",
-                    isDark ? "text-zinc-400" : "text-zinc-600"
-                  )}>
+                  <p className={cn("text-base mt-2", isDark ? "text-zinc-400" : "text-zinc-600")}>
                     {article.excerpt}
                   </p>
                 )}

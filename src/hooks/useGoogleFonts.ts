@@ -795,20 +795,14 @@ export function useGoogleFonts(headingFont?: string | null, bodyFont?: string | 
   const loadedRef = useRef<Set<string>>(new Set());
 
   useEffect(() => {
-    const startTime = Date.now();
-    console.log('[FONTS] 🔤 useGoogleFonts effect triggered');
-    
     // Only run on client side
     if (typeof window === 'undefined') {
-      console.log('[FONTS] ⚠️ Skipping - server side');
       return;
     }
 
     const fontsToLoad: string[] = [];
     const headingFamily = extractFontFamily(headingFont);
     const bodyFamily = extractFontFamily(bodyFont);
-    
-    console.log(`[FONTS] 📝 Requested fonts - heading: ${headingFamily}, body: ${bodyFamily}`);
 
 
 
