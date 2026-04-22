@@ -1,21 +1,12 @@
 import { defineConfig } from 'astro/config';
 import react from '@astrojs/react';
 import tailwind from '@astrojs/tailwind';
-import cloudflare from '@astrojs/cloudflare';
-// The helpcenter is always deployed at root on Cloudflare Pages.
-// Sub-path support (e.g. usegately.com/docs) is handled entirely by the
-// Cloudflare Worker proxy which strips the prefix before forwarding here.
-// No base path needed in the build.
+import vercel from '@astrojs/vercel';
 
 // https://astro.build/config
 export default defineConfig({
   output: 'server',
-  adapter: cloudflare({
-    mode: 'directory',
-    functionPerRoute: false,
-    imageService: 'compile',
-    sessions: false
-  }),
+  adapter: vercel(),
   build: {
     assets: '_helio',
   },
