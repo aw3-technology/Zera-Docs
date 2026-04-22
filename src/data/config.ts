@@ -9,7 +9,7 @@ export const helpCenterConfig = {
   secondary_color: '#B45309',
   welcome_title: 'Zera Docs',
   welcome_subtitle: 'Community-Governed. Treasury-Supported. Explore the governance-first blockchain.',
-  theme_mode: 'auto' as 'light' | 'dark' | 'auto',
+  theme_mode: 'dark' as 'light' | 'dark' | 'auto',
   logo_url: '/zera-favicon.png' as string | null,
   favicon_url: '/zera-favicon.png' as string | null,
 

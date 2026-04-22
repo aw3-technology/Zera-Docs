@@ -58,7 +58,7 @@ export default function CategoryPageWrapper({
   projectId,
   folders = [],
 }: CategoryPageWrapperProps) {
-  const [isDark, setIsDark] = useState(false);
+  const [isDark, setIsDark] = useState(true);
   const [aiChatOpen, setAiChatOpen] = useState(false);
   const { activeFolderId, setFolder: setActiveFolderId } = useFolderSync();
 

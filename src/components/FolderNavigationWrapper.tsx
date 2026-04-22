@@ -37,7 +37,7 @@ export default function FolderNavigationWrapper({
   categories = [],
 }: FolderNavigationWrapperProps) {
   const [activeFolderId, setActiveFolderId] = useState<string | null>(null);
-  const [isDark, setIsDark] = useState(false);
+  const [isDark, setIsDark] = useState(true);
 
   // Sync with theme changes
   useEffect(() => {

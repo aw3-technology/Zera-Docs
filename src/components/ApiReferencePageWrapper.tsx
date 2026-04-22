@@ -33,7 +33,7 @@ export function ApiReferencePageWrapper({
   allArticles,
   folders = [],
 }: ApiReferencePageWrapperProps) {
-  const [isDark, setIsDark] = useState(false);
+  const [isDark, setIsDark] = useState(true);
   const [aiChatOpen, setAiChatOpen] = useState(false);
   const [searchModalOpen, setSearchModalOpen] = useState(false);
   const [activeFolderId, setActiveFolderId] = useState<string | null>(null);

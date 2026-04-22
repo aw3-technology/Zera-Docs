@@ -75,7 +75,7 @@ export default function ArticlePageWrapper({
   folders = [],
   apiSpecUrl,
 }: ArticlePageWrapperProps) {
-  const [isDark, setIsDark] = useState(false);
+  const [isDark, setIsDark] = useState(true);
   const [aiChatOpen, setAiChatOpen] = useState(false);
   const [searchModalOpen, setSearchModalOpen] = useState(false);
   const { activeFolderId, setFolder: setActiveFolderId } = useFolderSync();

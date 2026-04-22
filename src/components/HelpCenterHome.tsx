@@ -95,7 +95,7 @@ export default function HelpCenterHome({
   projectId,
   initialFolderId,
 }: HelpCenterHomeProps) {
-  const [isDark, setIsDark] = useState(false);
+  const [isDark, setIsDark] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const { activeFolderId, setFolder: setActiveFolderId } = useFolderSync(initialFolderId);
   const [searchQuery, setSearchQuery] = useState('');

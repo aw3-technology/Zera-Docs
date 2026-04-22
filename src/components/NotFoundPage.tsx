@@ -22,7 +22,7 @@ export default function NotFoundPage({
   folders = [],
   projectId,
 }: NotFoundPageProps) {
-  const [isDark, setIsDark] = useState(false);
+  const [isDark, setIsDark] = useState(true);
   const [aiChatOpen, setAiChatOpen] = useState(false);
   const [activeFolderId, setActiveFolderId] = useState<string | null>(null);
 
