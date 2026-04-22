@@ -385,7 +385,7 @@ export default function ArticlePageWrapper({
 
       {/* Main Content with Sidebar inside max-width */}
       <div className="flex-1 overflow-hidden">
-        <div className="flex mx-auto gap-8 h-full pr-4 md:pr-8" style={{ maxWidth: '1400px' }}>
+        <div className="flex mx-auto gap-4 md:gap-6 lg:gap-8 h-full pr-0 sm:pr-4 md:pr-8" style={{ maxWidth: '1400px' }}>
           {/* Sidebar - Left Column — desktop only */}
           <div data-astro-transition-persist="sidebar" className="hidden lg:block">
             <HelpCenterSidebar
@@ -402,7 +402,7 @@ export default function ArticlePageWrapper({
 
           {/* Article Content - Center Column - Scrollable */}
           <div className={cn(
-            "flex-1 min-w-0 pt-6 md:pt-8 pb-12 overflow-y-auto scrollbar-hide pl-4 lg:pl-0",
+            "flex-1 min-w-0 pt-6 md:pt-8 pb-12 overflow-y-auto scrollbar-hide px-4 sm:pl-4 sm:pr-4 lg:pl-0 lg:pr-0",
             !isApiRefArticle && "max-w-[720px]"
           )} id="article-scroll-container">
             {/* Breadcrumb */}

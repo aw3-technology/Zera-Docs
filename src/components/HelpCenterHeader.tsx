@@ -200,7 +200,7 @@ export function HelpCenterHeader({
             {/* Theme toggle */}
             <button
               onClick={onThemeToggle}
-              className={cn("p-2 rounded-full h-[32px] w-[32px] flex items-center justify-center", isDark ? "text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800" : "text-zinc-500 hover:text-zinc-700 hover:bg-zinc-100")}
+              className={cn("p-2 rounded-full h-[36px] w-[36px] md:h-[32px] md:w-[32px] flex items-center justify-center", isDark ? "text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800" : "text-zinc-500 hover:text-zinc-700 hover:bg-zinc-100")}
             >
               {isDark ? <Icon icon="hugeicons:sun-03" className="h-4 w-4" /> : <Icon icon="hugeicons:moon-02" className="h-4 w-4" />}
             </button>

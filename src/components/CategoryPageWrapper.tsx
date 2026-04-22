@@ -190,7 +190,7 @@ export default function CategoryPageWrapper({
 
       {/* Main Content with Sidebar inside max-width */}
       <div className="flex-1 overflow-hidden">
-        <div className="flex mx-auto gap-8 h-full pr-4 md:pr-8" style={{ maxWidth: '1400px' }}>
+        <div className="flex mx-auto gap-4 md:gap-6 lg:gap-8 h-full pr-0 sm:pr-4 md:pr-8" style={{ maxWidth: '1400px' }}>
           {/* Sidebar - Left Column — desktop only */}
           <div data-astro-transition-persist="sidebar" className="hidden lg:block">
             <HelpCenterSidebar
@@ -206,7 +206,7 @@ export default function CategoryPageWrapper({
           </div>
 
           {/* Main Content - Center Column - Scrollable */}
-          <div className="flex-1 min-w-0 pt-6 md:pt-8 pb-12 max-w-3xl overflow-y-auto scrollbar-hide pl-4 lg:pl-0">
+          <div className="flex-1 min-w-0 pt-6 md:pt-8 pb-12 max-w-3xl overflow-y-auto scrollbar-hide px-4 sm:pl-4 sm:pr-4 lg:pl-0 lg:pr-0">
             {/* Breadcrumb */}
             <nav className={cn("flex items-center gap-2 text-sm mb-6 opacity-0 animate-fade-in", isDark ? "text-zinc-400" : "text-zinc-500")} style={{ animationDelay: '0.05s' }}>
               <a href={getBasePath() || '/'} className="hover:underline">Home</a>

@@ -105,7 +105,7 @@ export function SearchModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center pt-[15vh]">
+    <div className="fixed inset-0 z-50 flex items-start justify-center pt-[10vh] sm:pt-[15vh] px-4 sm:px-0">
       <div
         className="absolute inset-0 bg-black/50 backdrop-blur-sm"
         onClick={onClose}
@@ -162,7 +162,7 @@ export function SearchModal({
         </div>
 
         {/* Results */}
-        <div className="max-h-[300px] overflow-auto p-2">
+        <div className="max-h-[50vh] sm:max-h-[300px] overflow-auto p-2">
           {query === '' ? (
             <div className={cn("px-3 py-8 text-center", isDark ? "text-zinc-500" : "text-zinc-400")}>
               <Icon icon="hugeicons:search-01" className="h-8 w-8 mx-auto mb-3 opacity-50" />

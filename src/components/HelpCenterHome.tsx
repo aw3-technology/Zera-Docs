@@ -327,7 +327,7 @@ export default function HelpCenterHome({
 
       {/* Main Content with Sidebar inside max-width */}
       <div className="flex-1 overflow-y-scroll custom-scrollbar-always">
-        <div className="flex mx-auto gap-8 pr-4 md:pr-8" style={{ maxWidth: '1400px' }}>
+        <div className="flex mx-auto gap-4 md:gap-6 lg:gap-8 pr-0 sm:pr-4 md:pr-8" style={{ maxWidth: '1400px' }}>
           {/* Sidebar - Left Column — desktop only */}
           <div data-astro-transition-persist="sidebar" className="hidden lg:block">
             <HelpCenterSidebar
@@ -344,8 +344,8 @@ export default function HelpCenterHome({
           </div>
 
           {/* Main Content - Center Column */}
-          <div className="flex-1 min-w-0 pt-6 pb-12 pl-4 lg:pl-0">
-            <div className="flex gap-8">
+          <div className="flex-1 min-w-0 pt-6 pb-12 px-4 sm:pl-4 sm:pr-0 lg:pl-0">
+            <div className="flex gap-4 md:gap-6 lg:gap-8">
               {/* Center Content */}
               <div className="flex-1 max-w-3xl">
                 {selectedCategory ? (

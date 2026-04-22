@@ -35,7 +35,22 @@ export function BaseLayoutWrapper({
         {children}
       </div>
 
-      {/* AI Chat Panel Container - Animated Width */}
+      {/* AI Chat Panel - Full-screen overlay on mobile, side panel on desktop */}
+      {AIChatPanel && aiChatOpen && (
+        <div className="md:hidden fixed inset-0 z-50">
+          <AIChatPanel
+            isOpen={aiChatOpen}
+            onClose={onAiChatToggle}
+            projectId={projectId}
+            primaryColor={config.primary_color}
+            isDark={isDark}
+            portalName={config.portal_name}
+            subdomainUrl={config.subdomain_url}
+          />
+        </div>
+      )}
+
+      {/* AI Chat Panel - Animated side panel on desktop */}
       <motion.div
         initial={false}
         animate={{
@@ -47,7 +62,7 @@ export function BaseLayoutWrapper({
           damping: 30,
           duration: 0.3
         }}
-        className="flex-shrink-0 overflow-hidden h-screen"
+        className="hidden md:block flex-shrink-0 overflow-hidden h-screen"
       >
         {AIChatPanel && aiChatOpen && (
           <AIChatPanel
