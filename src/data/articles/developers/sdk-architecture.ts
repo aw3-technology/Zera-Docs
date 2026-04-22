@@ -24,13 +24,13 @@ export const sdkArchitectureArticle = {
       { icon: 'hugeicons:code', title: 'Smart Contract Calls', body: 'Arbitrary contract function execution via smart-contracts/execute.' },
       { icon: 'hugeicons:exchange-01', title: 'DEX Operations', body: 'Pool creation, liquidity, and swaps via smart-contracts/use-cases/dex.' },
       { icon: 'hugeicons:link-01', title: 'Cross-Chain Bridge', body: 'ZERA <-> Solana lock/mint/burn/release via smart-contracts/use-cases/bridge.' },
-      { icon: 'hugeicons:vote', title: 'Governance Voting', body: 'Binary and multi-option governance votes via the vote module.' },
+      { icon: 'hugeicons:checkmark-badge-01', title: 'Governance Voting', body: 'Binary and multi-option governance votes via the vote module.' },
     ]),
 
     cardGroup(3, [
       { icon: 'hugeicons:file-add', title: 'Contract Deployment', body: 'Create/update InstrumentContracts via the contract module.' },
       { icon: 'hugeicons:search-01', title: 'Network Queries', body: 'Nonce, balance, fees, token info via the api module.' },
-      { icon: 'hugeicons:wifi', title: 'Transport', body: 'ConnectRPC over gRPC-Web, with HTTPS/HTTP fallback via the grpc module.' },
+      { icon: 'hugeicons:wireless', title: 'Transport', body: 'ConnectRPC over gRPC-Web, with HTTPS/HTTP fallback via the grpc module.' },
     ]),
 
     divider(),

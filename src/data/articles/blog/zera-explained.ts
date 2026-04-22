@@ -163,8 +163,8 @@ export const zeraExplainedArticle = {
     p('ZERA\'s architecture is best understood as a set of interlocking systems, each reinforcing the others:'),
 
     cardGroup(2, [
-      { icon: 'hugeicons:government', title: 'Governance Engine', body: 'Self-enforcing, autonomous decision-making that controls every aspect of the network without human intermediaries.' },
-      { icon: 'hugeicons:money-bag', title: 'Treasury System', body: 'Protocol-native, continuously funded, fully transparent, and entirely governed by the community.' },
+      { icon: 'hugeicons:court-house', title: 'Governance Engine', body: 'Self-enforcing, autonomous decision-making that controls every aspect of the network without human intermediaries.' },
+      { icon: 'hugeicons:money-bag-01', title: 'Treasury System', body: 'Protocol-native, continuously funded, fully transparent, and entirely governed by the community.' },
       { icon: 'hugeicons:cpu', title: 'WASM Smart Contracts', body: 'High-performance, language-flexible smart contract execution with governance-upgradeable parameters.' },
       { icon: 'hugeicons:link-01', title: 'Bridge Infrastructure', body: 'Native cross-chain interoperability with decentralized guardians and governance-controlled configurations.' },
     ]),

@@ -208,7 +208,7 @@ export default function CategoryPageWrapper({
           {/* Main Content - Center Column - Scrollable */}
           <div className="flex-1 min-w-0 pt-6 md:pt-8 pb-12 max-w-3xl overflow-y-auto scrollbar-hide pl-4 lg:pl-0">
             {/* Breadcrumb */}
-            <nav className={cn("flex items-center gap-2 text-sm mb-6", isDark ? "text-zinc-400" : "text-zinc-500")}>
+            <nav className={cn("flex items-center gap-2 text-sm mb-6 opacity-0 animate-fade-in", isDark ? "text-zinc-400" : "text-zinc-500")} style={{ animationDelay: '0.05s' }}>
               <a href={getBasePath() || '/'} className="hover:underline">Home</a>
               {(() => {
                 const categoryFolder = category.folder_id
@@ -229,7 +229,7 @@ export default function CategoryPageWrapper({
             </nav>
 
             {/* Category Header */}
-            <div className="mb-8">
+            <div className="mb-8 opacity-0 animate-fade-up" style={{ animationDelay: '0.1s' }}>
               <div className="flex items-center gap-3 mb-3">
                 {renderCategoryIcon(category.icon)}
                 <h1 className="text-2xl md:text-3xl font-bold" style={{ fontFamily: config.heading_font || 'system-ui, sans-serif' }}>
@@ -244,7 +244,7 @@ export default function CategoryPageWrapper({
             </div>
 
             {/* Articles List */}
-            <div className="space-y-2">
+            <div className="space-y-2 opacity-0 animate-fade-up" style={{ animationDelay: '0.15s' }}>
               {articles.length === 0 ? (
                 <p className={cn("text-center py-12", isDark ? "text-zinc-500" : "text-zinc-400")}>
                   No articles found in this category.

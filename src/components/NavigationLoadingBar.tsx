@@ -7,45 +7,31 @@ interface NavigationLoadingBarProps {
 export function NavigationLoadingBar({ primaryColor = '#D97706' }: NavigationLoadingBarProps) {
   const barRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const progressRef = useRef(0);
   const animationRef = useRef<number>();
   const isNavigatingRef = useRef(false);
 
   useEffect(() => {
-    let rightEdge = 0;
-    let leftEdge = 0;
-    const barWidth = 50; // Wider bar - right reaches end before left follows
-
     const startLoading = () => {
       if (isNavigatingRef.current) return;
       isNavigatingRef.current = true;
-      rightEdge = 0;
-      leftEdge = 0;
-      
+      progressRef.current = 0;
+
       if (containerRef.current) {
         containerRef.current.style.opacity = '1';
       }
 
-      // Continuous left to right animation with trailing effect
+      // Smooth ease-out progress that slows down as it approaches 90%
       const animate = () => {
-        rightEdge += 2;
-        
-        // When right edge reaches 100%, start moving left edge
-        if (rightEdge > barWidth) {
-          leftEdge = rightEdge - barWidth;
-        }
-        
-        // Reset both when left edge reaches 100%
-        if (leftEdge >= 100) {
-          rightEdge = 0;
-          leftEdge = 0;
-        }
-        
+        // Fast start, asymptotic slowdown
+        const remaining = 90 - progressRef.current;
+        progressRef.current += remaining * 0.08;
+
         if (barRef.current) {
-          barRef.current.style.width = (rightEdge - leftEdge) + '%';
-          barRef.current.style.marginLeft = leftEdge + '%';
+          barRef.current.style.transform = `scaleX(${progressRef.current / 100})`;
         }
-        
-        if (isNavigatingRef.current) {
+
+        if (isNavigatingRef.current && progressRef.current < 89.5) {
           animationRef.current = requestAnimationFrame(animate);
         }
       };
@@ -60,34 +46,34 @@ export function NavigationLoadingBar({ primaryColor = '#D97706' }: NavigationLoa
         cancelAnimationFrame(animationRef.current);
       }
 
-      // Jump to 100% immediately
+      // Quickly finish to 100%
       if (barRef.current) {
-        barRef.current.style.width = '100%';
+        barRef.current.style.transition = 'transform 0.2s cubic-bezier(0.4, 0, 0.2, 1)';
+        barRef.current.style.transform = 'scaleX(1)';
       }
 
-      // Fade out after a brief moment
+      // Fade out
       setTimeout(() => {
         if (containerRef.current) {
           containerRef.current.style.opacity = '0';
         }
-      }, 300);
+      }, 250);
 
       // Reset for next navigation
       setTimeout(() => {
         if (barRef.current) {
-          barRef.current.style.width = '0%';
+          barRef.current.style.transition = 'none';
+          barRef.current.style.transform = 'scaleX(0)';
         }
         if (containerRef.current) {
           containerRef.current.style.opacity = '0';
         }
         isNavigatingRef.current = false;
-      }, 600);
+        progressRef.current = 0;
+      }, 500);
     };
 
-    // Listen for navigation start - fires immediately when user clicks
     document.addEventListener('astro:before-preparation', startLoading);
-    
-    // Listen for navigation complete - fires when page is ready
     document.addEventListener('astro:after-preparation', completeLoading);
 
     return () => {
@@ -102,20 +88,21 @@ export function NavigationLoadingBar({ primaryColor = '#D97706' }: NavigationLoa
   return (
     <div
       ref={containerRef}
-      className="fixed top-0 left-0 right-0 h-0.5 z-50"
+      className="fixed top-0 left-0 right-0 h-[2px] z-50"
       style={{
         opacity: 0,
-        transition: 'opacity 0.3s ease',
+        transition: 'opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
       }}
     >
       <div
         ref={barRef}
         style={{
-          width: '0%',
+          width: '100%',
           height: '100%',
           backgroundColor: primaryColor,
-          boxShadow: `0 0 10px ${primaryColor}`,
-          transition: 'width 0.05s linear',
+          boxShadow: `0 0 8px ${primaryColor}80, 0 0 2px ${primaryColor}40`,
+          transformOrigin: 'left',
+          transform: 'scaleX(0)',
         }}
       />
     </div>

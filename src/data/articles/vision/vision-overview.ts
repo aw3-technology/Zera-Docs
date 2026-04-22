@@ -22,7 +22,7 @@ export const visionOverviewArticle = {
     h2('Featured Concept: ZERA Democracy'),
 
     cardGroup(2, [
-      { icon: 'hugeicons:government', title: 'ZERA Democracy', body: 'A community concept for party-free, continuous civic governance: verified constituents direct each representative vote with an immutable public record.', href: '/article/vision-democracy' },
+      { icon: 'hugeicons:court-house', title: 'ZERA Democracy', body: 'A community concept for party-free, continuous civic governance: verified constituents direct each representative vote with an immutable public record.', href: '/article/vision-democracy' },
     ]),
   ]),
 };

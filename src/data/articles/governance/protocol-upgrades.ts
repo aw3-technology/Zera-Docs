@@ -32,9 +32,9 @@ export const protocolUpgradesArticle = {
 
     cardGroup(2, [
       { icon: 'hugeicons:shield-01', title: 'Reduced Managerial Reliance', body: 'Passed proposals execute automatically. No trusted party stands between the vote and the outcome.' },
-      { icon: 'hugeicons:distributed', title: 'Enhanced Decentralization', body: 'Execution is enforced by the protocol, not by individuals. This removes single points of failure and trust assumptions.' },
-      { icon: 'hugeicons:balance', title: 'Improved Legal Posture', body: 'Autonomous execution strengthens the argument that the network is genuinely decentralized — not controlled by a small group.' },
-      { icon: 'hugeicons:lightning-01', title: 'No Execution Delays', body: 'The upgrade takes effect as soon as the governance window closes and the vote passes. No waiting for a team to "ship it."' },
+      { icon: 'hugeicons:blockchain-06', title: 'Enhanced Decentralization', body: 'Execution is enforced by the protocol, not by individuals. This removes single points of failure and trust assumptions.' },
+      { icon: 'hugeicons:justice-scale-01', title: 'Improved Legal Posture', body: 'Autonomous execution strengthens the argument that the network is genuinely decentralized — not controlled by a small group.' },
+      { icon: 'hugeicons:flash', title: 'No Execution Delays', body: 'The upgrade takes effect as soon as the governance window closes and the vote passes. No waiting for a team to "ship it."' },
     ]),
 
     h2('Example: a protocol upgrade in practice'),

@@ -96,7 +96,7 @@ export const decentralizationByDesignArticle = {
 
     cardGroup(3, [
       { icon: 'hugeicons:code', title: 'Protocol', body: 'Consensus rules, fee structures, and network upgrades are all governed by community vote with automatic execution.' },
-      { icon: 'hugeicons:money-bag', title: 'Treasury', body: 'Every dollar in the Treasury is allocated by governance. No individual or entity has discretionary spending power.' },
+      { icon: 'hugeicons:money-bag-01', title: 'Treasury', body: 'Every dollar in the Treasury is allocated by governance. No individual or entity has discretionary spending power.' },
       { icon: 'hugeicons:coins-01', title: 'Tokenomics', body: 'Burn rates, fee splits, and supply parameters are governance-configurable. Monetary policy evolves with the community.' },
     ]),
     cardGroup(3, [

@@ -45,7 +45,7 @@ export const zeraOverviewArticle = {
       { icon: 'hugeicons:coins-01', title: 'Smart Coin Lifecycle', body: 'Token creation and management governed by community participation — transparent from mint to utility.' },
       { icon: 'hugeicons:dollar-circle', title: 'Flexible and Predictable Fees', body: 'Pay transaction fees with any approved coin. No surprises, no single-token lock-in.' },
       { icon: 'hugeicons:safe', title: 'Treasury Support', body: 'Funded through network activity, the treasury backs protocol development and governance decisions.' },
-      { icon: 'hugeicons:vote', title: 'Decentralized Governance', body: 'On-chain, transparent proposals with verifiable voting and autonomous execution. No gatekeepers.' },
+      { icon: 'hugeicons:checkmark-badge-01', title: 'Decentralized Governance', body: 'On-chain, transparent proposals with verifiable voting and autonomous execution. No gatekeepers.' },
     ]),
 
     callout('info', 'ZERA governance is fully on-chain — every proposal, vote, and execution is transparent and verifiable by anyone.'),

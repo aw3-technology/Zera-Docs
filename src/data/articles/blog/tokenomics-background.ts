@@ -21,7 +21,7 @@ export const tokenomicsBackgroundArticle = {
     p('ZERA\'s coin supply is designed for transparency, auditability, and community control.'),
 
     cardGroup(3, [
-      { icon: 'hugeicons:coin', title: 'Initial Supply', body: '6,291,475.42238 ZERA' },
+      { icon: 'hugeicons:coins-01', title: 'Initial Supply', body: '6,291,475.42238 ZERA' },
       { icon: 'hugeicons:chart-maximum', title: 'Maximum Supply', body: '906,291,475.42 ZERA' },
       { icon: 'hugeicons:shield-01', title: 'Supply Management', body: 'Minting and burning managed exclusively by on-chain governance and smart contracts.' },
     ]),
@@ -97,8 +97,8 @@ export const tokenomicsBackgroundArticle = {
     p('ZERA\'s implementation of supply management demonstrates how governance controls its base coin:'),
 
     cardGroup(2, [
-      { icon: 'hugeicons:document-01', title: 'Proposal', body: 'Community introduced supply management through governance.' },
-      { icon: 'hugeicons:vote', title: 'Voting', body: 'Holders approved the proposal on-chain.' },
+      { icon: 'hugeicons:document-validation', title: 'Proposal', body: 'Community introduced supply management through governance.' },
+      { icon: 'hugeicons:checkmark-badge-01', title: 'Voting', body: 'Holders approved the proposal on-chain.' },
       { icon: 'hugeicons:rocket-01', title: 'Implementation', body: 'The contract was deployed with approved functionality while governance maintains total control.' },
       { icon: 'hugeicons:refresh', title: 'Upgrade', body: 'Governance can update the contract over time to fit the evolving needs of its users.' },
     ]),

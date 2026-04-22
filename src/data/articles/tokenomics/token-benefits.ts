@@ -79,7 +79,7 @@ export const tokenBenefitsArticle = {
     cardGroup(3, [
       { icon: 'hugeicons:arrow-data-transfer-horizontal', title: 'Bidirectional Use', body: 'Tokens can move between ZERA and other chains, leveraging ecosystem access and utility.' },
       { icon: 'hugeicons:link-03', title: 'Cross-Ecosystem Integration', body: 'Projects gain exposure to multiple user bases and ecosystems without sacrificing sovereignty.' },
-      { icon: 'hugeicons:distributed', title: 'Network Effects', body: 'Tokens benefit from being part of an interoperable web, rather than siloed infrastructure.' },
+      { icon: 'hugeicons:blockchain-06', title: 'Network Effects', body: 'Tokens benefit from being part of an interoperable web, rather than siloed infrastructure.' },
     ]),
 
     p('For example, consider a Solana-native token that bridges into ZERA. On Solana, its role may be limited to transfers and DeFi protocols. But when bridged into ZERA, that same token could expand its scope in two powerful ways:'),

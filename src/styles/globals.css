@@ -99,15 +99,24 @@
     letter-spacing: 0.04em;
   }
   
-  /* Disable all transitions and animations globally for instant theme switching */
+  /* Suppress color-related transitions for instant theme switching,
+     but allow all other animations (transforms, opacity, layout) to remain smooth */
   *,
   *::before,
   *::after {
-    transition-property: none !important;
+    transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, outline-color, box-shadow !important;
     transition-duration: 0s !important;
-    transition-timing-function: none !important;
-    animation-duration: 0s !important;
-    animation-delay: 0s !important;
+  }
+
+  /* Re-enable transitions on interactive elements — the theme-color override
+     above is still applied, but these selectors restore non-color transitions */
+  a, button, [role="button"], input, textarea, select,
+  [class*="hover:"], [class*="group-hover:"],
+  .transition-all, .transition-transform, .transition-opacity,
+  .transition-shadow, .transition-colors {
+    transition-property: transform, opacity, box-shadow, filter, width, height, padding, margin, max-height !important;
+    transition-duration: 0.2s !important;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1) !important;
   }
 }
 
@@ -193,22 +202,51 @@
   .allow-animation * {
     transition-property: all !important;
     transition-duration: 0.2s !important;
-    transition-timing-function: ease !important;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1) !important;
   }
-  
+
   .allow-animation-slow,
   .allow-animation-slow * {
     transition-property: all !important;
     transition-duration: 0.3s !important;
-    transition-timing-function: ease !important;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1) !important;
   }
-  
+
   /* Allow View Transitions fade animation for content */
   [data-astro-transition="fade"],
   [data-astro-transition="fade"] * {
     transition-property: opacity !important;
     transition-duration: 0.15s !important;
     transition-timing-function: ease-in-out !important;
+  }
+
+  /* Ensure keyframe-based animations are never suppressed */
+  .animate-pulse,
+  .animate-pulse *,
+  .animate-spin,
+  .animate-bounce,
+  .animate-fade-in,
+  .animate-fade-in *,
+  .animate-fade-up,
+  .animate-fade-up *,
+  .animate-slide-in,
+  .animate-slide-in *,
+  [class*="animate-"] {
+    animation-duration: revert !important;
+    animation-delay: revert !important;
+    animation-timing-function: revert !important;
+  }
+
+  /* Image loading animation */
+  .img-loading {
+    opacity: 0;
+    filter: blur(4px);
+    transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1), filter 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  }
+
+  .img-loaded {
+    opacity: 1 !important;
+    filter: blur(0) !important;
   }
   
   /* Prevent flicker on persisted elements during navigation */

@@ -89,7 +89,7 @@ export function ArticleFeedback({
           </p>
           {submitted ? (
             <div className="flex items-center gap-1.5">
-              <Icon icon="hugeicons:checkmark-01" className="h-3.5 w-3.5 text-green-500" />
+              <Icon icon="hugeicons:checkmark-circle-01" className="h-3.5 w-3.5 text-green-500" />
               <span className={cn(
                 "text-xs whitespace-nowrap",
                 isDark ? "text-zinc-400" : "text-zinc-500"
@@ -143,7 +143,7 @@ export function ArticleFeedback({
         </p>
         {submitted ? (
           <div className="flex items-center gap-1.5">
-            <Icon icon="hugeicons:checkmark-01" className="h-3.5 w-3.5 text-green-500" />
+            <Icon icon="hugeicons:checkmark-circle-01" className="h-3.5 w-3.5 text-green-500" />
             <span className={cn(
               "text-xs",
               isDark ? "text-zinc-400" : "text-zinc-500"
@@ -196,7 +196,7 @@ export function ArticleFeedback({
         <div className="flex items-center justify-between w-full">
           {submitted ? (
             <div className="flex items-center gap-2">
-              <Icon icon="hugeicons:checkmark-01" className="h-4 w-4 text-green-500" />
+              <Icon icon="hugeicons:checkmark-circle-01" className="h-4 w-4 text-green-500" />
               <span className={cn(
                 "text-sm",
                 isDark ? "text-zinc-400" : "text-zinc-600"
@@ -257,7 +257,7 @@ export function ArticleFeedback({
       <div className="flex flex-col gap-3">
         {submitted ? (
           <div className="flex items-center gap-2">
-            <Icon icon="hugeicons:checkmark-01" className="h-4 w-4 text-green-500" />
+            <Icon icon="hugeicons:checkmark-circle-01" className="h-4 w-4 text-green-500" />
             <span className={cn(
               "text-sm",
               isDark ? "text-zinc-400" : "text-zinc-600"

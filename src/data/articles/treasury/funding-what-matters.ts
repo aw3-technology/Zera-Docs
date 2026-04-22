@@ -33,7 +33,7 @@ export const fundingWhatMattersArticle = {
         body: 'Support builders creating tools, libraries, SDKs, and infrastructure for the ecosystem.',
       },
       {
-        icon: 'hugeicons:apps',
+        icon: 'hugeicons:grid',
         title: 'New dApps',
         body: 'Back teams building decentralized applications that bring users and utility to the network.',
       },

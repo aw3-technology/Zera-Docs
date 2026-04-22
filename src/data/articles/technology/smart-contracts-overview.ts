@@ -40,7 +40,7 @@ export const smartContractsOverviewArticle = {
       { icon: 'hugeicons:shield-01', title: 'Stability', body: 'Governance-controlled upgrades prevent unilateral changes.' },
       { icon: 'hugeicons:refresh', title: 'Adaptability', body: 'Contracts can evolve through community consensus.' },
       { icon: 'hugeicons:view', title: 'Transparent Evolution', body: 'All changes are visible and auditable on-chain.' },
-      { icon: 'hugeicons:distributed', title: 'Trust Minimization', body: 'No single party controls contract behavior.' },
+      { icon: 'hugeicons:blockchain-06', title: 'Trust Minimization', body: 'No single party controls contract behavior.' },
     ]),
 
     accordion('Can I use any programming language?', 'Any language that compiles to WASM can be used. Rust, Go, C, and AssemblyScript are the most commonly supported, with mature toolchains and documentation.'),

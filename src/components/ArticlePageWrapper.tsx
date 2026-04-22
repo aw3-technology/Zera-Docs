@@ -406,7 +406,7 @@ export default function ArticlePageWrapper({
             !isApiRefArticle && "max-w-[720px]"
           )} id="article-scroll-container">
             {/* Breadcrumb */}
-            <nav className={cn("flex items-center gap-2 text-sm mb-6", isDark ? "text-zinc-400" : "text-zinc-500")}>
+            <nav className={cn("flex items-center gap-2 text-sm mb-6 opacity-0 animate-fade-in", isDark ? "text-zinc-400" : "text-zinc-500")} style={{ animationDelay: '0.05s' }}>
               <a href={getBasePath() || '/'} className="hover:underline">Home</a>
               {(() => {
                 const cat = categories.find(c => c.id === article.category_id);
@@ -439,7 +439,7 @@ export default function ArticlePageWrapper({
             </nav>
 
             {/* Article Header with Copy Options */}
-            <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 mb-6">
+            <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 mb-6 opacity-0 animate-fade-up" style={{ animationDelay: '0.1s' }}>
               {/* Category Badge and Title */}
               <div className="flex-1 min-w-0">
                 <span
@@ -523,7 +523,7 @@ export default function ArticlePageWrapper({
             )}
 
             {/* Article Content */}
-            <div className="min-h-[400px]">
+            <div className="min-h-[400px] opacity-0 animate-fade-up" style={{ animationDelay: '0.15s' }}>
               <ErrorBoundary>
                 <ArticleContentViewer
                   key={article.id}

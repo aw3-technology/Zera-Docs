@@ -32,7 +32,7 @@ export const zeraVsSolanaArticle = {
         body: 'ZERA is not controlled by any company, foundation, or central manager. All decisions are executed automatically on-chain through governance.',
       },
       {
-        icon: 'hugeicons:government',
+        icon: 'hugeicons:court-house',
         title: 'Governance-First Design',
         body: 'Direct democracy — the community proposes, votes, and executes outcomes without centralized approval. Specialized constructs include ZIP, IIT, and ZMT.',
       },
@@ -47,7 +47,7 @@ export const zeraVsSolanaArticle = {
         body: 'ZRA has a capped supply of ~906M with minting/burning controlled by governance. Fees split between burn, treasury, and validators.',
       },
       {
-        icon: 'hugeicons:money-bag',
+        icon: 'hugeicons:money-bag-01',
         title: 'Treasury & Sustainability',
         body: 'Entirely community-controlled treasury funded by network activity. Funds protocol upgrades, grants, dApps, and ecosystem growth.',
       },

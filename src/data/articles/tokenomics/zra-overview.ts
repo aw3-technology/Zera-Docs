@@ -24,7 +24,7 @@ export const zraOverviewArticle = {
       { icon: 'hugeicons:shield-01', title: 'Governance-Controlled', body: 'All mint/burn and supply changes occur only via governance-enforced mechanisms.' },
       { icon: 'hugeicons:search-01', title: 'Supply Parameters', body: 'Initial, circulating, and maximum supply are transparent and auditable at all times.' },
       { icon: 'hugeicons:refresh', title: 'Dynamic Adjustments', body: 'Supply management may evolve over time through governance proposals and votes.' },
-      { icon: 'hugeicons:balance', title: 'Community Sovereignty', body: 'No central authority controls supply — only the network\'s governance process.' },
+      { icon: 'hugeicons:justice-scale-01', title: 'Community Sovereignty', body: 'No central authority controls supply — only the network\'s governance process.' },
     ]),
 
     divider(),
@@ -35,7 +35,7 @@ export const zraOverviewArticle = {
     cardGroup(3, [
       { icon: 'hugeicons:fire', title: '25% Burned', body: 'A quarter of every ZRA fee is permanently removed from circulation.' },
       { icon: 'hugeicons:money-bag-02', title: '25% To Treasury', body: 'A quarter flows to the network treasury for ecosystem funding.' },
-      { icon: 'hugeicons:distributed', title: '50% To Validators', body: 'Half of every fee rewards the validators securing the network.' },
+      { icon: 'hugeicons:blockchain-06', title: '50% To Validators', body: 'Half of every fee rewards the validators securing the network.' },
     ]),
 
     divider(),

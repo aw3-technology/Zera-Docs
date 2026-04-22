@@ -88,7 +88,7 @@ export const cardBlockSpec = createReactBlockSpec(
       const { icon, href, imageUrl, cardTitle, cardBody } = block.props;
       const inner = (
         <div className="flex flex-col flex-1">
-          {imageUrl && <img src={imageUrl} alt="" className="w-full h-36 object-cover rounded-t-2xl" />}
+          {imageUrl && <img src={imageUrl} alt="" className="w-full h-36 object-cover rounded-t-2xl img-loading" onLoad={(e) => e.currentTarget.classList.add('img-loaded')} />}
           <div className="p-5 flex flex-col flex-1">
             {icon && (
               <span className="mb-2 block" style={{ color: 'var(--viewer-primary, #D97706)' }}>
@@ -539,7 +539,7 @@ export const cardGroupBlockSpec = createReactBlockSpec(
                 >
                   {card.imageUrl && (
                     <div className="w-full overflow-hidden rounded-t-2xl">
-                      <img src={card.imageUrl} alt="" className="w-full h-32 object-cover" />
+                      <img src={card.imageUrl} alt="" className="w-full h-32 object-cover img-loading" onLoad={(e) => e.currentTarget.classList.add('img-loaded')} />
                     </div>
                   )}
                   <div className="p-4 flex flex-col flex-1">
@@ -607,6 +607,8 @@ export const imageBlockSpec = createReactBlockSpec(
             <img
               src={url}
               alt={caption || ''}
+              className="img-loading"
+              onLoad={(e) => e.currentTarget.classList.add('img-loaded')}
               style={{
                 width: '100%',
                 height: 'auto',

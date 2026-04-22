@@ -26,7 +26,7 @@ export const regulatoryResilienceOverviewArticle = {
     p('Tokens can play concrete roles — governance, fee payment (ACE), native staking / Network Security (ACE) — which clarifies non-speculative utility. Each of these functions occurs on every transaction or staking epoch, providing objective, repeatable use.'),
 
     cardGroup(2, [
-      { icon: 'hugeicons:government', title: 'Governance Participation', body: 'Token holders vote on proposals that execute autonomously — active, functional utility.' },
+      { icon: 'hugeicons:court-house', title: 'Governance Participation', body: 'Token holders vote on proposals that execute autonomously — active, functional utility.' },
       { icon: 'hugeicons:coins-01', title: 'Fee Payment (ACE)', body: 'ACE-enabled tokens can pay transaction fees natively on the network.' },
       { icon: 'hugeicons:shield-01', title: 'Network Security', body: 'ACE tokens contribute to validator staking and network security directly.' },
       { icon: 'hugeicons:view', title: 'Transparent Auditability', body: 'Every proposal, vote, and execution leaves a verifiable on-chain record.' },

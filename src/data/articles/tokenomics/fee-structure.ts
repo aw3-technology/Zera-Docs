@@ -39,7 +39,7 @@ export const feeStructureArticle = {
     cardGroup(3, [
       { icon: 'hugeicons:fire', title: '25% Burned', body: 'A quarter of every ZRA fee is permanently removed from circulation.' },
       { icon: 'hugeicons:money-bag-02', title: '25% Treasury', body: 'A quarter flows to the network treasury for ecosystem funding.' },
-      { icon: 'hugeicons:distributed', title: '50% Validators', body: 'Half of every fee rewards the validators securing the network.' },
+      { icon: 'hugeicons:blockchain-06', title: '50% Validators', body: 'Half of every fee rewards the validators securing the network.' },
     ]),
 
     h2('ACE Token Fee Distribution'),
@@ -47,7 +47,7 @@ export const feeStructureArticle = {
 
     cardGroup(2, [
       { icon: 'hugeicons:money-bag-02', title: '50% Treasury', body: 'Half of every ACE token fee flows to the network treasury.' },
-      { icon: 'hugeicons:distributed', title: '50% Validators', body: 'Half rewards the validators securing the network.' },
+      { icon: 'hugeicons:blockchain-06', title: '50% Validators', body: 'Half rewards the validators securing the network.' },
     ]),
 
     divider(),

@@ -490,7 +490,7 @@ export function AIChatPanel({
                                   <AccordionTrigger className="flex items-center gap-2 text-xs text-muted-foreground p-3 w-full hover:bg-muted/50 transition-colors rounded-2xl border border-border/50 bg-card hover:no-underline [&[data-state=open]>svg]:rotate-180">
                                     <div className="flex items-center gap-2 flex-1 min-w-0">
                                       <Icon icon="hugeicons:search-01" className="h-4 w-4 text-green-500 flex-shrink-0" />
-                                      <Icon icon="hugeicons:checkmark-01" className="h-3 w-3 text-green-500 flex-shrink-0" />
+                                      <Icon icon="hugeicons:checkmark-circle-01" className="h-3 w-3 text-green-500 flex-shrink-0" />
                                       <span className="truncate">Found {foundArticles.length} article{foundArticles.length !== 1 ? 's' : ''}</span>
                                     </div>
                                   </AccordionTrigger>
@@ -680,7 +680,7 @@ export function AIChatPanel({
                         title="Copy"
                       >
                         {copiedId === message.id ? (
-                          <Icon icon="hugeicons:checkmark-01" className="h-3.5 w-3.5 text-green-500" />
+                          <Icon icon="hugeicons:checkmark-circle-01" className="h-3.5 w-3.5 text-green-500" />
                         ) : (
                           <Icon icon="hugeicons:copy-01" className="h-3.5 w-3.5 text-muted-foreground" />
                         )}

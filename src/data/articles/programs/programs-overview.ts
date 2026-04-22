@@ -20,7 +20,7 @@ export const programsOverviewArticle = {
     divider(),
 
     cardGroup(2, [
-      { icon: 'hugeicons:laboratory', title: 'IIT — Innovative Initiatives Token', body: 'A dedicated governance channel seeded with 30M+ ZERA to fund research, experiments, open-source tools, or any other governance-dictated items. Monthly two-stage cycle (shortlist then final execution).', href: '/article/iit-background' },
+      { icon: 'hugeicons:test-tube-01', title: 'IIT — Innovative Initiatives Token', body: 'A dedicated governance channel seeded with 30M+ ZERA to fund research, experiments, open-source tools, or any other governance-dictated items. Monthly two-stage cycle (shortlist then final execution).', href: '/article/iit-background' },
       { icon: 'hugeicons:megaphone-01', title: 'ZMT — ZERA Marketing Token', body: 'A governance channel to support education, awareness, events, and adoption. Proposals pass, then actions execute on-chain.', href: '/article/zmt-background' },
       { icon: 'hugeicons:code', title: 'ZIP — ZERA Improvement Protocol', body: 'Protocol upgrades via required-version transactions. ZIP handles protocol-level upgrades that are autonomously executed when passed.', href: '/article/protocol-upgrades' },
     ]),

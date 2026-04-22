@@ -398,7 +398,7 @@ export default function HelpCenterHome({
               /* Home View */
               <>
                 {/* Hero Section */}
-                <div className="py-8 md:py-12">
+                <div className="py-8 md:py-12 opacity-0 animate-fade-up" style={{ animationDelay: '0.05s' }}>
                   <div className="max-w-2xl text-left">
                     {(() => {
                       const activeFolder = activeFolderId ? folders.find(f => f.id === activeFolderId) : null;
@@ -441,7 +441,7 @@ export default function HelpCenterHome({
 
                 {/* Categories Grid - 2 columns to account for right panel */}
                 {(config.show_categories ?? true) && filteredCategories.length > 0 && (
-                  <div className="mb-8">
+                  <div className="mb-8 opacity-0 animate-fade-up" style={{ animationDelay: '0.15s' }}>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       {filteredCategories.filter(c => getArticlesForCategory(c.id).length > 0).slice(0, 6).map(category => {
                         const categoryArticles = getArticlesForCategory(category.id);
@@ -485,7 +485,7 @@ export default function HelpCenterHome({
 
                 {/* Frequently Asked Questions Section */}
                 {faqs.length > 0 && (
-                  <div className="mb-8">
+                  <div className="mb-8 opacity-0 animate-fade-up" style={{ animationDelay: '0.25s' }}>
                     <h2
                       className="font-semibold mb-4 text-xl"
                       style={{ color: isDark ? '#fafafa' : '#18181b', fontFamily: config.heading_font || 'system-ui, sans-serif' }}

@@ -24,7 +24,7 @@ export const governanceOverviewArticle = {
       { icon: 'hugeicons:code', title: 'Protocol Upgrades', body: 'Submit and vote on ZERA Improvement Proposals (ZIP) that upgrade the protocol autonomously.' },
       { icon: 'hugeicons:money-bag-02', title: 'Treasury Spending', body: 'Allocate treasury funds for grants, ecosystem growth, and operational expenses.' },
       { icon: 'hugeicons:megaphone-01', title: 'Marketing & Awareness', body: 'Fund campaigns, partnerships, and community initiatives through governance proposals.' },
-      { icon: 'hugeicons:laboratory', title: 'R&D Funding', body: 'Direct resources toward research, new features, and technical exploration.' },
+      { icon: 'hugeicons:test-tube-01', title: 'R&D Funding', body: 'Direct resources toward research, new features, and technical exploration.' },
       { icon: 'hugeicons:coins-01', title: 'Fee & Staking Tokens', body: 'Decide which tokens are accepted for transaction fees and staking rewards.' },
       { icon: 'hugeicons:link-03', title: 'Bridge Operations', body: 'Govern cross-chain bridge parameters, supported chains, and security thresholds.' },
     ]),
@@ -45,8 +45,8 @@ export const governanceOverviewArticle = {
 
     cardGroup(2, [
       { icon: 'hugeicons:shield-01', title: 'Reduced Managerial Reliance', body: 'No core team or foundation needs to "implement" a passed vote — it happens automatically.' },
-      { icon: 'hugeicons:distributed', title: 'Enhanced Decentralization', body: 'Execution is trustless. The outcome is determined by the protocol, not by individuals.' },
-      { icon: 'hugeicons:balance', title: 'Improved Legal Posture', body: 'Binding on-chain execution strengthens the case that the network operates autonomously.' },
+      { icon: 'hugeicons:blockchain-06', title: 'Enhanced Decentralization', body: 'Execution is trustless. The outcome is determined by the protocol, not by individuals.' },
+      { icon: 'hugeicons:justice-scale-01', title: 'Improved Legal Posture', body: 'Binding on-chain execution strengthens the case that the network operates autonomously.' },
       { icon: 'hugeicons:rocket-01', title: 'Faster Iteration', body: 'Proposals move from vote to execution without delays caused by manual handoffs or approvals.' },
     ]),
 

@@ -84,7 +84,7 @@ export function CodeBlock({
               >
                 {copied ? (
                   <>
-                    <Icon icon="hugeicons:checkmark-01" className="h-3.5 w-3.5" />
+                    <Icon icon="hugeicons:checkmark-circle-01" className="h-3.5 w-3.5" />
                     <span>Copied!</span>
                   </>
                 ) : (

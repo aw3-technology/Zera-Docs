@@ -143,6 +143,9 @@ import { decentralizationByDesignArticle } from './articles/blog/decentralizatio
 import { tokenomicsBackgroundArticle } from './articles/blog/tokenomics-background';
 import { zeraVsSolanaArticle } from './articles/blog/zera-vs-solana';
 import { zeraNetworkBackgroundArticle } from './articles/blog/zera-network-background';
+import { corePrinciplesOverviewArticle } from './articles/blog/core-principles-overview';
+import { governanceDesignPrinciplesArticle } from './articles/blog/governance-design-principles';
+import { marketingSwotAnalysisArticle } from './articles/blog/marketing-swot-analysis';
 
 export const articles = [
   // Getting Started
@@ -223,4 +226,7 @@ export const articles = [
   tokenomicsBackgroundArticle,
   zeraVsSolanaArticle,
   zeraNetworkBackgroundArticle,
+  corePrinciplesOverviewArticle,
+  governanceDesignPrinciplesArticle,
+  marketingSwotAnalysisArticle,
 ];

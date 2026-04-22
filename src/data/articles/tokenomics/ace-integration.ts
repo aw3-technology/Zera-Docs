@@ -22,7 +22,7 @@ export const aceIntegrationArticle = {
 
     cardGroup(2, [
       { icon: 'hugeicons:money-bag-02', title: '50% To Treasury', body: 'Half of every ACE token fee flows to the network treasury.' },
-      { icon: 'hugeicons:distributed', title: '50% To Validators', body: 'Half rewards the validators securing the network.' },
+      { icon: 'hugeicons:blockchain-06', title: '50% To Validators', body: 'Half rewards the validators securing the network.' },
     ]),
 
     divider(),
@@ -56,7 +56,7 @@ export const aceIntegrationArticle = {
     cardGroup(2, [
       { icon: 'hugeicons:rocket-01', title: 'ACE Utility', body: 'Native fee payment and validator staking from day one.' },
       { icon: 'hugeicons:code', title: 'Governance-Ready', body: 'Deploy configurable, autonomous governance without building from scratch.' },
-      { icon: 'hugeicons:balance', title: 'Regulatory Strength', body: 'Demonstrate non-speculative utility with code-enforced outcomes.' },
+      { icon: 'hugeicons:justice-scale-01', title: 'Regulatory Strength', body: 'Demonstrate non-speculative utility with code-enforced outcomes.' },
       { icon: 'hugeicons:link-03', title: 'Interoperability', body: 'Seamless integration with the ZERA ecosystem and cross-chain bridges.' },
     ]),
 

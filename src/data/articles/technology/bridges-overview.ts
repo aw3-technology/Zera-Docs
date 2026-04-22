@@ -27,7 +27,7 @@ export const bridgesOverviewArticle = {
     p('Created and directed by governance; non-custodial validation of cross-chain transfers; upgradeable over time. Guardians are a purpose-specific subset of validators that handle bridge operations.'),
 
     cardGroup(2, [
-      { icon: 'hugeicons:government', title: 'Governance-Created', body: 'Guardian sets are established and managed through governance proposals.' },
+      { icon: 'hugeicons:court-house', title: 'Governance-Created', body: 'Guardian sets are established and managed through governance proposals.' },
       { icon: 'hugeicons:shield-01', title: 'Non-Custodial', body: 'Guardians validate transfers without ever holding custody of bridged assets.' },
       { icon: 'hugeicons:refresh', title: 'Upgradeable', body: 'Guardian parameters and membership can evolve through governance over time.' },
       { icon: 'hugeicons:view', title: 'Transparent', body: 'All bridge operations are visible and auditable on-chain.' },

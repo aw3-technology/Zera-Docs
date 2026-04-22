@@ -120,7 +120,7 @@ export function CopyDropdown({
               onClick={(e) => { e.stopPropagation(); e.preventDefault(); copyAsMarkdown(); }}
             >
               {showToast
-                ? <Icon icon="hugeicons:checkmark-01" className="h-3.5 w-3.5 text-green-500" />
+                ? <Icon icon="hugeicons:checkmark-circle-01" className="h-3.5 w-3.5 text-green-500" />
                 : <Icon icon="hugeicons:copy-01" className="h-3.5 w-3.5" />
               }
               <span>{showToast ? 'Copied!' : 'Copy as Markdown'}</span>

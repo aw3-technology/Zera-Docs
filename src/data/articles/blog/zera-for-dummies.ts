@@ -55,7 +55,7 @@ export const zeraForDummiesArticle = {
     p('ZERA has several governance mechanisms, each designed for different types of decisions:'),
     cardGroup(3, [
       { icon: 'hugeicons:file-02', title: 'ZIP', body: 'ZERA Improvement Proposals — for protocol-level changes and upgrades to the network itself.' },
-      { icon: 'hugeicons:money-bag', title: 'Treasury', body: 'Proposals to allocate community funds for development, marketing, grants, and ecosystem growth.' },
+      { icon: 'hugeicons:money-bag-01', title: 'Treasury', body: 'Proposals to allocate community funds for development, marketing, grants, and ecosystem growth.' },
       { icon: 'hugeicons:shield-01', title: 'IIT (30M+ ZRA)', body: 'Initial Issuance Token governance — high-stakes decisions requiring a significant stake to propose.' },
     ]),
     cardGroup(2, [
