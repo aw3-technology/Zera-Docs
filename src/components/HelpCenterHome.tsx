@@ -16,6 +16,7 @@ import {
 import { useGoogleFonts } from '@/hooks/useGoogleFonts';
 import { useFolderSync } from '@/hooks/useFolderSync';
 import { useTheme } from '@/hooks/useTheme';
+import { useAiChat } from '@/hooks/useAiChat';
 import { useSearchShortcut } from '@/hooks/useSearchShortcut';
 import { getArticles, getCategories } from '@/lib/api';
 import type { Article, Category, Folder, Faq, HelpCenterConfig } from '@/lib/api';
@@ -44,7 +45,7 @@ export default function HelpCenterHome({
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const { activeFolderId, setFolder: setActiveFolderId } = useFolderSync(initialFolderId);
   const [searchModalOpen, setSearchModalOpen] = useState(false);
-  const [aiChatOpen, setAiChatOpen] = useState(false);
+  const { aiChatOpen, openAiChat, closeAiChat, toggleAiChat } = useAiChat();
   const [clientCategories, setClientCategories] = useState(categories);
   const [clientArticles, setClientArticles] = useState(articles);
   const hasFetchedRef = useRef(false);
@@ -115,7 +116,7 @@ export default function HelpCenterHome({
       config={config}
       projectId={projectId}
       aiChatOpen={aiChatOpen}
-      onAiChatToggle={() => setAiChatOpen(!aiChatOpen)}
+      onAiChatToggle={closeAiChat}
     >
       <div 
         className={cn(
@@ -131,7 +132,7 @@ export default function HelpCenterHome({
       <div data-astro-transition-persist="header">
         <HelpCenterHeader
           onSearchOpen={() => setSearchModalOpen(true)}
-          onAIOpen={() => setAiChatOpen(!aiChatOpen)}
+          onAIOpen={openAiChat}
           folders={folders}
           activeFolderId={activeFolderId}
           onFolderChange={setActiveFolderId}
@@ -210,7 +211,7 @@ export default function HelpCenterHome({
           url.searchParams.set('ai_query', query.trim());
           window.history.pushState({}, '', url.toString());
           
-          setAiChatOpen(true);
+          openAiChat();
         }}
       />
       </div>

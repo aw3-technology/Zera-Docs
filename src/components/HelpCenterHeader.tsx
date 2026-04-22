@@ -149,6 +149,17 @@ export function HelpCenterHeader({
               </button>
             )}
 
+            {/* AI button — mobile only */}
+            {onAIOpen && (
+              <button
+                onClick={onAIOpen}
+                className="lg:hidden p-2 rounded-lg text-zinc-600 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800"
+                aria-label="Ask AI"
+              >
+                <Icon icon="hugeicons:ai-brain-01" className="h-5 w-5" style={{ color: config.primary_color }} />
+              </button>
+            )}
+
             {/* Nav links — desktop only */}
             {config.header_links?.length > 0 && (
               <nav className="hidden md:flex items-center gap-1">

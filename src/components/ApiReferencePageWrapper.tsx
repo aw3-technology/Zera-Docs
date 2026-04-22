@@ -9,6 +9,7 @@ import { CustomApiReference } from './help-center/CustomApiReference';
 import { cn, sortCategories, filterCategoriesByFolder } from '@/lib/utils';
 import { useGoogleFonts } from '@/hooks/useGoogleFonts';
 import { useTheme } from '@/hooks/useTheme';
+import { useAiChat } from '@/hooks/useAiChat';
 import { useSearchShortcut } from '@/hooks/useSearchShortcut';
 import { SESSION_KEYS } from '@/lib/storageKeys';
 
@@ -38,7 +39,7 @@ export function ApiReferencePageWrapper({
   folders = [],
 }: ApiReferencePageWrapperProps) {
   const { isDark, toggleTheme } = useTheme();
-  const [aiChatOpen, setAiChatOpen] = useState(false);
+  const { aiChatOpen, openAiChat, closeAiChat, toggleAiChat } = useAiChat();
   const [searchModalOpen, setSearchModalOpen] = useState(false);
   const [activeFolderId, setActiveFolderId] = useState<string | null>(null);
 
@@ -69,7 +70,7 @@ export function ApiReferencePageWrapper({
       config={config}
       projectId={projectId}
       aiChatOpen={aiChatOpen}
-      onAiChatToggle={() => setAiChatOpen(!aiChatOpen)}
+      onAiChatToggle={closeAiChat}
     >
       <div 
         className={cn(
@@ -84,7 +85,7 @@ export function ApiReferencePageWrapper({
         <div data-astro-transition-persist="header" className="bg-transparent">
           <HelpCenterHeader
             onSearchOpen={() => setSearchModalOpen(true)}
-            onAIOpen={() => setAiChatOpen(!aiChatOpen)}
+            onAIOpen={openAiChat}
             showBackButton={false}
             folders={folders}
             articles={allArticles}

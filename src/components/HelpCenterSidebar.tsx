@@ -1,9 +1,10 @@
 import { cn, getBasePath } from '@/lib/utils';
 import { Icon } from './ui/icon';
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useHelpCenter } from '@/contexts/HelpCenterContext';
 import { SidebarArticleList } from './sidebar/SidebarArticleList';
+import { SESSION_KEYS } from '@/lib/storageKeys';
 import type { Article, Category, Folder } from '@/lib/api';
 
 interface HelpCenterSidebarProps {
@@ -37,18 +38,28 @@ export function HelpCenterSidebar({
   folders = [],
 }: HelpCenterSidebarProps) {
   const { config, isDark } = useHelpCenter();
-  const [collapsedCategories, setCollapsedCategories] = useState<Set<string>>(new Set());
+  const [collapsedCategories, setCollapsedCategories] = useState<Set<string>>(() => {
+    try {
+      const stored = sessionStorage.getItem(SESSION_KEYS.COLLAPSED_CATEGORIES);
+      return stored ? new Set(JSON.parse(stored)) : new Set();
+    } catch {
+      return new Set();
+    }
+  });
 
   const sidebarStyle = config?.sidebar_style || 'default';
-  const headerLinks = config?.header_links?.slice(0, 3) || [];
+  const headerLinks = config?.header_links || [];
 
-  const toggleCollapse = (categoryId: string) => {
+  const toggleCollapse = useCallback((categoryId: string) => {
     setCollapsedCategories(prev => {
       const next = new Set(prev);
       next.has(categoryId) ? next.delete(categoryId) : next.add(categoryId);
+      try {
+        sessionStorage.setItem(SESSION_KEYS.COLLAPSED_CATEGORIES, JSON.stringify([...next]));
+      } catch { /* ignore */ }
       return next;
     });
-  };
+  }, []);
 
   const getArticlesForCategory = (categoryId: string): Article[] => {
     const raw = articles.filter(a => a.category_id === categoryId);

@@ -15,6 +15,7 @@ import { BaseLayoutWrapper } from './BaseLayoutWrapper';
 import { SearchModal } from './SearchModal';
 import { ErrorBoundary } from './ErrorBoundary';
 import { useTheme } from '@/hooks/useTheme';
+import { useAiChat } from '@/hooks/useAiChat';
 import { useGoogleFonts } from '@/hooks/useGoogleFonts';
 import { useFolderSync } from '@/hooks/useFolderSync';
 import { useSearchShortcut } from '@/hooks/useSearchShortcut';
@@ -83,7 +84,7 @@ export default function ArticlePageWrapper({
   apiSpecUrl,
 }: ArticlePageWrapperProps) {
   const { isDark, toggleTheme } = useTheme();
-  const [aiChatOpen, setAiChatOpen] = useState(false);
+  const { aiChatOpen, openAiChat, closeAiChat, toggleAiChat } = useAiChat();
   const [searchModalOpen, setSearchModalOpen] = useState(false);
   const { activeFolderId } = useFolderSync();
   const [tryItModalOpen, setTryItModalOpen] = useState(false);
@@ -115,7 +116,7 @@ export default function ArticlePageWrapper({
       config={config}
       projectId={projectId}
       aiChatOpen={aiChatOpen}
-      onAiChatToggle={() => setAiChatOpen(!aiChatOpen)}
+      onAiChatToggle={closeAiChat}
     >
       <div
         className={cn("flex flex-col h-screen overflow-hidden bg-background text-foreground")}
@@ -128,7 +129,7 @@ export default function ArticlePageWrapper({
       <div data-astro-transition-persist="header" className="bg-transparent">
         <HelpCenterHeader
           onSearchOpen={() => setSearchModalOpen(true)}
-          onAIOpen={() => setAiChatOpen(!aiChatOpen)}
+          onAIOpen={openAiChat}
           showBackButton={false}
           folders={folders}
           articles={allArticles}

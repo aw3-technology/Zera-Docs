@@ -6,6 +6,7 @@ import { HelpCenterHeader } from './HelpCenterHeader';
 import { Icon } from './ui/icon';
 import { useGoogleFonts } from '@/hooks/useGoogleFonts';
 import { useTheme } from '@/hooks/useTheme';
+import { useAiChat } from '@/hooks/useAiChat';
 import { useFolderSync } from '@/hooks/useFolderSync';
 import { NavigationLoadingBar } from './NavigationLoadingBar';
 import { BaseLayoutWrapper } from './BaseLayoutWrapper';
@@ -31,7 +32,7 @@ export default function CategoryPageWrapper({
   folders = [],
 }: CategoryPageWrapperProps) {
   const { isDark, toggleTheme } = useTheme();
-  const [aiChatOpen, setAiChatOpen] = useState(false);
+  const { aiChatOpen, openAiChat, closeAiChat, toggleAiChat } = useAiChat();
   const { activeFolderId, setFolder: setActiveFolderId } = useFolderSync();
 
   // Sort and filter categories by folder (no subcategory inclusion on category page)
@@ -52,7 +53,7 @@ export default function CategoryPageWrapper({
       config={config}
       projectId={projectId}
       aiChatOpen={aiChatOpen}
-      onAiChatToggle={() => setAiChatOpen(!aiChatOpen)}
+      onAiChatToggle={closeAiChat}
     >
       <div 
         className={cn(
@@ -68,7 +69,7 @@ export default function CategoryPageWrapper({
       <div data-astro-transition-persist="header">
         <HelpCenterHeader
           onSearchOpen={() => {}}
-          onAIOpen={() => setAiChatOpen(!aiChatOpen)}
+          onAIOpen={openAiChat}
           showBackButton={false}
           folders={folders}
           articles={allArticles}

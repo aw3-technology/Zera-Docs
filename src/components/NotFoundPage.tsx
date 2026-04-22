@@ -8,6 +8,7 @@ import { NavigationLoadingBar } from './NavigationLoadingBar';
 import { BaseLayoutWrapper } from './BaseLayoutWrapper';
 import { useGoogleFonts } from '@/hooks/useGoogleFonts';
 import { useTheme } from '@/hooks/useTheme';
+import { useAiChat } from '@/hooks/useAiChat';
 import { SESSION_KEYS } from '@/lib/storageKeys';
 
 interface NotFoundPageProps {
@@ -26,7 +27,7 @@ export default function NotFoundPage({
   projectId,
 }: NotFoundPageProps) {
   const { isDark, toggleTheme } = useTheme();
-  const [aiChatOpen, setAiChatOpen] = useState(false);
+  const { aiChatOpen, openAiChat, closeAiChat, toggleAiChat } = useAiChat();
   const [activeFolderId, setActiveFolderId] = useState<string | null>(null);
 
   useGoogleFonts(config.heading_font, config.body_font);
@@ -52,7 +53,7 @@ export default function NotFoundPage({
       config={config}
       projectId={projectId}
       aiChatOpen={aiChatOpen}
-      onAiChatToggle={() => setAiChatOpen(!aiChatOpen)}
+      onAiChatToggle={closeAiChat}
     >
       <div
         className={cn('flex flex-col h-screen overflow-hidden bg-background text-foreground')}
@@ -63,7 +64,7 @@ export default function NotFoundPage({
         <div data-astro-transition-persist="header">
           <HelpCenterHeader
             onSearchOpen={() => {}}
-            onAIOpen={() => setAiChatOpen(!aiChatOpen)}
+            onAIOpen={openAiChat}
             folders={folders}
             activeFolderId={activeFolderId}
             onFolderChange={setActiveFolderId}

@@ -25,9 +25,13 @@ export const helpCenterConfig = {
 
   // Header
   header_links: [
-    { label: 'Home', url: '/' },
-    { label: 'Explorer', url: 'https://zerascan.io' },
-    { label: 'Bridge', url: 'https://bridge.zeranetwork.io' },
+    { label: 'Home', url: 'https://zera.net/', icon: 'hugeicons:home-01' },
+    { label: 'Explorer', url: 'https://zerascan.io/', icon: 'hugeicons:search-visual' },
+    { label: 'News', url: 'https://zera.news/', icon: 'hugeicons:news-01' },
+    { label: 'Wallet', url: 'https://apps.apple.com/us/app/vision-hub-zera-web3-wallet/id6758921523', icon: 'hugeicons:wallet-01' },
+    { label: 'Telegram', url: 'https://t.me/ZeraNetwork', icon: 'hugeicons:telegram' },
+    { label: 'DexScreener', url: 'https://dexscreener.com/solana/CpaXrJhnLesjnBt893WaBbNkYAEQvpqFZmGExvvA1njg', icon: 'hugeicons:chart-line-data-01' },
+    { label: 'Linktree', url: 'https://linktr.ee/zerachain', icon: 'hugeicons:link-01' },
   ],
   show_primary_button: true,
   primary_button_label: 'Get Started',

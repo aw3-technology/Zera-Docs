@@ -12,5 +12,6 @@ export const STORAGE_KEYS = {
 export const SESSION_KEYS = {
   THEME_IS_DARK: 'theme-is-dark',
   ACTIVE_FOLDER_ID: 'active-folder-id',
+  COLLAPSED_CATEGORIES: 'collapsed-categories',
   ARTICLE_VIEW: (articleId: string) => `article_view_${articleId}`,
 } as const;
