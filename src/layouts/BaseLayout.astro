@@ -164,10 +164,8 @@ const baseUrl = subPathDomain ? `${publicOrigin}${publicPathPrefix}` : (config.s
         // Apply theme class immediately to html element
         if (isDark) {
           document.documentElement.classList.add('dark');
-          document.documentElement.style.backgroundColor = '#000000';
         } else {
           document.documentElement.classList.remove('dark');
-          document.documentElement.style.backgroundColor = '#ffffff';
         }
 
         // Store in sessionStorage for navigation
@@ -180,13 +178,8 @@ const baseUrl = subPathDomain ? `${publicOrigin}${publicPathPrefix}` : (config.s
       // Function to apply theme
       function applyTheme() {
         const isDark = sessionStorage.getItem('theme-is-dark') === '1';
-        if (isDark) {
-          document.documentElement.classList.add('dark');
-          document.documentElement.style.backgroundColor = '#000000';
-        } else {
-          document.documentElement.classList.remove('dark');
-          document.documentElement.style.backgroundColor = '#ffffff';
-        }
+        document.documentElement.classList.toggle('dark', isDark);
+        document.documentElement.style.removeProperty('background-color');
       }
       
       // Save theme state before navigation
@@ -198,22 +191,8 @@ const baseUrl = subPathDomain ? `${publicOrigin}${publicPathPrefix}` : (config.s
       // Apply theme to new document BEFORE swap - CRITICAL
       document.addEventListener('astro:before-swap', (e) => {
         const isDark = sessionStorage.getItem('theme-is-dark') === '1';
-        // Apply to both html and body immediately
-        if (isDark) {
-          e.newDocument.documentElement.classList.add('dark');
-          e.newDocument.documentElement.style.backgroundColor = '#000000';
-          e.newDocument.documentElement.style.colorScheme = 'dark';
-          if (e.newDocument.body) {
-            e.newDocument.body.style.backgroundColor = '#000000';
-          }
-        } else {
-          e.newDocument.documentElement.classList.remove('dark');
-          e.newDocument.documentElement.style.backgroundColor = '#ffffff';
-          e.newDocument.documentElement.style.colorScheme = 'light';
-          if (e.newDocument.body) {
-            e.newDocument.body.style.backgroundColor = '#ffffff';
-          }
-        }
+        e.newDocument.documentElement.classList.toggle('dark', isDark);
+        e.newDocument.documentElement.style.colorScheme = isDark ? 'dark' : 'light';
       });
       
       // Ensure theme is applied after page load

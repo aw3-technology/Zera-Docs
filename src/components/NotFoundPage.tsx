@@ -34,33 +34,27 @@ export default function NotFoundPage({
   }, []);
 
   useEffect(() => {
-    const saved = localStorage.getItem('help-center-theme');
-    if (saved) {
-      const dark = saved === 'dark';
+    const applyTheme = (dark: boolean) => {
       setIsDark(dark);
       document.documentElement.classList.toggle('dark', dark);
-      document.documentElement.style.backgroundColor = dark ? '#000000' : '#ffffff';
+      document.documentElement.style.removeProperty('background-color');
       sessionStorage.setItem('theme-is-dark', dark ? '1' : '0');
-      return;
-    }
+    };
+
+    const saved = localStorage.getItem('help-center-theme');
+    if (saved) { applyTheme(saved === 'dark'); return; }
+
     const sessionTheme = sessionStorage.getItem('theme-is-dark');
-    if (sessionTheme !== null) {
-      const dark = sessionTheme === '1';
-      setIsDark(dark);
-      document.documentElement.classList.toggle('dark', dark);
-      document.documentElement.style.backgroundColor = dark ? '#000000' : '#ffffff';
-      return;
-    }
-    setIsDark(true);
-    document.documentElement.classList.add('dark');
-    document.documentElement.style.backgroundColor = '#000000';
-    sessionStorage.setItem('theme-is-dark', '1');
+    if (sessionTheme !== null) { applyTheme(sessionTheme === '1'); return; }
+
+    applyTheme(true);
   }, [config.theme_mode]);
 
   const handleThemeToggle = () => {
     const newDark = !isDark;
-    document.documentElement.classList.toggle('dark', newDark);
     setIsDark(newDark);
+    document.documentElement.classList.toggle('dark', newDark);
+    document.documentElement.style.removeProperty('background-color');
     localStorage.setItem('help-center-theme', newDark ? 'dark' : 'light');
     sessionStorage.setItem('theme-is-dark', newDark ? '1' : '0');
   };

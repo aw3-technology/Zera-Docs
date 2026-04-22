@@ -85,6 +85,10 @@
     @apply border-border/50;
   }
   
+  html {
+    background-color: hsl(var(--background));
+  }
+
   body {
     @apply bg-background text-foreground;
   }

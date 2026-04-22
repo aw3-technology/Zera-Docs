@@ -187,33 +187,24 @@ export default function HelpCenterHome({
 
   // Handle dark mode
   useEffect(() => {
+    const applyTheme = (dark: boolean) => {
+      setIsDark(dark);
+      document.documentElement.classList.toggle('dark', dark);
+      // Remove any inline backgroundColor so CSS variables take over
+      document.documentElement.style.removeProperty('background-color');
+      sessionStorage.setItem('theme-is-dark', dark ? '1' : '0');
+    };
+
     // localStorage = explicit user choice (highest priority)
     const savedTheme = localStorage.getItem('help-center-theme');
-
-    if (savedTheme) {
-      const isDarkMode = savedTheme === 'dark';
-      setIsDark(isDarkMode);
-      document.documentElement.classList.toggle('dark', isDarkMode);
-      document.documentElement.style.backgroundColor = isDarkMode ? '#000000' : '#ffffff';
-      sessionStorage.setItem('theme-is-dark', isDarkMode ? '1' : '0');
-      return;
-    }
+    if (savedTheme) { applyTheme(savedTheme === 'dark'); return; }
 
     // sessionStorage = navigation persistence (second priority)
     const sessionTheme = sessionStorage.getItem('theme-is-dark');
-    if (sessionTheme !== null) {
-      const isDarkMode = sessionTheme === '1';
-      setIsDark(isDarkMode);
-      document.documentElement.classList.toggle('dark', isDarkMode);
-      document.documentElement.style.backgroundColor = isDarkMode ? '#000000' : '#ffffff';
-      return;
-    }
+    if (sessionTheme !== null) { applyTheme(sessionTheme === '1'); return; }
 
     // No saved preference — default to dark
-    setIsDark(true);
-    document.documentElement.classList.add('dark');
-    document.documentElement.style.backgroundColor = '#000000';
-    sessionStorage.setItem('theme-is-dark', '1');
+    applyTheme(true);
   }, [config.theme_mode]);
 
   const searchResults = searchQuery
@@ -255,15 +246,9 @@ export default function HelpCenterHome({
 
   const handleThemeToggle = () => {
     const newIsDark = !isDark;
-    
-    // Instantly toggle without transition
-    if (newIsDark) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-    
     setIsDark(newIsDark);
+    document.documentElement.classList.toggle('dark', newIsDark);
+    document.documentElement.style.removeProperty('background-color');
     localStorage.setItem('help-center-theme', newIsDark ? 'dark' : 'light');
     sessionStorage.setItem('theme-is-dark', newIsDark ? '1' : '0');
   };
@@ -279,7 +264,7 @@ export default function HelpCenterHome({
       <div 
         className={cn(
           "flex flex-col h-screen overflow-hidden",
-          isDark ? "bg-background text-white" : "bg-white text-zinc-900"
+          "bg-background text-foreground"
         )}
         style={{ fontFamily: config.body_font || 'system-ui, sans-serif' }}
       >

@@ -168,33 +168,20 @@ export default function ArticlePageWrapper({
 
   // Handle dark mode
   useEffect(() => {
-    // localStorage = explicit user choice (highest priority)
+    const applyTheme = (dark: boolean) => {
+      setIsDark(dark);
+      document.documentElement.classList.toggle('dark', dark);
+      document.documentElement.style.removeProperty('background-color');
+      sessionStorage.setItem('theme-is-dark', dark ? '1' : '0');
+    };
+
     const savedTheme = localStorage.getItem('help-center-theme');
+    if (savedTheme) { applyTheme(savedTheme === 'dark'); return; }
 
-    if (savedTheme) {
-      const isDarkMode = savedTheme === 'dark';
-      setIsDark(isDarkMode);
-      document.documentElement.classList.toggle('dark', isDarkMode);
-      document.documentElement.style.backgroundColor = isDarkMode ? '#000000' : '#ffffff';
-      sessionStorage.setItem('theme-is-dark', isDarkMode ? '1' : '0');
-      return;
-    }
-
-    // sessionStorage = navigation persistence (second priority)
     const sessionTheme = sessionStorage.getItem('theme-is-dark');
-    if (sessionTheme !== null) {
-      const isDarkMode = sessionTheme === '1';
-      setIsDark(isDarkMode);
-      document.documentElement.classList.toggle('dark', isDarkMode);
-      document.documentElement.style.backgroundColor = isDarkMode ? '#000000' : '#ffffff';
-      return;
-    }
+    if (sessionTheme !== null) { applyTheme(sessionTheme === '1'); return; }
 
-    // No saved preference — default to dark
-    setIsDark(true);
-    document.documentElement.classList.add('dark');
-    document.documentElement.style.backgroundColor = '#000000';
-    sessionStorage.setItem('theme-is-dark', '1');
+    applyTheme(true);
   }, [config.theme_mode]);
 
   // Handle TOC rendering
@@ -313,15 +300,9 @@ export default function ArticlePageWrapper({
 
   const handleThemeToggle = () => {
     const newIsDark = !isDark;
-    
-    // Instantly toggle without transition
-    if (newIsDark) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-    
     setIsDark(newIsDark);
+    document.documentElement.classList.toggle('dark', newIsDark);
+    document.documentElement.style.removeProperty('background-color');
     localStorage.setItem('help-center-theme', newIsDark ? 'dark' : 'light');
     sessionStorage.setItem('theme-is-dark', newIsDark ? '1' : '0');
   };
