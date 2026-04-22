@@ -16,7 +16,7 @@ export const helpCenterConfig = {
   // Layout
   show_search: true,
   show_categories: true,
-  ai_answer_enabled: false,
+  ai_answer_enabled: true,
   sidebar_style: 'default' as const,
 
   // Fonts
