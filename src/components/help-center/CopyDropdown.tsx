@@ -59,16 +59,31 @@ export function CopyDropdown({
       .replace(/<[^>]*>?/gm, '');
   };
 
-  const copyAsMarkdown = () => {
+  const copyAsMarkdown = async () => {
     const title = article.title;
     const category = categoryName;
     const url = articleUrl;
     const cleanContent = stripHtml(article.content);
     const markdown = `---\nURL: ${url}\nTitle: ${title}\nCategory: ${category}\n---\n\n${cleanContent}`;
-    navigator.clipboard.writeText(markdown);
-    setShowToast(true);
-    setIsOpen(false);
-    setTimeout(() => setShowToast(false), 2000);
+    try {
+      await navigator.clipboard.writeText(markdown);
+      setShowToast(true);
+      setIsOpen(false);
+      setTimeout(() => setShowToast(false), 2000);
+    } catch {
+      // Fallback for older browsers or when clipboard API is unavailable
+      const textarea = document.createElement('textarea');
+      textarea.value = markdown;
+      textarea.style.position = 'fixed';
+      textarea.style.opacity = '0';
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textarea);
+      setShowToast(true);
+      setIsOpen(false);
+      setTimeout(() => setShowToast(false), 2000);
+    }
   };
 
   const viewFullPageMarkdown = () => {
@@ -101,7 +116,8 @@ export function CopyDropdown({
             {/* Left: direct copy action */}
             <div
               className="flex items-center gap-2 px-3 h-full hover:bg-accent/60 rounded-l-xl transition-colors"
-              onClick={(e) => { e.stopPropagation(); copyAsMarkdown(); }}
+              onPointerDown={(e) => { e.stopPropagation(); }}
+              onClick={(e) => { e.stopPropagation(); e.preventDefault(); copyAsMarkdown(); }}
             >
               {showToast
                 ? <Icon icon="hugeicons:checkmark-01" className="h-3.5 w-3.5 text-green-500" />

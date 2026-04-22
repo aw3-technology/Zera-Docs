@@ -405,6 +405,39 @@ export default function ArticlePageWrapper({
             "flex-1 min-w-0 pt-6 md:pt-8 pb-12 overflow-y-auto scrollbar-hide pl-4 lg:pl-0",
             !isApiRefArticle && "max-w-[720px]"
           )} id="article-scroll-container">
+            {/* Breadcrumb */}
+            <nav className={cn("flex items-center gap-2 text-sm mb-6", isDark ? "text-zinc-400" : "text-zinc-500")}>
+              <a href={getBasePath() || '/'} className="hover:underline">Home</a>
+              {(() => {
+                const cat = categories.find(c => c.id === article.category_id);
+                const articleFolder = cat?.folder_id
+                  ? folders.find(f => f.id === cat.folder_id)
+                  : null;
+                const categorySlug = cat?.name?.toLowerCase().replace(/\s+/g, '-') || '';
+                const categoryUrl = (articleFolder && !articleFolder.is_default)
+                  ? `${getBasePath()}/${articleFolder.slug}/${categorySlug}`
+                  : `${getBasePath()}/${categorySlug}`;
+                return (
+                  <>
+                    {articleFolder && !articleFolder.is_default && (
+                      <>
+                        <Icon icon="hugeicons:arrow-right-01" className="h-3 w-3" />
+                        <a href={`${getBasePath()}/${articleFolder.slug}`} className="hover:underline">{articleFolder.name}</a>
+                      </>
+                    )}
+                    {cat && (
+                      <>
+                        <Icon icon="hugeicons:arrow-right-01" className="h-3 w-3" />
+                        <a href={categoryUrl} className="hover:underline">{cat.name}</a>
+                      </>
+                    )}
+                  </>
+                );
+              })()}
+              <Icon icon="hugeicons:arrow-right-01" className="h-3 w-3" />
+              <span className={cn("truncate", isDark ? "text-zinc-200" : "text-zinc-900")}>{article.title}</span>
+            </nav>
+
             {/* Article Header with Copy Options */}
             <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 mb-6">
               {/* Category Badge and Title */}

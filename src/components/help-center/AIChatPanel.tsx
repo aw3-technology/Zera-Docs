@@ -10,7 +10,7 @@ import { AiTextArea } from './AiTextArea';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CodeBlock, InlineCode } from '../ui/code-block';
 
-const API_BASE_URL = ''; // local mode — no external API
+const API_BASE_URL = '/api/chat';
 
 interface Message {
   id: string;
@@ -236,58 +236,79 @@ export function AIChatPanel({
       }, 1000);
     }
     try {
-      // Local search — find relevant articles by matching keywords in title/excerpt/content
-      const query = text.toLowerCase();
-      const words = query.split(/\s+/).filter(w => w.length > 2);
+      // Build conversation history for the API
+      const allMessages = [...messages, userMessage];
+      const apiMessages = allMessages.map(m => ({ role: m.role, content: m.content }));
 
-      // Dynamically import local data (avoids SSR issues)
-      const { articles: rawArticles } = await import('@/data/index');
+      const response = await fetch(API_BASE_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: apiMessages }),
+      });
 
-      const scored = rawArticles
-        .filter(a => a.is_published)
-        .map(a => {
-          const haystack = `${a.title} ${a.excerpt || ''} ${a.content}`.toLowerCase();
-          const score = words.reduce((s, w) => s + (haystack.split(w).length - 1), 0);
-          return { ...a, score };
-        })
-        .filter(a => a.score > 0)
-        .sort((a, b) => b.score - a.score)
-        .slice(0, 5);
+      if (!response.ok) {
+        throw new Error(`API error: ${response.status}`);
+      }
 
-      // Build a simple answer from the top results
-      let answer = '';
-      if (scored.length === 0) {
-        answer = "I couldn't find any articles matching your question. Try browsing the categories or rephrasing your search.";
-      } else {
-        const top = scored[0];
-        // Strip HTML for a plain-text excerpt
-        const plain = top.content
-          .replace(/<[^>]+>/g, ' ')
-          .replace(/\s+/g, ' ')
-          .trim()
-          .slice(0, 400);
-        answer = `Based on **${top.title}**:\n\n${plain}${plain.length === 400 ? '…' : ''}\n\n`;
-        if (scored.length > 1) {
-          answer += `**Related articles:**\n${scored.slice(1).map(a => `- [${a.title}](/article/${a.slug})`).join('\n')}`;
+      // Create assistant message placeholder for streaming
+      const assistantId = `assistant-${Date.now()}`;
+      setMessages(prev => [...prev, {
+        id: assistantId,
+        role: 'assistant',
+        content: '',
+        timestamp: new Date(),
+      }]);
+
+      // Parse SSE stream from Anthropic
+      const reader = response.body?.getReader();
+      const decoder = new TextDecoder();
+      let fullContent = '';
+      let buffer = '';
+
+      if (reader) {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split('\n');
+          buffer = lines.pop() || '';
+
+          for (const line of lines) {
+            if (!line.startsWith('data: ')) continue;
+            const data = line.slice(6);
+            if (data === '[DONE]') continue;
+
+            try {
+              const event = JSON.parse(data);
+              if (event.type === 'content_block_delta' && event.delta?.text) {
+                fullContent += event.delta.text;
+                setMessages(prev =>
+                  prev.map(m => m.id === assistantId ? { ...m, content: fullContent } : m)
+                );
+              }
+            } catch {
+              // skip unparseable SSE chunks
+            }
+          }
         }
       }
 
-      if (scored.length > 0) {
-        setSearchProcessVisible(true);
-        setFoundArticles(scored.map(a => ({
-          title: a.title,
-          slug: a.slug,
-          url: getArticleUrl(a.slug),
-        })));
+      // Extract article links from the response (markdown links like [Title](/article/slug))
+      const linkRegex = /\[([^\]]+)\]\(\/article\/([^)]+)\)/g;
+      const links: { title: string; url: string; slug: string }[] = [];
+      let match;
+      while ((match = linkRegex.exec(fullContent)) !== null) {
+        links.push({ title: match[1], url: getArticleUrl(match[2]), slug: match[2] });
       }
 
-      setMessages(prev => [...prev, {
-        id: `assistant-${Date.now()}`,
-        role: 'assistant',
-        content: answer,
-        timestamp: new Date(),
-        links: scored.map(a => ({ title: a.title, url: getArticleUrl(a.slug), slug: a.slug })),
-      }]);
+      if (links.length > 0) {
+        setSearchProcessVisible(true);
+        setFoundArticles(links.map(l => ({ title: l.title, slug: l.slug, url: l.url })));
+        setMessages(prev =>
+          prev.map(m => m.id === assistantId ? { ...m, links } : m)
+        );
+      }
     } catch (error) {
       setMessages(prev => [...prev, {
         id: `error-${Date.now()}`,
@@ -299,7 +320,6 @@ export function AIChatPanel({
       if (searchingTimeout) clearTimeout(searchingTimeout);
       setIsLoading(false);
       setLoadingStage('thinking');
-      // Don't clear foundArticles if we want to keep them visible
       if (!showSteps) {
         setFoundArticles([]);
         setSearchProcessVisible(false);

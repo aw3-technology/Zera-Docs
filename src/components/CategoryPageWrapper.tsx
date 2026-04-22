@@ -209,7 +209,21 @@ export default function CategoryPageWrapper({
           <div className="flex-1 min-w-0 pt-6 md:pt-8 pb-12 max-w-3xl overflow-y-auto scrollbar-hide pl-4 lg:pl-0">
             {/* Breadcrumb */}
             <nav className={cn("flex items-center gap-2 text-sm mb-6", isDark ? "text-zinc-400" : "text-zinc-500")}>
-              <a href={getBasePath()} className="hover:underline">Home</a>
+              <a href={getBasePath() || '/'} className="hover:underline">Home</a>
+              {(() => {
+                const categoryFolder = category.folder_id
+                  ? folders.find(f => f.id === category.folder_id)
+                  : null;
+                if (categoryFolder && !categoryFolder.is_default) {
+                  return (
+                    <>
+                      <Icon icon="hugeicons:arrow-right-01" className="h-3 w-3" />
+                      <a href={`${getBasePath()}/${categoryFolder.slug}`} className="hover:underline">{categoryFolder.name}</a>
+                    </>
+                  );
+                }
+                return null;
+              })()}
               <Icon icon="hugeicons:arrow-right-01" className="h-3 w-3" />
               <span className={cn(isDark ? "text-zinc-200" : "text-zinc-900")}>{category.name}</span>
             </nav>
