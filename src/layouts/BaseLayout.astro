@@ -165,11 +165,13 @@ const baseUrl = subPathDomain ? `${publicOrigin}${publicPathPrefix}` : (config.s
           }
         }
 
-        // Apply theme class immediately to html element
+        // Apply theme class immediately to html and body elements
         if (isDark) {
           document.documentElement.classList.add('dark');
+          document.body?.classList.add('dark');
         } else {
           document.documentElement.classList.remove('dark');
+          document.body?.classList.remove('dark');
         }
 
         // Store in sessionStorage for navigation
@@ -186,6 +188,7 @@ const baseUrl = subPathDomain ? `${publicOrigin}${publicPathPrefix}` : (config.s
       function applyTheme() {
         const isDark = sessionStorage.getItem(SK_THEME_IS_DARK) === '1';
         document.documentElement.classList.toggle('dark', isDark);
+        document.body.classList.toggle('dark', isDark);
         document.documentElement.style.removeProperty('background-color');
       }
 
@@ -199,6 +202,7 @@ const baseUrl = subPathDomain ? `${publicOrigin}${publicPathPrefix}` : (config.s
       document.addEventListener('astro:before-swap', (e) => {
         const isDark = sessionStorage.getItem(SK_THEME_IS_DARK) === '1';
         e.newDocument.documentElement.classList.toggle('dark', isDark);
+        e.newDocument.body.classList.toggle('dark', isDark);
         e.newDocument.documentElement.style.colorScheme = isDark ? 'dark' : 'light';
       });
 
