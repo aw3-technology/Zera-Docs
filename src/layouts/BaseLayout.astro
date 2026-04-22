@@ -145,15 +145,22 @@ const baseUrl = subPathDomain ? `${publicOrigin}${publicPathPrefix}` : (config.s
       
       (function() {
         // Get theme synchronously BEFORE any rendering
+        // Priority: localStorage (user choice) > sessionStorage (nav) > default dark
         const savedTheme = localStorage.getItem('help-center-theme');
-        const themeMode = '{config.theme_mode}';
-        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        
-        // Determine if dark mode
-        const isDark = savedTheme === 'dark' || 
-                      (themeMode === 'dark' && !savedTheme) ||
-                      (themeMode === 'auto' && !savedTheme && prefersDark);
-        
+
+        var isDark;
+        if (savedTheme) {
+          isDark = savedTheme === 'dark';
+        } else {
+          const sessionTheme = sessionStorage.getItem('theme-is-dark');
+          if (sessionTheme !== null) {
+            isDark = sessionTheme === '1';
+          } else {
+            // No preference saved — default to dark
+            isDark = true;
+          }
+        }
+
         // Apply theme class immediately to html element
         if (isDark) {
           document.documentElement.classList.add('dark');
@@ -162,7 +169,7 @@ const baseUrl = subPathDomain ? `${publicOrigin}${publicPathPrefix}` : (config.s
           document.documentElement.classList.remove('dark');
           document.documentElement.style.backgroundColor = '#ffffff';
         }
-        
+
         // Store in sessionStorage for navigation
         sessionStorage.setItem('theme-is-dark', isDark ? '1' : '0');
       })();

@@ -86,24 +86,27 @@ export function ApiReferencePageWrapper({
 
   // Handle dark mode with localStorage and sessionStorage
   useEffect(() => {
-    const sessionTheme = sessionStorage.getItem('theme-is-dark');
-    if (sessionTheme) {
-      setIsDark(sessionTheme === '1');
-      return;
-    }
-
     const savedTheme = localStorage.getItem('help-center-theme');
     if (savedTheme) {
-      setIsDark(savedTheme === 'dark');
+      const isDarkMode = savedTheme === 'dark';
+      setIsDark(isDarkMode);
+      document.documentElement.classList.toggle('dark', isDarkMode);
+      document.documentElement.style.backgroundColor = isDarkMode ? '#000000' : '#ffffff';
+      sessionStorage.setItem('theme-is-dark', isDarkMode ? '1' : '0');
       return;
     }
-
-    const themeMode = config.theme_mode || 'light';
-    if (themeMode === 'dark') {
-      setIsDark(true);
-    } else if (themeMode === 'auto') {
-      setIsDark(window.matchMedia('(prefers-color-scheme: dark)').matches);
+    const sessionTheme = sessionStorage.getItem('theme-is-dark');
+    if (sessionTheme !== null) {
+      const isDarkMode = sessionTheme === '1';
+      setIsDark(isDarkMode);
+      document.documentElement.classList.toggle('dark', isDarkMode);
+      document.documentElement.style.backgroundColor = isDarkMode ? '#000000' : '#ffffff';
+      return;
     }
+    setIsDark(true);
+    document.documentElement.classList.add('dark');
+    document.documentElement.style.backgroundColor = '#000000';
+    sessionStorage.setItem('theme-is-dark', '1');
   }, [config.theme_mode]);
 
   const handleThemeToggle = () => {

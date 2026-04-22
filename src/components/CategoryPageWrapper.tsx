@@ -84,43 +84,33 @@ export default function CategoryPageWrapper({
 
   // Handle dark mode with localStorage and sessionStorage
   useEffect(() => {
-    // Check sessionStorage first (for navigation persistence)
+    // localStorage = explicit user choice (highest priority)
+    const savedTheme = localStorage.getItem('help-center-theme');
+
+    if (savedTheme) {
+      const isDarkMode = savedTheme === 'dark';
+      setIsDark(isDarkMode);
+      document.documentElement.classList.toggle('dark', isDarkMode);
+      document.documentElement.style.backgroundColor = isDarkMode ? '#000000' : '#ffffff';
+      sessionStorage.setItem('theme-is-dark', isDarkMode ? '1' : '0');
+      return;
+    }
+
+    // sessionStorage = navigation persistence (second priority)
     const sessionTheme = sessionStorage.getItem('theme-is-dark');
     if (sessionTheme !== null) {
       const isDarkMode = sessionTheme === '1';
       setIsDark(isDarkMode);
-      if (isDarkMode) {
-        document.documentElement.classList.add('dark');
-      } else {
-        document.documentElement.classList.remove('dark');
-      }
+      document.documentElement.classList.toggle('dark', isDarkMode);
+      document.documentElement.style.backgroundColor = isDarkMode ? '#000000' : '#ffffff';
       return;
     }
-    
-    // Check localStorage second
-    const savedTheme = localStorage.getItem('help-center-theme');
-    
-    if (savedTheme) {
-      const isDarkMode = savedTheme === 'dark';
-      setIsDark(isDarkMode);
-      if (isDarkMode) {
-        document.documentElement.classList.add('dark');
-      } else {
-        document.documentElement.classList.remove('dark');
-      }
-      sessionStorage.setItem('theme-is-dark', isDarkMode ? '1' : '0');
-    } else if (config.theme_mode === 'dark') {
-      setIsDark(true);
-      document.documentElement.classList.add('dark');
-      sessionStorage.setItem('theme-is-dark', '1');
-    } else if (config.theme_mode === 'auto') {
-      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      setIsDark(prefersDark);
-      if (prefersDark) document.documentElement.classList.add('dark');
-      sessionStorage.setItem('theme-is-dark', prefersDark ? '1' : '0');
-    } else {
-      sessionStorage.setItem('theme-is-dark', '0');
-    }
+
+    // No saved preference — default to dark
+    setIsDark(true);
+    document.documentElement.classList.add('dark');
+    document.documentElement.style.backgroundColor = '#000000';
+    sessionStorage.setItem('theme-is-dark', '1');
   }, [config.theme_mode]);
 
   const handleThemeToggle = () => {

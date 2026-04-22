@@ -34,31 +34,27 @@ export default function NotFoundPage({
   }, []);
 
   useEffect(() => {
-    const sessionTheme = sessionStorage.getItem('theme-is-dark');
-    if (sessionTheme !== null) {
-      const dark = sessionTheme === '1';
-      setIsDark(dark);
-      document.documentElement.classList.toggle('dark', dark);
-      return;
-    }
     const saved = localStorage.getItem('help-center-theme');
     if (saved) {
       const dark = saved === 'dark';
       setIsDark(dark);
       document.documentElement.classList.toggle('dark', dark);
+      document.documentElement.style.backgroundColor = dark ? '#000000' : '#ffffff';
       sessionStorage.setItem('theme-is-dark', dark ? '1' : '0');
-    } else if (config.theme_mode === 'dark') {
-      setIsDark(true);
-      document.documentElement.classList.add('dark');
-      sessionStorage.setItem('theme-is-dark', '1');
-    } else if (config.theme_mode === 'auto') {
-      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      setIsDark(prefersDark);
-      document.documentElement.classList.toggle('dark', prefersDark);
-      sessionStorage.setItem('theme-is-dark', prefersDark ? '1' : '0');
-    } else {
-      sessionStorage.setItem('theme-is-dark', '0');
+      return;
     }
+    const sessionTheme = sessionStorage.getItem('theme-is-dark');
+    if (sessionTheme !== null) {
+      const dark = sessionTheme === '1';
+      setIsDark(dark);
+      document.documentElement.classList.toggle('dark', dark);
+      document.documentElement.style.backgroundColor = dark ? '#000000' : '#ffffff';
+      return;
+    }
+    setIsDark(true);
+    document.documentElement.classList.add('dark');
+    document.documentElement.style.backgroundColor = '#000000';
+    sessionStorage.setItem('theme-is-dark', '1');
   }, [config.theme_mode]);
 
   const handleThemeToggle = () => {
