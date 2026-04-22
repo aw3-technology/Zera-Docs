@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Icon } from '../ui/icon';
 import { cn } from '@/lib/utils';
+import { STORAGE_KEYS, SESSION_KEYS } from '@/lib/storageKeys';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://api.usegately.com/api';
 
@@ -28,7 +29,7 @@ export function ArticleFeedback({
     setSubmitted(false);
     setIsSubmitting(false);
     
-    const storedFeedback = localStorage.getItem(`article_feedback_${articleId}`);
+    const storedFeedback = localStorage.getItem(STORAGE_KEYS.ARTICLE_FEEDBACK(articleId));
     if (storedFeedback) {
       setFeedback(storedFeedback as 'helpful' | 'not_helpful');
       setSubmitted(true);
@@ -38,7 +39,7 @@ export function ArticleFeedback({
   useEffect(() => {
     if (!articleId || !projectId) return;
     
-    const viewKey = `article_view_${articleId}`;
+    const viewKey = SESSION_KEYS.ARTICLE_VIEW(articleId);
     if (sessionStorage.getItem(viewKey)) return;
     
     fetch(`${API_BASE_URL}/public/projects/${projectId}/help-articles/${articleId}/view`, {
@@ -68,7 +69,7 @@ export function ArticleFeedback({
       if (response.ok) {
         setFeedback(feedbackType);
         setSubmitted(true);
-        localStorage.setItem(`article_feedback_${articleId}`, feedbackType);
+        localStorage.setItem(STORAGE_KEYS.ARTICLE_FEEDBACK(articleId), feedbackType);
       }
     } catch (error) {
       console.error('Failed to submit feedback:', error);

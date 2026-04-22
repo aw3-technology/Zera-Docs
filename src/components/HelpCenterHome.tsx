@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
-import { cn, getBasePath } from '@/lib/utils';
+import { cn, getBasePath, sortCategories, filterCategoriesByFolder } from '@/lib/utils';
+import { DELAY_DATA_FETCH } from '@/lib/constants';
 import { Icon } from './ui/icon';
 import { SearchModal } from './SearchModal';
 import { HelpCenterHeader } from './HelpCenterHeader';
@@ -14,67 +15,11 @@ import {
 } from './ui/accordion';
 import { useGoogleFonts } from '@/hooks/useGoogleFonts';
 import { useFolderSync } from '@/hooks/useFolderSync';
-
-interface Article {
-  id: string;
-  title: string;
-  slug: string;
-  content: string;
-  excerpt?: string;
-  category_id: string | null;
-  is_published: boolean;
-  display_order?: number | null;
-  created_at: string;
-  updated_at: string;
-}
-
-interface Category {
-  id: string;
-  name: string;
-  description?: string | null;
-  icon?: string | null;
-  display_order?: number | null;
-  folder_id?: string | null;
-  parent_category_id?: string | null;
-}
-
-interface Folder {
-  id: string;
-  name: string;
-  slug: string;
-  icon?: string | null;
-  description?: string | null;
-  is_default: boolean;
-  display_order?: number;
-}
-
-interface Faq {
-  id: string;
-  question: string;
-  answer: string;
-  is_published: boolean;
-}
-
-interface HelpCenterConfig {
-  portal_name: string;
-  primary_color: string;
-  welcome_title: string;
-  welcome_subtitle: string;
-  theme_mode: 'light' | 'dark' | 'auto';
-  logo_url?: string | null;
-  show_search?: boolean;
-  show_categories?: boolean;
-  ai_answer_enabled?: boolean;
-  subdomain_url?: string | null;
-  sidebar_style?: 'default' | 'minimal' | 'compact' | 'cards' | 'modern' | 'floating' | 'bordered' | 'gradient' | 'icon-only' | 'underline' | 'accordion';
-  header_links?: { label: string; url: string }[];
-  show_primary_button?: boolean;
-  primary_button_label?: string;
-  primary_button_url?: string;
-  heading_font?: string | null;
-  body_font?: string | null;
-  sub_path?: string | null;
-}
+import { useTheme } from '@/hooks/useTheme';
+import { useSearchShortcut } from '@/hooks/useSearchShortcut';
+import { getArticles, getCategories } from '@/lib/api';
+import type { Article, Category, Folder, Faq, HelpCenterConfig } from '@/lib/api';
+import { HelpCenterProvider } from '@/contexts/HelpCenterContext';
 
 interface HelpCenterHomeProps {
   config: HelpCenterConfig;
@@ -95,10 +40,9 @@ export default function HelpCenterHome({
   projectId,
   initialFolderId,
 }: HelpCenterHomeProps) {
-  const [isDark, setIsDark] = useState(true);
+  const { isDark, toggleTheme } = useTheme();
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const { activeFolderId, setFolder: setActiveFolderId } = useFolderSync(initialFolderId);
-  const [searchQuery, setSearchQuery] = useState('');
   const [searchModalOpen, setSearchModalOpen] = useState(false);
   const [aiChatOpen, setAiChatOpen] = useState(false);
   const [clientCategories, setClientCategories] = useState(categories);
@@ -107,43 +51,14 @@ export default function HelpCenterHome({
   
   // activeFolderId is managed by useFolderSync — synced via custom event across all components
 
-  // Sort categories by display_order (nulls last), then by name
-  const sortedCategories = [...clientCategories].sort((a, b) => {
-    const orderA = a.display_order ?? Number.MAX_SAFE_INTEGER;
-    const orderB = b.display_order ?? Number.MAX_SAFE_INTEGER;
-    
-    if (orderA !== orderB) {
-      return orderA - orderB;
-    }
-    
-    return a.name.localeCompare(b.name);
-  });
-
-  // Filter categories by active folder — include subcategories whose parent belongs to the folder
-  const folderCategoryIds = new Set(
-    activeFolderId
-      ? sortedCategories.filter(cat => cat.folder_id === activeFolderId).map(c => c.id)
-      : sortedCategories.filter(cat => !cat.folder_id || cat.folder_id === null).map(c => c.id)
-  );
-  const filteredCategories = sortedCategories.filter(cat =>
-    folderCategoryIds.has(cat.id) ||
-    (cat.parent_category_id && cat.parent_category_id !== '' && folderCategoryIds.has(cat.parent_category_id))
-  );
+  // Sort and filter categories by folder
+  const sortedCategories = sortCategories(clientCategories);
+  const filteredCategories = filterCategoriesByFolder(sortedCategories, activeFolderId);
 
   // Load Google Fonts dynamically
   useGoogleFonts(config.heading_font, config.body_font);
 
-  // Handle Cmd+K / Ctrl+K to open search
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
-        e.preventDefault();
-        setSearchModalOpen(true);
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
+  useSearchShortcut(setSearchModalOpen);
 
   // Client-side fallback: refetch only if SSR data came back empty, and only once
   useEffect(() => {
@@ -157,67 +72,24 @@ export default function HelpCenterHome({
         const needsArticles = clientArticles.length === 0;
         const needsCategories = clientCategories.length === 0;
 
-        const [articlesResponse, categoriesResponse] = await Promise.all([
-          needsArticles ? fetch(`/api/public/projects/${projectId}/help-articles`) : Promise.resolve(null),
-          needsCategories ? fetch(`/api/public/projects/${projectId}/help-article-categories`) : Promise.resolve(null),
+        const [fetchedArticles, fetchedCategories] = await Promise.all([
+          needsArticles ? getArticles(projectId) : Promise.resolve([]),
+          needsCategories ? getCategories(projectId) : Promise.resolve([]),
         ]);
 
-        if (articlesResponse?.ok) {
-          const articlesData = await articlesResponse.json();
-          const fetchedArticles = articlesData.data?.articles || articlesData.articles || articlesData.data || [];
-          if (Array.isArray(fetchedArticles) && fetchedArticles.length > 0) {
-            setClientArticles(fetchedArticles);
-          }
+        if (fetchedArticles.length > 0) {
+          setClientArticles(fetchedArticles);
         }
-
-        if (categoriesResponse?.ok) {
-          const categoriesData = await categoriesResponse.json();
-          const fetchedCategories = categoriesData.data?.categories || categoriesData.categories || categoriesData.data || [];
-          if (Array.isArray(fetchedCategories) && fetchedCategories.length > 0) {
-            setClientCategories(fetchedCategories);
-          }
+        if (fetchedCategories.length > 0) {
+          setClientCategories(fetchedCategories);
         }
       } catch {
         // Silent fail
       }
-    }, 1000);
+    }, DELAY_DATA_FETCH);
 
     return () => clearTimeout(timer);
   }, [projectId]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  // Handle dark mode
-  useEffect(() => {
-    const applyTheme = (dark: boolean) => {
-      setIsDark(dark);
-      document.documentElement.classList.toggle('dark', dark);
-      // Remove any inline backgroundColor so CSS variables take over
-      document.documentElement.style.removeProperty('background-color');
-      sessionStorage.setItem('theme-is-dark', dark ? '1' : '0');
-    };
-
-    // localStorage = explicit user choice (highest priority)
-    const savedTheme = localStorage.getItem('help-center-theme');
-    if (savedTheme) { applyTheme(savedTheme === 'dark'); return; }
-
-    // sessionStorage = navigation persistence (second priority)
-    const sessionTheme = sessionStorage.getItem('theme-is-dark');
-    if (sessionTheme !== null) { applyTheme(sessionTheme === '1'); return; }
-
-    // No saved preference — default to dark
-    applyTheme(true);
-  }, [config.theme_mode]);
-
-  const searchResults = searchQuery
-    ? clientArticles.filter(a => 
-        a.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        a.content.toLowerCase().includes(searchQuery.toLowerCase())
-      )
-    : [];
-
-  const getCategoryName = (categoryId: string | null) => {
-    if (!categoryId) return 'General';
-    return clientCategories.find(c => c.id === categoryId)?.name || 'General';
-  };
 
   const handleArticleClick = (article: Article) => {
     const articleCategory = clientCategories.find(c => c.id === article.category_id);
@@ -237,27 +109,11 @@ export default function HelpCenterHome({
     return clientArticles.filter(a => a.category_id === categoryId);
   };
 
-  const renderCategoryIcon = (iconName?: string | null) => {
-    const icon = iconName || "hugeicons:folder-01";
-    return <Icon icon={icon} className="h-8 w-8" style={{ color: config.primary_color }} />;
-  };
-
-  const sidebarStyle = config.sidebar_style || 'default';
-
-  const handleThemeToggle = () => {
-    const newIsDark = !isDark;
-    setIsDark(newIsDark);
-    document.documentElement.classList.toggle('dark', newIsDark);
-    document.documentElement.style.removeProperty('background-color');
-    localStorage.setItem('help-center-theme', newIsDark ? 'dark' : 'light');
-    sessionStorage.setItem('theme-is-dark', newIsDark ? '1' : '0');
-  };
-
   return (
+    <HelpCenterProvider config={config} projectId={projectId} isDark={isDark} toggleTheme={toggleTheme}>
     <BaseLayoutWrapper
       config={config}
       projectId={projectId}
-      isDark={isDark}
       aiChatOpen={aiChatOpen}
       onAiChatToggle={() => setAiChatOpen(!aiChatOpen)}
     >
@@ -274,9 +130,6 @@ export default function HelpCenterHome({
       {/* Header - persists across navigation */}
       <div data-astro-transition-persist="header">
         <HelpCenterHeader
-          config={config}
-          isDark={isDark}
-          onThemeToggle={handleThemeToggle}
           onSearchOpen={() => setSearchModalOpen(true)}
           onAIOpen={() => setAiChatOpen(!aiChatOpen)}
           folders={folders}
@@ -286,13 +139,10 @@ export default function HelpCenterHome({
           categories={clientCategories}
           mobileSidebar={
             <HelpCenterSidebar
-              config={config}
               categories={filteredCategories}
               articles={clientArticles}
               selectedCategory={selectedCategory}
-              isDark={isDark}
               onCategorySelect={setSelectedCategory}
-              onThemeToggle={handleThemeToggle}
               getArticleCount={(categoryId) => getArticlesForCategory(categoryId).length}
               folders={folders}
             />
@@ -302,17 +152,14 @@ export default function HelpCenterHome({
 
       {/* Main Content with Sidebar inside max-width */}
       <div className="flex-1 overflow-y-scroll custom-scrollbar-always">
-        <div className="flex mx-auto gap-4 md:gap-6 lg:gap-8 pr-0 sm:pr-4 md:pr-8" style={{ maxWidth: '1400px' }}>
+        <div className="flex mx-auto gap-4 md:gap-6 lg:gap-8 pr-0 sm:pr-4 md:pr-8 max-w-[1400px]">
           {/* Sidebar - Left Column — desktop only */}
           <div data-astro-transition-persist="sidebar" className="hidden lg:block">
             <HelpCenterSidebar
-              config={config}
               categories={filteredCategories}
               articles={clientArticles}
               selectedCategory={selectedCategory}
-              isDark={isDark}
               onCategorySelect={setSelectedCategory}
-              onThemeToggle={handleThemeToggle}
               getArticleCount={(categoryId) => getArticlesForCategory(categoryId).length}
               folders={folders}
             />
@@ -324,184 +171,24 @@ export default function HelpCenterHome({
               {/* Center Content */}
               <div className="flex-1 max-w-3xl">
                 {selectedCategory ? (
-              /* Category Articles */
-              <>
-                {(() => {
-                  const category = clientCategories.find(c => c.id === selectedCategory);
-                  const categoryArticles = getArticlesForCategory(selectedCategory);
-                  
-                  return (
-                    <>
-                      <div className="mb-8">
-                        <div className="flex items-center gap-3 mb-2">
-                          {renderCategoryIcon(category?.icon)}
-                          <h1 className="text-3xl font-bold" style={{ fontFamily: config.heading_font || 'system-ui, sans-serif' }}>{category?.name}</h1>
-                        </div>
-                        {category?.description && (
-                          <p className={cn("text-lg", isDark ? "text-zinc-400" : "text-zinc-600")}>
-                            {category.description}
-                          </p>
-                        )}
-                      </div>
-                      
-                      <div className="space-y-2">
-                        {categoryArticles.map(article => (
-                          <button
-                            key={article.id}
-                            onClick={() => handleArticleClick(article)}
-                            className={cn(
-                              "w-full flex items-center gap-4 p-4 rounded-xl border text-left group transition-all",
-                              isDark
-                                ? "bg-transparent backdrop-blur-sm border-zinc-800 hover:border-zinc-700 hover:shadow-sm"
-                                : "bg-transparent backdrop-blur-sm border-zinc-100 hover:border-zinc-200 hover:shadow-sm"
-                            )}
-                          >
-                            <Icon icon="hugeicons:file-02" className={cn("h-5 w-5", isDark ? "text-zinc-500" : "text-zinc-400")} />
-                            <span className="flex-1 font-medium">{article.title}</span>
-                            <Icon icon="hugeicons:arrow-right-01" className={cn(
-                              "h-5 w-5 transition-transform group-hover:translate-x-1",
-                              isDark ? "text-zinc-600" : "text-zinc-300"
-                            )} />
-                          </button>
-                        ))}
-                      </div>
-                    </>
-                  );
-                })()}
-              </>
-            ) : (
-              /* Home View */
-              <>
-                {/* Hero Section */}
-                <div className="py-8 md:py-12 opacity-0 animate-fade-up" style={{ animationDelay: '0.05s' }}>
-                  <div className="max-w-2xl text-left">
-                    {(() => {
-                      const activeFolder = activeFolderId ? folders.find(f => f.id === activeFolderId) : null;
-                      const isNonDefaultFolder = activeFolder && !activeFolder.is_default;
-                      return (
-                        <>
-                          <h1 className="text-2xl md:text-4xl font-bold tracking-tight mb-3" style={{ fontFamily: config.heading_font || 'system-ui, sans-serif' }}>
-                            {isNonDefaultFolder ? activeFolder.name : config.welcome_title}
-                          </h1>
-                          <p className={cn("text-lg mb-6", isDark ? "text-zinc-400" : "text-zinc-600")}>
-                            {isNonDefaultFolder && activeFolder.description ? activeFolder.description : config.welcome_subtitle}
-                          </p>
-                        </>
-                      );
-                    })()}
-
-                    {/* Search Bar with AI Button */}
-                    <div className="relative">
-                      <button
-                        onClick={() => setSearchModalOpen(true)}
-                        className={cn(
-                          "w-full flex items-center gap-3 px-4 py-3.5 rounded-xl border text-left group transition-all",
-                          isDark
-                            ? "bg-transparent backdrop-blur-sm border-zinc-800 hover:border-zinc-700"
-                            : "bg-transparent backdrop-blur-sm border-zinc-200 hover:border-zinc-300 hover:shadow-sm"
-                        )}
-                      >
-                        <Icon icon="hugeicons:magic-wand-01" className={cn("h-5 w-5", isDark ? "text-zinc-500" : "text-zinc-400")} />
-                        <span className={cn("flex-1 text-base", isDark ? "text-zinc-500" : "text-zinc-400")}>
-                          Ask, search, or explain...
-                        </span>
-                        <Icon icon="hugeicons:arrow-right-01" className={cn(
-                          "h-5 w-5 transition-transform group-hover:translate-x-1",
-                          isDark ? "text-zinc-600" : "text-zinc-400"
-                        )} />
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Categories Grid - 2 columns to account for right panel */}
-                {(config.show_categories ?? true) && filteredCategories.length > 0 && (
-                  <div className="mb-8 opacity-0 animate-fade-up" style={{ animationDelay: '0.15s' }}>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      {filteredCategories.filter(c => getArticlesForCategory(c.id).length > 0).slice(0, 6).map(category => {
-                        const categoryArticles = getArticlesForCategory(category.id);
-                        const categoryFolder = category.folder_id 
-                          ? folders.find(f => f.id === category.folder_id)
-                          : null;
-                        const categorySlug = category.name.toLowerCase().replace(/\s+/g, '-');
-                        const categoryUrl = (categoryFolder && !categoryFolder.is_default)
-                          ? `/${categoryFolder.slug}/${categorySlug}`
-                          : `/${categorySlug}`;
-                        const base = getBasePath(config);
-
-                        return (
-                          <a
-                            key={category.id}
-                            href={`${base}${categoryUrl}`}
-                            className={cn(
-                              "group flex flex-col items-start gap-4 p-5 rounded-2xl border text-left min-h-[160px] transition-all",
-                              isDark
-                                ? "bg-transparent backdrop-blur-sm border-zinc-800 hover:border-zinc-700 hover:shadow-md"
-                                : "bg-transparent backdrop-blur-sm border-zinc-100 hover:border-zinc-200 hover:shadow-md"
-                            )}
-                          >
-                            {renderCategoryIcon(category.icon)}
-                            <div className="flex-1 w-full">
-                              <h3 className="font-semibold text-base mb-1.5" style={{ color: isDark ? '#fafafa' : '#18181b' }}>
-                                {category.name}
-                              </h3>
-                              {category.description && (
-                                <p className={cn("text-sm line-clamp-2", isDark ? "text-zinc-400" : "text-zinc-500")}>
-                                  {category.description}
-                                </p>
-                              )}
-                            </div>
-                          </a>
-                        );
-                      })}
-                    </div>
-                  </div>
+                  <CategoryView
+                    category={clientCategories.find(c => c.id === selectedCategory)}
+                    articles={getArticlesForCategory(selectedCategory)}
+                    config={config}
+                    onArticleClick={handleArticleClick}
+                  />
+                ) : (
+                  <HomeView
+                    config={config}
+                    folders={folders}
+                    activeFolderId={activeFolderId}
+                    filteredCategories={filteredCategories}
+                    faqs={faqs}
+                    getArticlesForCategory={getArticlesForCategory}
+                    onSearchOpen={() => setSearchModalOpen(true)}
+                  />
                 )}
-
-                {/* Frequently Asked Questions Section */}
-                {faqs.length > 0 && (
-                  <div className="mb-8 opacity-0 animate-fade-up" style={{ animationDelay: '0.25s' }}>
-                    <h2
-                      className="font-semibold mb-4 text-xl"
-                      style={{ color: isDark ? '#fafafa' : '#18181b', fontFamily: config.heading_font || 'system-ui, sans-serif' }}
-                    >
-                      Frequently Asked Questions
-                    </h2>
-                    <Accordion type="single" collapsible className="space-y-2">
-                      {faqs.slice(0, 5).map((faq) => (
-                        <AccordionItem
-                          key={faq.id}
-                          value={faq.id}
-                          className={cn(
-                            "rounded-xl border px-4 transition-all",
-                            isDark ? "bg-transparent backdrop-blur-sm border-zinc-800" : "bg-transparent backdrop-blur-sm border-zinc-100"
-                          )}
-                        >
-                          <AccordionTrigger
-                            className="py-4 hover:no-underline text-base"
-                          >
-                            <span
-                              className="font-medium text-left"
-                              style={{ color: isDark ? '#fafafa' : '#18181b' }}
-                            >
-                              {faq.question}
-                            </span>
-                          </AccordionTrigger>
-                          <AccordionContent className="pb-4">
-                            <div className={cn("text-sm", isDark ? "text-zinc-300" : "text-zinc-600")}>
-                              {faq.answer}
-                            </div>
-                          </AccordionContent>
-                        </AccordionItem>
-                      ))}
-                    </Accordion>
-                  </div>
-                )}
-              </>
-            )}
               </div>
-
-
             </div>
           </div>
 
@@ -515,7 +202,6 @@ export default function HelpCenterHome({
         onClose={() => setSearchModalOpen(false)}
         articles={clientArticles}
         categories={clientCategories}
-        isDark={isDark}
         primaryColor={config.primary_color}
         aiEnabled={config.ai_answer_enabled}
         onAskAI={(query) => {
@@ -529,5 +215,170 @@ export default function HelpCenterHome({
       />
       </div>
     </BaseLayoutWrapper>
+    </HelpCenterProvider>
+  );
+}
+
+// ── Extracted sub-components ──────────────────────────────────────────────────
+
+function CategoryView({
+  category,
+  articles,
+  config,
+  onArticleClick,
+}: {
+  category: Category | undefined;
+  articles: Article[];
+  config: HelpCenterConfig;
+  onArticleClick: (article: Article) => void;
+}) {
+  return (
+    <>
+      <div className="mb-8">
+        <div className="flex items-center gap-3 mb-2">
+          <Icon icon={category?.icon || "hugeicons:folder-01"} className="h-8 w-8" style={{ color: config.primary_color }} />
+          <h1 className="text-3xl font-bold" style={{ fontFamily: config.heading_font || 'system-ui, sans-serif' }}>{category?.name}</h1>
+        </div>
+        {category?.description && (
+          <p className="text-lg text-zinc-600 dark:text-zinc-400">
+            {category.description}
+          </p>
+        )}
+      </div>
+
+      <div className="space-y-2">
+        {articles.map(article => (
+          <button
+            key={article.id}
+            onClick={() => onArticleClick(article)}
+            className="w-full flex items-center gap-4 p-4 rounded-xl border text-left group transition-all bg-transparent backdrop-blur-sm border-zinc-100 hover:border-zinc-200 hover:shadow-sm dark:border-zinc-800 dark:hover:border-zinc-700"
+          >
+            <Icon icon="hugeicons:file-02" className="h-5 w-5 text-zinc-400 dark:text-zinc-500" />
+            <span className="flex-1 font-medium">{article.title}</span>
+            <Icon icon="hugeicons:arrow-right-01" className="h-5 w-5 transition-transform group-hover:translate-x-1 text-zinc-300 dark:text-zinc-600" />
+          </button>
+        ))}
+      </div>
+    </>
+  );
+}
+
+function HomeView({
+  config,
+  folders,
+  activeFolderId,
+  filteredCategories,
+  faqs,
+  getArticlesForCategory,
+  onSearchOpen,
+}: {
+  config: HelpCenterConfig;
+  folders: Folder[];
+  activeFolderId: string | null;
+  filteredCategories: Category[];
+  faqs: Faq[];
+  getArticlesForCategory: (id: string) => Article[];
+  onSearchOpen: () => void;
+}) {
+  const activeFolder = activeFolderId ? folders.find(f => f.id === activeFolderId) : null;
+  const isNonDefaultFolder = activeFolder && !activeFolder.is_default;
+
+  return (
+    <>
+      {/* Hero Section */}
+      <div className="py-8 md:py-12 opacity-0 animate-fade-up [animation-delay:0.05s]">
+        <div className="max-w-2xl text-left">
+          <h1 className="text-2xl md:text-4xl font-bold tracking-tight mb-3" style={{ fontFamily: config.heading_font || 'system-ui, sans-serif' }}>
+            {isNonDefaultFolder ? activeFolder.name : config.welcome_title}
+          </h1>
+          <p className="text-lg mb-6 text-zinc-600 dark:text-zinc-400">
+            {isNonDefaultFolder && activeFolder.description ? activeFolder.description : config.welcome_subtitle}
+          </p>
+
+          <div className="relative">
+            <button
+              onClick={onSearchOpen}
+              className="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl border text-left group transition-all bg-transparent backdrop-blur-sm border-zinc-200 hover:border-zinc-300 hover:shadow-sm dark:border-zinc-800 dark:hover:border-zinc-700"
+            >
+              <Icon icon="hugeicons:magic-wand-01" className="h-5 w-5 text-zinc-400 dark:text-zinc-500" />
+              <span className="flex-1 text-base text-zinc-400 dark:text-zinc-500">
+                Ask, search, or explain...
+              </span>
+              <Icon icon="hugeicons:arrow-right-01" className="h-5 w-5 transition-transform group-hover:translate-x-1 text-zinc-400 dark:text-zinc-600" />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Categories Grid */}
+      {(config.show_categories ?? true) && filteredCategories.length > 0 && (
+        <div className="mb-8 opacity-0 animate-fade-up [animation-delay:0.15s]">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {filteredCategories.filter(c => getArticlesForCategory(c.id).length > 0).slice(0, 6).map(category => {
+              const categoryFolder = category.folder_id
+                ? folders.find(f => f.id === category.folder_id)
+                : null;
+              const categorySlug = category.name.toLowerCase().replace(/\s+/g, '-');
+              const categoryUrl = (categoryFolder && !categoryFolder.is_default)
+                ? `/${categoryFolder.slug}/${categorySlug}`
+                : `/${categorySlug}`;
+              const base = getBasePath(config);
+
+              return (
+                <a
+                  key={category.id}
+                  href={`${base}${categoryUrl}`}
+                  className="group flex flex-col items-start gap-4 p-5 rounded-2xl border text-left min-h-[160px] transition-all bg-transparent backdrop-blur-sm border-zinc-100 hover:border-zinc-200 hover:shadow-md dark:border-zinc-800 dark:hover:border-zinc-700"
+                >
+                  <Icon icon={category.icon || "hugeicons:folder-01"} className="h-8 w-8" style={{ color: config.primary_color }} />
+                  <div className="flex-1 w-full">
+                    <h3 className="font-semibold text-base mb-1.5 text-zinc-900 dark:text-zinc-50">
+                      {category.name}
+                    </h3>
+                    {category.description && (
+                      <p className="text-sm line-clamp-2 text-zinc-500 dark:text-zinc-400">
+                        {category.description}
+                      </p>
+                    )}
+                  </div>
+                </a>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* FAQs */}
+      {faqs.length > 0 && (
+        <div className="mb-8 opacity-0 animate-fade-up [animation-delay:0.25s]">
+          <h2
+            className="font-semibold mb-4 text-xl text-zinc-900 dark:text-zinc-50"
+            style={{ fontFamily: config.heading_font || 'system-ui, sans-serif' }}
+          >
+            Frequently Asked Questions
+          </h2>
+          <Accordion type="single" collapsible className="space-y-2">
+            {faqs.slice(0, 5).map((faq) => (
+              <AccordionItem
+                key={faq.id}
+                value={faq.id}
+                className="rounded-xl border px-4 transition-all bg-transparent backdrop-blur-sm border-zinc-100 dark:border-zinc-800"
+              >
+                <AccordionTrigger className="py-4 hover:no-underline text-base">
+                  <span className="font-medium text-left text-zinc-900 dark:text-zinc-50">
+                    {faq.question}
+                  </span>
+                </AccordionTrigger>
+                <AccordionContent className="pb-4">
+                  <div className="text-sm text-zinc-600 dark:text-zinc-300">
+                    {faq.answer}
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
+        </div>
+      )}
+    </>
   );
 }

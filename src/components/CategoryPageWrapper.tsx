@@ -1,43 +1,15 @@
-import { useState, useEffect, useRef } from 'react';
-import { cn, getBasePath } from '@/lib/utils';
+import { useState, useRef } from 'react';
+import { cn, getBasePath, sortCategories, filterCategoriesByFolder } from '@/lib/utils';
 import { HelpCenterSidebar } from './HelpCenterSidebar';
+import { HelpCenterProvider } from '@/contexts/HelpCenterContext';
 import { HelpCenterHeader } from './HelpCenterHeader';
 import { Icon } from './ui/icon';
 import { useGoogleFonts } from '@/hooks/useGoogleFonts';
+import { useTheme } from '@/hooks/useTheme';
 import { useFolderSync } from '@/hooks/useFolderSync';
 import { NavigationLoadingBar } from './NavigationLoadingBar';
 import { BaseLayoutWrapper } from './BaseLayoutWrapper';
-
-interface Article {
-  id: string;
-  title: string;
-  slug: string;
-  content: string;
-  excerpt?: string;
-  category_id: string | null;
-  is_published: boolean;
-  created_at: string;
-  updated_at: string;
-}
-
-interface Category {
-  id: string;
-  name: string;
-  description?: string | null;
-  icon?: string | null;
-  display_order?: number | null;
-  folder_id?: string | null;
-}
-
-interface Folder {
-  id: string;
-  name: string;
-  slug: string;
-  icon?: string | null;
-  description?: string | null;
-  is_default: boolean;
-  display_order?: number;
-}
+import type { Article, Category, Folder } from '@/lib/api';
 
 interface CategoryPageWrapperProps {
   config: any;
@@ -58,56 +30,16 @@ export default function CategoryPageWrapper({
   projectId,
   folders = [],
 }: CategoryPageWrapperProps) {
-  const [isDark, setIsDark] = useState(true);
+  const { isDark, toggleTheme } = useTheme();
   const [aiChatOpen, setAiChatOpen] = useState(false);
   const { activeFolderId, setFolder: setActiveFolderId } = useFolderSync();
 
-  // Sort categories by display_order
-  const sortedCategories = [...allCategories].sort((a, b) => {
-    const orderA = a.display_order ?? Number.MAX_SAFE_INTEGER;
-    const orderB = b.display_order ?? Number.MAX_SAFE_INTEGER;
-    
-    if (orderA !== orderB) {
-      return orderA - orderB;
-    }
-    
-    return a.name.localeCompare(b.name);
-  });
-
-  // Filter categories by active folder
-  const filteredCategories = activeFolderId
-    ? sortedCategories.filter(cat => cat.folder_id === activeFolderId)
-    : sortedCategories.filter(cat => !cat.folder_id || cat.folder_id === null);
+  // Sort and filter categories by folder (no subcategory inclusion on category page)
+  const sortedCategories = sortCategories(allCategories);
+  const filteredCategories = filterCategoriesByFolder(sortedCategories, activeFolderId, { includeSubcategories: false });
 
   // Load Google Fonts dynamically
   useGoogleFonts(config.heading_font, config.body_font);
-
-  // Handle dark mode with localStorage and sessionStorage
-  useEffect(() => {
-    const applyTheme = (dark: boolean) => {
-      setIsDark(dark);
-      document.documentElement.classList.toggle('dark', dark);
-      document.documentElement.style.removeProperty('background-color');
-      sessionStorage.setItem('theme-is-dark', dark ? '1' : '0');
-    };
-
-    const savedTheme = localStorage.getItem('help-center-theme');
-    if (savedTheme) { applyTheme(savedTheme === 'dark'); return; }
-
-    const sessionTheme = sessionStorage.getItem('theme-is-dark');
-    if (sessionTheme !== null) { applyTheme(sessionTheme === '1'); return; }
-
-    applyTheme(true);
-  }, [config.theme_mode]);
-
-  const handleThemeToggle = () => {
-    const newIsDark = !isDark;
-    setIsDark(newIsDark);
-    document.documentElement.classList.toggle('dark', newIsDark);
-    document.documentElement.style.removeProperty('background-color');
-    localStorage.setItem('help-center-theme', newIsDark ? 'dark' : 'light');
-    sessionStorage.setItem('theme-is-dark', newIsDark ? '1' : '0');
-  };
 
   const renderCategoryIcon = (iconName?: string | null) => {
     const icon = iconName || "hugeicons:folder-01";
@@ -115,10 +47,10 @@ export default function CategoryPageWrapper({
   };
 
   return (
+    <HelpCenterProvider config={config} projectId={projectId} isDark={isDark} toggleTheme={toggleTheme}>
     <BaseLayoutWrapper
       config={config}
       projectId={projectId}
-      isDark={isDark}
       aiChatOpen={aiChatOpen}
       onAiChatToggle={() => setAiChatOpen(!aiChatOpen)}
     >
@@ -135,9 +67,6 @@ export default function CategoryPageWrapper({
       {/* Header - persists across navigation */}
       <div data-astro-transition-persist="header">
         <HelpCenterHeader
-          config={config}
-          isDark={isDark}
-          onThemeToggle={handleThemeToggle}
           onSearchOpen={() => {}}
           onAIOpen={() => setAiChatOpen(!aiChatOpen)}
           showBackButton={false}
@@ -146,12 +75,9 @@ export default function CategoryPageWrapper({
           categories={allCategories}
           mobileSidebar={
             <HelpCenterSidebar
-              config={config}
               categories={filteredCategories}
               articles={allArticles}
               selectedCategory={category.id}
-              isDark={isDark}
-              onThemeToggle={handleThemeToggle}
               getArticleCount={(categoryId) => allArticles.filter(a => a.category_id === categoryId).length}
               folders={folders}
             />
@@ -161,16 +87,13 @@ export default function CategoryPageWrapper({
 
       {/* Main Content with Sidebar inside max-width */}
       <div className="flex-1 overflow-hidden">
-        <div className="flex mx-auto gap-4 md:gap-6 lg:gap-8 h-full pr-0 sm:pr-4 md:pr-8" style={{ maxWidth: '1400px' }}>
+        <div className="flex mx-auto gap-4 md:gap-6 lg:gap-8 h-full pr-0 sm:pr-4 md:pr-8 max-w-[1400px]">
           {/* Sidebar - Left Column — desktop only */}
           <div data-astro-transition-persist="sidebar" className="hidden lg:block">
             <HelpCenterSidebar
-              config={config}
               categories={filteredCategories}
               articles={allArticles}
               selectedCategory={category.id}
-              isDark={isDark}
-              onThemeToggle={handleThemeToggle}
               getArticleCount={(categoryId) => allArticles.filter(a => a.category_id === categoryId).length}
               folders={folders}
             />
@@ -179,7 +102,7 @@ export default function CategoryPageWrapper({
           {/* Main Content - Center Column - Scrollable */}
           <div className="flex-1 min-w-0 pt-6 md:pt-8 pb-12 max-w-3xl overflow-y-auto scrollbar-hide px-4 sm:pl-4 sm:pr-4 lg:pl-0 lg:pr-0">
             {/* Breadcrumb */}
-            <nav className={cn("flex items-center gap-2 text-sm mb-6 opacity-0 animate-fade-in", isDark ? "text-zinc-400" : "text-zinc-500")} style={{ animationDelay: '0.05s' }}>
+            <nav className={cn("flex items-center gap-2 text-sm mb-6 opacity-0 animate-fade-in [animation-delay:0.05s]", "text-zinc-500 dark:text-zinc-400")}>
               <a href={getBasePath() || '/'} className="hover:underline">Home</a>
               {(() => {
                 const categoryFolder = category.folder_id
@@ -196,11 +119,11 @@ export default function CategoryPageWrapper({
                 return null;
               })()}
               <Icon icon="hugeicons:arrow-right-01" className="h-3 w-3" />
-              <span className={cn(isDark ? "text-zinc-200" : "text-zinc-900")}>{category.name}</span>
+              <span className={"text-zinc-900 dark:text-zinc-200"}>{category.name}</span>
             </nav>
 
             {/* Category Header */}
-            <div className="mb-8 opacity-0 animate-fade-up" style={{ animationDelay: '0.1s' }}>
+            <div className="mb-8 opacity-0 animate-fade-up [animation-delay:0.1s]">
               <div className="flex items-center gap-3 mb-3">
                 {renderCategoryIcon(category.icon)}
                 <h1 className="text-2xl md:text-3xl font-bold" style={{ fontFamily: config.heading_font || 'system-ui, sans-serif' }}>
@@ -208,16 +131,16 @@ export default function CategoryPageWrapper({
                 </h1>
               </div>
               {category.description && (
-                <p className={cn("text-base md:text-lg", isDark ? "text-zinc-400" : "text-zinc-600")}>
+                <p className={"text-base md:text-lg text-zinc-600 dark:text-zinc-400"}>
                   {category.description}
                 </p>
               )}
             </div>
 
             {/* Articles List */}
-            <div className="space-y-2 opacity-0 animate-fade-up" style={{ animationDelay: '0.15s' }}>
+            <div className="space-y-2 opacity-0 animate-fade-up [animation-delay:0.15s]">
               {articles.length === 0 ? (
-                <p className={cn("text-center py-12", isDark ? "text-zinc-500" : "text-zinc-400")}>
+                <p className={"text-center py-12 text-zinc-400 dark:text-zinc-500"}>
                   No articles found in this category.
                 </p>
               ) : (
@@ -233,26 +156,18 @@ export default function CategoryPageWrapper({
                     <a
                       key={article.id}
                       href={articleUrl}
-                    className={cn(
-                      "flex items-center gap-3 px-4 py-3 rounded-xl border text-left group",
-                      isDark
-                        ? "bg-card border-zinc-800 hover:border-zinc-700"
-                        : "bg-white border-zinc-100 hover:border-zinc-200 hover:shadow-sm"
-                    )}
+                    className={"flex items-center gap-3 px-4 py-3 rounded-xl border text-left group bg-card border-zinc-100 hover:border-zinc-200 hover:shadow-sm dark:border-zinc-800 dark:hover:border-zinc-700"}
                   >
-                    <Icon icon="hugeicons:file-02" className={cn("h-4 w-4 flex-shrink-0", isDark ? "text-zinc-500" : "text-zinc-400")} />
+                    <Icon icon="hugeicons:file-02" className={"h-4 w-4 flex-shrink-0 text-zinc-400 dark:text-zinc-500"} />
                     <div className="flex-1 min-w-0">
                       <h3 className="font-medium text-sm">{article.title}</h3>
                       {article.excerpt && (
-                        <p className={cn("text-xs line-clamp-1 mt-0.5", isDark ? "text-zinc-500" : "text-zinc-400")}>
+                        <p className={"text-xs line-clamp-1 mt-0.5 text-zinc-400 dark:text-zinc-500"}>
                           {article.excerpt}
                         </p>
                       )}
                     </div>
-                    <Icon icon="hugeicons:arrow-right-01" className={cn(
-                      "h-4 w-4 flex-shrink-0",
-                      isDark ? "text-zinc-600" : "text-zinc-300"
-                    )} />
+                    <Icon icon="hugeicons:arrow-right-01" className={"h-4 w-4 flex-shrink-0 text-zinc-300 dark:text-zinc-600"} />
                   </a>
                   );
                 })
@@ -264,5 +179,6 @@ export default function CategoryPageWrapper({
 
       </div>
     </BaseLayoutWrapper>
+    </HelpCenterProvider>
   );
 }

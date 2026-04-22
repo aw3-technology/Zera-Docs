@@ -1,26 +1,6 @@
 import { cn } from '@/lib/utils';
 import { Icon } from './ui/icon';
-
-interface Folder {
-  id: string;
-  name: string;
-  slug: string;
-  icon?: string | null;
-  description?: string | null;
-  is_default: boolean;
-}
-
-interface Article {
-  id: string;
-  slug: string;
-  category_id: string | null;
-  display_order?: number | null;
-}
-
-interface Category {
-  id: string;
-  folder_id?: string | null;
-}
+import type { Article, Category, Folder } from '@/lib/api';
 
 interface FolderNavigationProps {
   folders: Folder[];

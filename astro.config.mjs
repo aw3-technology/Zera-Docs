@@ -26,6 +26,11 @@ export default defineConfig({
   vite: {
     optimizeDeps: {
       include: [
+        'react',
+        'react-dom',
+        'react-dom/client',
+        'react/jsx-runtime',
+        'react/jsx-dev-runtime',
         '@blocknote/core',
         '@blocknote/react',
         '@blocknote/shadcn',
@@ -39,7 +44,8 @@ export default defineConfig({
     resolve: {
       alias: {
         '@': '/src',
-      }
+      },
+      dedupe: ['react', 'react-dom'],
     },
     logLevel: 'error',
     server: {

@@ -1,6 +1,6 @@
 /**
- * Legacy API integration — kept for reference if switching to a remote data source.
- * In local mode, src/lib/localData.ts is used instead.
+ * API data access layer — shared types and client-side fetch functions.
+ * SSR uses src/lib/localData.ts; client-side fallbacks use these fetch functions.
  */
 
 import { getCached } from './cache';
@@ -53,6 +53,37 @@ export interface Faq {
   question: string;
   answer: string;
   is_published: boolean;
+}
+
+export interface Folder {
+  id: string;
+  name: string;
+  slug: string;
+  icon?: string | null;
+  description?: string | null;
+  is_default: boolean;
+  display_order?: number;
+}
+
+export interface HelpCenterConfig {
+  portal_name: string;
+  primary_color: string;
+  welcome_title: string;
+  welcome_subtitle: string;
+  theme_mode: 'light' | 'dark' | 'auto';
+  logo_url?: string | null;
+  show_search?: boolean;
+  show_categories?: boolean;
+  ai_answer_enabled?: boolean;
+  subdomain_url?: string | null;
+  sidebar_style?: 'default' | 'minimal' | 'compact' | 'cards' | 'modern' | 'floating' | 'bordered' | 'gradient' | 'icon-only' | 'underline' | 'accordion';
+  header_links?: { label: string; url: string; icon?: string }[];
+  show_primary_button?: boolean;
+  primary_button_label?: string;
+  primary_button_url?: string;
+  heading_font?: string | null;
+  body_font?: string | null;
+  sub_path?: string | null;
 }
 
 /**

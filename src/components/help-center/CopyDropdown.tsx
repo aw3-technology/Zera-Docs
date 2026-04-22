@@ -7,6 +7,7 @@ import {
   DropdownMenuTrigger,
 } from '../ui/dropdown-menu';
 import { cn, getBasePath } from '@/lib/utils';
+import { DELAY_COPY_FEEDBACK } from '@/lib/constants';
 
 interface CopyDropdownProps {
   article: {
@@ -69,7 +70,7 @@ export function CopyDropdown({
       await navigator.clipboard.writeText(markdown);
       setShowToast(true);
       setIsOpen(false);
-      setTimeout(() => setShowToast(false), 2000);
+      setTimeout(() => setShowToast(false), DELAY_COPY_FEEDBACK);
     } catch {
       // Fallback for older browsers or when clipboard API is unavailable
       const textarea = document.createElement('textarea');
@@ -82,7 +83,7 @@ export function CopyDropdown({
       document.body.removeChild(textarea);
       setShowToast(true);
       setIsOpen(false);
-      setTimeout(() => setShowToast(false), 2000);
+      setTimeout(() => setShowToast(false), DELAY_COPY_FEEDBACK);
     }
   };
 

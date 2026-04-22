@@ -1,12 +1,11 @@
 import { useState, useEffect, type ReactNode } from 'react';
-import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
+import { useTheme } from '@/hooks/useTheme';
 
 interface BaseLayoutWrapperProps {
   children: ReactNode;
   config: any;
   projectId: string;
-  isDark: boolean;
   aiChatOpen: boolean;
   onAiChatToggle: () => void;
 }
@@ -15,10 +14,10 @@ export function BaseLayoutWrapper({
   children,
   config,
   projectId,
-  isDark,
   aiChatOpen,
   onAiChatToggle,
 }: BaseLayoutWrapperProps) {
+  const { isDark } = useTheme();
   const [AIChatPanel, setAIChatPanel] = useState<any>(null);
 
   // Dynamically import AIChatPanel only on client side

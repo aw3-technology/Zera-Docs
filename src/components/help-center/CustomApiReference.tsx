@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { ChevronDown, ChevronRight } from 'lucide-react';
+import { API_BASE_URL } from '@/lib/constants';
 import { TryItModal } from './TryItModal';
 
 interface CustomApiReferenceProps {
@@ -38,16 +39,10 @@ interface Endpoint {
   operationId?: string;
 }
 
-const METHOD_COLORS: Record<string, { bg: string; text: string }> = {
-  GET:    { bg: '#22c55e1a', text: '#16a34a' },
-  POST:   { bg: '#3b82f61a', text: '#2563eb' },
-  PUT:    { bg: '#f59e0b1a', text: '#d97706' },
-  PATCH:  { bg: '#f973161a', text: '#ea580c' },
-  DELETE: { bg: '#ef44441a', text: '#dc2626' },
-};
+import { METHOD_COLORS, METHOD_COLOR_DEFAULT } from '@/lib/constants';
 
 function MethodBadge({ method }: { method: string }) {
-  const colors = METHOD_COLORS[method] || { bg: '#6b72801a', text: '#4b5563' };
+  const colors = METHOD_COLORS[method] || METHOD_COLOR_DEFAULT;
   return (
     <span
       className="inline-flex items-center justify-center px-1.5 py-0.5 rounded-md text-[10px] font-bold tracking-wide font-mono shrink-0"
@@ -64,7 +59,7 @@ export function CustomApiReference({
   isDark = false,
   headingFont,
   bodyFont,
-  baseUrl = 'https://api.usegately.com/api/v1'
+  baseUrl = API_BASE_URL
 }: CustomApiReferenceProps) {
   console.log('[CustomApiReference] Component rendering with specUrl:', specUrl);
   

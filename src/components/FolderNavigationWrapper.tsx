@@ -1,27 +1,7 @@
 import { useState, useEffect } from 'react';
 import { FolderNavigation } from './FolderNavigation';
-
-interface Folder {
-  id: string;
-  name: string;
-  slug: string;
-  icon?: string | null;
-  description?: string | null;
-  is_default: boolean;
-  display_order?: number;
-}
-
-interface Article {
-  id: string;
-  slug: string;
-  category_id: string | null;
-  display_order?: number | null;
-}
-
-interface Category {
-  id: string;
-  folder_id?: string | null;
-}
+import { SESSION_KEYS } from '@/lib/storageKeys';
+import type { Article, Category, Folder } from '@/lib/api';
 
 interface FolderNavigationWrapperProps {
   folders: Folder[];
@@ -64,14 +44,14 @@ export default function FolderNavigationWrapper({
       setActiveFolderId(folderId);
       // Store in sessionStorage for persistence across page navigations
       if (folderId) {
-        sessionStorage.setItem('active-folder-id', folderId);
+        sessionStorage.setItem(SESSION_KEYS.ACTIVE_FOLDER_ID, folderId);
       } else {
-        sessionStorage.removeItem('active-folder-id');
+        sessionStorage.removeItem(SESSION_KEYS.ACTIVE_FOLDER_ID);
       }
     };
 
     // Restore from sessionStorage on mount
-    const savedFolderId = sessionStorage.getItem('active-folder-id');
+    const savedFolderId = sessionStorage.getItem(SESSION_KEYS.ACTIVE_FOLDER_ID);
     if (savedFolderId) {
       setActiveFolderId(savedFolderId);
     }
@@ -92,9 +72,9 @@ export default function FolderNavigationWrapper({
       onFolderSelect={(folderId) => {
         setActiveFolderId(folderId);
         if (folderId) {
-          sessionStorage.setItem('active-folder-id', folderId);
+          sessionStorage.setItem(SESSION_KEYS.ACTIVE_FOLDER_ID, folderId);
         } else {
-          sessionStorage.removeItem('active-folder-id');
+          sessionStorage.removeItem(SESSION_KEYS.ACTIVE_FOLDER_ID);
         }
       }}
     />

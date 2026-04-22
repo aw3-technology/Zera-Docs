@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Button } from './button';
 import { Icon } from './icon';
 import { cn } from '@/lib/utils';
+import { DELAY_COPY_FEEDBACK } from '@/lib/constants';
 
 interface CodeBlockProps {
   children: string;
@@ -41,7 +42,7 @@ export function CodeBlock({
     try {
       await navigator.clipboard.writeText(children);
       setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      setTimeout(() => setCopied(false), DELAY_COPY_FEEDBACK);
     } catch (error) {
       console.warn('Failed to copy code:', error);
     }

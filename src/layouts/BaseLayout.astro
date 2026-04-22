@@ -26,7 +26,7 @@ const primaryColor = config.primary_color || '#D97706';
 const secondaryColor = config.secondary_color || '#B45309';
 const headingFont = config.heading_font || 'system-ui, sans-serif';
 const bodyFont = config.body_font || 'system-ui, sans-serif';
-const isDark = config.theme_mode === 'dark';
+const isDark = config.theme_mode !== 'light';
 
 // Get the original domain from headers (for proxied custom domains)
 const forwardedHost = Astro.request.headers.get('X-Forwarded-Host') || Astro.request.headers.get('X-Original-Host');
@@ -144,15 +144,19 @@ const baseUrl = subPathDomain ? `${publicOrigin}${publicPathPrefix}` : (config.s
       }
       
       (function() {
+        // Storage keys — keep in sync with src/lib/storageKeys.ts
+        var SK_THEME = 'help-center-theme';
+        var SK_THEME_IS_DARK = 'theme-is-dark';
+
         // Get theme synchronously BEFORE any rendering
         // Priority: localStorage (user choice) > sessionStorage (nav) > default dark
-        const savedTheme = localStorage.getItem('help-center-theme');
+        const savedTheme = localStorage.getItem(SK_THEME);
 
         var isDark;
         if (savedTheme) {
           isDark = savedTheme === 'dark';
         } else {
-          const sessionTheme = sessionStorage.getItem('theme-is-dark');
+          const sessionTheme = sessionStorage.getItem(SK_THEME_IS_DARK);
           if (sessionTheme !== null) {
             isDark = sessionTheme === '1';
           } else {
@@ -169,40 +173,43 @@ const baseUrl = subPathDomain ? `${publicOrigin}${publicPathPrefix}` : (config.s
         }
 
         // Store in sessionStorage for navigation
-        sessionStorage.setItem('theme-is-dark', isDark ? '1' : '0');
+        sessionStorage.setItem(SK_THEME_IS_DARK, isDark ? '1' : '0');
       })();
     </script>
     
     {/* Navigation theme persistence - handles View Transitions */}
     <script is:inline>
+      // Storage key — keep in sync with src/lib/storageKeys.ts
+      var SK_THEME_IS_DARK = 'theme-is-dark';
+
       // Function to apply theme
       function applyTheme() {
-        const isDark = sessionStorage.getItem('theme-is-dark') === '1';
+        const isDark = sessionStorage.getItem(SK_THEME_IS_DARK) === '1';
         document.documentElement.classList.toggle('dark', isDark);
         document.documentElement.style.removeProperty('background-color');
       }
-      
+
       // Save theme state before navigation
       document.addEventListener('astro:before-preparation', () => {
         const isDark = document.documentElement.classList.contains('dark');
-        sessionStorage.setItem('theme-is-dark', isDark ? '1' : '0');
+        sessionStorage.setItem(SK_THEME_IS_DARK, isDark ? '1' : '0');
       });
-      
+
       // Apply theme to new document BEFORE swap - CRITICAL
       document.addEventListener('astro:before-swap', (e) => {
-        const isDark = sessionStorage.getItem('theme-is-dark') === '1';
+        const isDark = sessionStorage.getItem(SK_THEME_IS_DARK) === '1';
         e.newDocument.documentElement.classList.toggle('dark', isDark);
         e.newDocument.documentElement.style.colorScheme = isDark ? 'dark' : 'light';
       });
-      
+
       // Ensure theme is applied after page load
       document.addEventListener('astro:page-load', () => {
         applyTheme();
-        
+
         // Also ensure persisted elements have correct theme
         const persistedElements = document.querySelectorAll('[data-astro-transition-persist]');
         persistedElements.forEach(el => {
-          const isDark = sessionStorage.getItem('theme-is-dark') === '1';
+          const isDark = sessionStorage.getItem(SK_THEME_IS_DARK) === '1';
           if (isDark) {
             el.closest('html')?.classList.add('dark');
           } else {

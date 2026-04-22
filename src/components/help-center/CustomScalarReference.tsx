@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { API_BASE_URL } from '@/lib/constants';
 
 interface CustomScalarReferenceProps {
   projectId: string;
@@ -220,7 +221,7 @@ export function CustomScalarReference({
       },
       servers: [
         {
-          url: 'https://api.usegately.com/api/v1',
+          url: API_BASE_URL,
           description: 'Production',
         },
       ],

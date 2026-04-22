@@ -6,8 +6,9 @@
  * - setFolder: writes to sessionStorage + dispatches event so all listeners update
  */
 import { useState, useEffect, useCallback } from 'react';
+import { SESSION_KEYS } from '@/lib/storageKeys';
 
-const SESSION_KEY = 'active-folder-id';
+const SESSION_KEY = SESSION_KEYS.ACTIVE_FOLDER_ID;
 const EVENT_NAME = 'folder-change';
 
 export function useFolderSync(initial?: string | null) {

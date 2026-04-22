@@ -1,11 +1,14 @@
 import { useState, useEffect } from 'react';
 import { cn, getBasePath } from '@/lib/utils';
 import { Icon } from './ui/icon';
+import { HelpCenterProvider } from '@/contexts/HelpCenterContext';
 import { HelpCenterHeader } from './HelpCenterHeader';
 import { HelpCenterSidebar } from './HelpCenterSidebar';
 import { NavigationLoadingBar } from './NavigationLoadingBar';
 import { BaseLayoutWrapper } from './BaseLayoutWrapper';
 import { useGoogleFonts } from '@/hooks/useGoogleFonts';
+import { useTheme } from '@/hooks/useTheme';
+import { SESSION_KEYS } from '@/lib/storageKeys';
 
 interface NotFoundPageProps {
   config: any;
@@ -22,42 +25,16 @@ export default function NotFoundPage({
   folders = [],
   projectId,
 }: NotFoundPageProps) {
-  const [isDark, setIsDark] = useState(true);
+  const { isDark, toggleTheme } = useTheme();
   const [aiChatOpen, setAiChatOpen] = useState(false);
   const [activeFolderId, setActiveFolderId] = useState<string | null>(null);
 
   useGoogleFonts(config.heading_font, config.body_font);
 
   useEffect(() => {
-    const savedFolderId = sessionStorage.getItem('active-folder-id');
+    const savedFolderId = sessionStorage.getItem(SESSION_KEYS.ACTIVE_FOLDER_ID);
     if (savedFolderId) setActiveFolderId(savedFolderId);
   }, []);
-
-  useEffect(() => {
-    const applyTheme = (dark: boolean) => {
-      setIsDark(dark);
-      document.documentElement.classList.toggle('dark', dark);
-      document.documentElement.style.removeProperty('background-color');
-      sessionStorage.setItem('theme-is-dark', dark ? '1' : '0');
-    };
-
-    const saved = localStorage.getItem('help-center-theme');
-    if (saved) { applyTheme(saved === 'dark'); return; }
-
-    const sessionTheme = sessionStorage.getItem('theme-is-dark');
-    if (sessionTheme !== null) { applyTheme(sessionTheme === '1'); return; }
-
-    applyTheme(true);
-  }, [config.theme_mode]);
-
-  const handleThemeToggle = () => {
-    const newDark = !isDark;
-    setIsDark(newDark);
-    document.documentElement.classList.toggle('dark', newDark);
-    document.documentElement.style.removeProperty('background-color');
-    localStorage.setItem('help-center-theme', newDark ? 'dark' : 'light');
-    sessionStorage.setItem('theme-is-dark', newDark ? '1' : '0');
-  };
 
   const sortedCategories = [...categories].sort((a, b) => {
     const orderA = a.display_order ?? Number.MAX_SAFE_INTEGER;
@@ -70,10 +47,10 @@ export default function NotFoundPage({
     : sortedCategories.filter(c => !c.folder_id);
 
   return (
+    <HelpCenterProvider config={config} projectId={projectId} isDark={isDark} toggleTheme={toggleTheme}>
     <BaseLayoutWrapper
       config={config}
       projectId={projectId}
-      isDark={isDark}
       aiChatOpen={aiChatOpen}
       onAiChatToggle={() => setAiChatOpen(!aiChatOpen)}
     >
@@ -85,9 +62,6 @@ export default function NotFoundPage({
 
         <div data-astro-transition-persist="header">
           <HelpCenterHeader
-            config={config}
-            isDark={isDark}
-            onThemeToggle={handleThemeToggle}
             onSearchOpen={() => {}}
             onAIOpen={() => setAiChatOpen(!aiChatOpen)}
             folders={folders}
@@ -103,12 +77,9 @@ export default function NotFoundPage({
             {/* Sidebar */}
             <div data-astro-transition-persist="sidebar" className="hidden lg:block">
               <HelpCenterSidebar
-                config={config}
                 categories={filteredCategories}
                 articles={articles}
                 selectedCategory={null}
-                isDark={isDark}
-                onThemeToggle={handleThemeToggle}
                 getArticleCount={(id) => articles.filter(a => a.category_id === id).length}
                 folders={folders}
               />
@@ -145,5 +116,6 @@ export default function NotFoundPage({
         </div>
       </div>
     </BaseLayoutWrapper>
+    </HelpCenterProvider>
   );
 }

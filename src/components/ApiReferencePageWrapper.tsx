@@ -1,12 +1,16 @@
 import { useState, useEffect } from 'react';
 import { BaseLayoutWrapper } from './BaseLayoutWrapper';
+import { HelpCenterProvider } from '@/contexts/HelpCenterContext';
 import { HelpCenterHeader } from './HelpCenterHeader';
 import { HelpCenterSidebar } from './HelpCenterSidebar';
 import { NavigationLoadingBar } from './NavigationLoadingBar';
 import { SearchModal } from './SearchModal';
 import { CustomApiReference } from './help-center/CustomApiReference';
-import { cn } from '@/lib/utils';
+import { cn, sortCategories, filterCategoriesByFolder } from '@/lib/utils';
 import { useGoogleFonts } from '@/hooks/useGoogleFonts';
+import { useTheme } from '@/hooks/useTheme';
+import { useSearchShortcut } from '@/hooks/useSearchShortcut';
+import { SESSION_KEYS } from '@/lib/storageKeys';
 
 interface ApiReferencePageWrapperProps {
   config: any;
@@ -33,93 +37,37 @@ export function ApiReferencePageWrapper({
   allArticles,
   folders = [],
 }: ApiReferencePageWrapperProps) {
-  const [isDark, setIsDark] = useState(true);
+  const { isDark, toggleTheme } = useTheme();
   const [aiChatOpen, setAiChatOpen] = useState(false);
   const [searchModalOpen, setSearchModalOpen] = useState(false);
   const [activeFolderId, setActiveFolderId] = useState<string | null>(null);
 
   // Get active folder from sessionStorage on mount
   useEffect(() => {
-    const savedFolderId = sessionStorage.getItem('active-folder-id');
+    const savedFolderId = sessionStorage.getItem(SESSION_KEYS.ACTIVE_FOLDER_ID);
     if (savedFolderId) {
       setActiveFolderId(savedFolderId);
     }
   }, []);
 
-  // Handle Cmd+K / Ctrl+K to open search
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
-        e.preventDefault();
-        setSearchModalOpen(true);
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
+  useSearchShortcut(setSearchModalOpen);
 
-  // Sort categories by display_order
-  const sortedCategories = [...categories].sort((a, b) => {
-    const orderA = a.display_order ?? Number.MAX_SAFE_INTEGER;
-    const orderB = b.display_order ?? Number.MAX_SAFE_INTEGER;
-    
-    if (orderA !== orderB) {
-      return orderA - orderB;
-    }
-    
-    return a.name.localeCompare(b.name);
-  });
-
-  // Filter categories by active folder
-  const folderCategoryIds = new Set(
-    activeFolderId
-      ? sortedCategories.filter(cat => cat.folder_id === activeFolderId).map(c => c.id)
-      : sortedCategories.filter(cat => !cat.folder_id || cat.folder_id === null).map(c => c.id)
-  );
-  const filteredCategories = sortedCategories.filter(cat =>
-    folderCategoryIds.has(cat.id) ||
-    (cat.parent_category_id && cat.parent_category_id !== '' && folderCategoryIds.has(cat.parent_category_id))
-  );
+  // Sort and filter categories by folder
+  const sortedCategories = sortCategories(categories);
+  const filteredCategories = filterCategoriesByFolder(sortedCategories, activeFolderId);
 
   // Load Google Fonts dynamically
   useGoogleFonts(config.heading_font, config.body_font);
-
-  // Handle dark mode with localStorage and sessionStorage
-  useEffect(() => {
-    const applyTheme = (dark: boolean) => {
-      setIsDark(dark);
-      document.documentElement.classList.toggle('dark', dark);
-      document.documentElement.style.removeProperty('background-color');
-      sessionStorage.setItem('theme-is-dark', dark ? '1' : '0');
-    };
-
-    const savedTheme = localStorage.getItem('help-center-theme');
-    if (savedTheme) { applyTheme(savedTheme === 'dark'); return; }
-
-    const sessionTheme = sessionStorage.getItem('theme-is-dark');
-    if (sessionTheme !== null) { applyTheme(sessionTheme === '1'); return; }
-
-    applyTheme(true);
-  }, [config.theme_mode]);
-
-  const handleThemeToggle = () => {
-    const newIsDark = !isDark;
-    setIsDark(newIsDark);
-    document.documentElement.classList.toggle('dark', newIsDark);
-    document.documentElement.style.removeProperty('background-color');
-    localStorage.setItem('help-center-theme', newIsDark ? 'dark' : 'light');
-    sessionStorage.setItem('theme-is-dark', newIsDark ? '1' : '0');
-  };
 
   const getArticleCountForCategory = (categoryId: string) => {
     return allArticles.filter(a => a.category_id === categoryId).length;
   };
 
   return (
+    <HelpCenterProvider config={config} projectId={projectId} isDark={isDark} toggleTheme={toggleTheme}>
     <BaseLayoutWrapper
       config={config}
       projectId={projectId}
-      isDark={isDark}
       aiChatOpen={aiChatOpen}
       onAiChatToggle={() => setAiChatOpen(!aiChatOpen)}
     >
@@ -133,11 +81,8 @@ export function ApiReferencePageWrapper({
         <NavigationLoadingBar primaryColor={config.primary_color} />
 
         {/* Header */}
-        <div data-astro-transition-persist="header" style={{ backgroundColor: 'transparent' }}>
+        <div data-astro-transition-persist="header" className="bg-transparent">
           <HelpCenterHeader
-            config={config}
-            isDark={isDark}
-            onThemeToggle={handleThemeToggle}
             onSearchOpen={() => setSearchModalOpen(true)}
             onAIOpen={() => setAiChatOpen(!aiChatOpen)}
             showBackButton={false}
@@ -149,17 +94,14 @@ export function ApiReferencePageWrapper({
 
         {/* Main content area with sidebar */}
         <div className="flex-1 overflow-hidden">
-          <div className="flex mx-auto gap-8 h-full" style={{ maxWidth: '1400px' }}>
+          <div className="flex mx-auto gap-8 h-full max-w-[1400px]">
             {/* Sidebar - Left Column */}
             <div data-astro-transition-persist="sidebar" className="hidden lg:block">
               <HelpCenterSidebar
-                config={config}
                 categories={filteredCategories}
                 articles={allArticles}
                 selectedCategory={null}
                 selectedArticle={null}
-                isDark={isDark}
-                onThemeToggle={handleThemeToggle}
                 getArticleCount={getArticleCountForCategory}
                 folders={folders}
               />
@@ -188,10 +130,10 @@ export function ApiReferencePageWrapper({
           onClose={() => setSearchModalOpen(false)}
           articles={allArticles}
           categories={categories}
-          isDark={isDark}
           primaryColor={config.primary_color}
         />
       </div>
     </BaseLayoutWrapper>
+    </HelpCenterProvider>
   );
 }

@@ -2,145 +2,17 @@ import { cn, getBasePath } from '@/lib/utils';
 import { Icon } from './ui/icon';
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-
-// ── HTTP method badge for API reference articles ──────────────────────────────
-
-const METHOD_COLORS: Record<string, { bg: string; text: string }> = {
-  GET:    { bg: '#22c55e1a', text: '#16a34a' },
-  POST:   { bg: '#3b82f61a', text: '#2563eb' },
-  PUT:    { bg: '#f59e0b1a', text: '#d97706' },
-  PATCH:  { bg: '#f973161a', text: '#ea580c' },
-  DELETE: { bg: '#ef44441a', text: '#dc2626' },
-};
-
-function SidebarMethodBadge({ method }: { method: string }) {
-  const colors = METHOD_COLORS[method] || { bg: '#6b72801a', text: '#4b5563' };
-  return (
-    <span
-      className="inline-flex items-center justify-center px-1.5 rounded text-[9px] font-bold tracking-wider font-mono shrink-0 h-4"
-      style={{ background: colors.bg, color: colors.text }}
-    >
-      {method}
-    </span>
-  );
-}
-
-// Parse API method from sidebar_title and extract clean title
-function parseApiTitle(article: Article): { method?: string; displayTitle: string } {
-  const sidebarTitle = article.sidebar_title?.trim();
-  
-  // Check if sidebar_title has HTTP method prefix
-  const sidebarMatch = sidebarTitle?.match(/^(GET|POST|PUT|PATCH|DELETE|HEAD)\s+(\/\S*)/i);
-  if (sidebarMatch) {
-    const method = sidebarMatch[1].toUpperCase();
-    
-    // If article.title is NOT just the API path format, use it as the display title
-    const titleIsNotPath = !article.title?.match(/^(GET|POST|PUT|PATCH|DELETE|HEAD)\s+(\/\S*)/i);
-    if (titleIsNotPath && article.title && article.title.trim()) {
-      return {
-        method,
-        displayTitle: article.title.trim(),
-      };
-    }
-    
-    // Otherwise, extract a clean title from the path
-    const path = sidebarMatch[2];
-    // Get the segments and filter out parameters like {id}, :id, etc.
-    const segments = path.split('/').filter(segment => {
-      if (!segment) return false;
-      // Skip path parameters
-      if (segment.startsWith('{') || segment.startsWith(':') || segment.startsWith('[')) return false;
-      return true;
-    });
-    
-    // Get the last meaningful segment
-    const lastSegment = segments[segments.length - 1] || 'API';
-    
-    // Convert kebab-case or snake_case to Title Case
-    const cleanTitle = lastSegment
-      .replace(/[-_]/g, ' ')
-      .split(' ')
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-      .join(' ');
-    
-    return {
-      method,
-      displayTitle: cleanTitle,
-    };
-  }
-  
-  // Check if the title itself looks like a path (starts with /)
-  const titleMatch = article.title?.match(/^(GET|POST|PUT|PATCH|DELETE|HEAD)\s+(\/\S*)/i);
-  if (titleMatch) {
-    const path = titleMatch[2];
-    const segments = path.split('/').filter(segment => {
-      if (!segment) return false;
-      // Skip path parameters
-      if (segment.startsWith('{') || segment.startsWith(':') || segment.startsWith('[')) return false;
-      return true;
-    });
-    
-    const lastSegment = segments[segments.length - 1] || 'API';
-    const cleanTitle = lastSegment
-      .replace(/[-_]/g, ' ')
-      .split(' ')
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-      .join(' ');
-    
-    return {
-      method: titleMatch[1].toUpperCase(),
-      displayTitle: cleanTitle,
-    };
-  }
-  
-  return { displayTitle: sidebarTitle || article.title };
-}
-
-interface Article {
-  id: string;
-  title: string;
-  slug: string;
-  content: string;
-  excerpt?: string;
-  category_id: string | null;
-  is_published: boolean;
-  display_order?: number | null;
-  sidebar_title?: string | null;
-  icon?: string | null;
-  created_at: string;
-  updated_at: string;
-}
-
-interface Category {
-  id: string;
-  name: string;
-  description?: string | null;
-  icon?: string | null;
-  display_order?: number | null;
-  folder_id?: string | null;
-  parent_category_id?: string | null;
-}
-
-interface Folder {
-  id: string;
-  name: string;
-  slug: string;
-  icon?: string | null;
-  description?: string | null;
-  is_default: boolean;
-  display_order?: number;
-}
+import { useHelpCenter } from '@/contexts/HelpCenterContext';
+import { SidebarArticleList } from './sidebar/SidebarArticleList';
+import type { Article, Category, Folder } from '@/lib/api';
 
 interface HelpCenterSidebarProps {
-  config: any;
   categories: Category[];
   articles: Article[];
   selectedCategory: string | null;
   selectedArticle?: Article | null;
-  isDark: boolean;
   onCategorySelect?: (categoryId: string | null) => void;
   onArticleSelect?: (article: Article) => void;
-  onThemeToggle: () => void;
   getArticleCount: (categoryId: string) => number;
   folders?: Folder[];
 }
@@ -155,18 +27,16 @@ function sortByOrder<T extends { display_order?: number | null; name?: string }>
 }
 
 export function HelpCenterSidebar({
-  config,
   categories,
   articles,
   selectedCategory,
   selectedArticle,
-  isDark,
   onCategorySelect,
   onArticleSelect,
-  onThemeToggle,
   getArticleCount,
   folders = [],
 }: HelpCenterSidebarProps) {
+  const { config, isDark } = useHelpCenter();
   const [collapsedCategories, setCollapsedCategories] = useState<Set<string>>(new Set());
 
   const sidebarStyle = config?.sidebar_style || 'default';
@@ -232,9 +102,7 @@ export function HelpCenterSidebar({
               'flex-1 flex items-center gap-2 py-1.5 text-sm font-medium text-left min-w-0',
               isSelected && !selectedArticle
                 ? ''
-                : isDark
-                ? 'text-zinc-200 hover:text-zinc-100'
-                : 'text-zinc-800 hover:text-zinc-900'
+                : 'text-zinc-800 hover:text-zinc-900 dark:text-zinc-200 dark:hover:text-zinc-100'
             )}
             style={isSelected && !selectedArticle ? { color: config.primary_color } : {}}
           >
@@ -245,7 +113,7 @@ export function HelpCenterSidebar({
             onClick={(e) => { e.preventDefault(); toggleCollapse(category.id); }}
             className={cn(
               'ml-1 p-1 rounded-md w-5 h-5 flex items-center justify-center flex-shrink-0',
-              isDark ? 'hover:bg-zinc-800 text-zinc-400' : 'hover:bg-zinc-100 text-zinc-500'
+              'hover:bg-zinc-100 text-zinc-500 dark:hover:bg-zinc-800 dark:text-zinc-400'
             )}
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
@@ -270,48 +138,14 @@ export function HelpCenterSidebar({
               className="overflow-hidden"
             >
               <div className="relative pl-[18px]">
-                <div className={cn(
-                  'absolute left-[9px] top-0 bottom-0 w-px',
-                  isDark ? 'bg-zinc-700/60' : 'bg-zinc-200/80'
-                )} />
-                {categoryArticles.map((article, i) => {
-                  const isActive = selectedArticle?.id === article.id;
-                  const url = getArticleUrl(article);
-                  const { method, displayTitle } = parseApiTitle(article);
-                  return (
-                    <motion.a
-                      key={article.id}
-                      href={url}
-                      initial={{ x: -6, opacity: 0 }}
-                      animate={{ x: 0, opacity: 1 }}
-                      transition={{ delay: i * 0.03, duration: 0.15, ease: 'easeOut' }}
-                      onClick={(e) => {
-                        if (onArticleSelect) {
-                          e.preventDefault();
-                          onArticleSelect(article);
-                        }
-                      }}
-                      className={cn(
-                        'flex items-center gap-1.5 py-1.5 pr-1 text-sm transition-colors min-w-0',
-                        isActive
-                          ? 'font-medium'
-                          : isDark
-                          ? 'text-zinc-400 hover:text-zinc-200'
-                          : 'text-zinc-500 hover:text-zinc-800'
-                      )}
-                      style={isActive ? { color: config.primary_color } : {}}
-                      whileHover={{ x: 2 }}
-                      whileTap={{ scale: 0.98 }}
-                    >
-                      {method ? (
-                        <SidebarMethodBadge method={method} />
-                      ) : article.icon ? (
-                        <Icon icon={article.icon} className="h-4 w-4 flex-shrink-0 opacity-70" />
-                      ) : null}
-                      <span className="truncate">{displayTitle}</span>
-                    </motion.a>
-                  );
-                })}
+                <div className="absolute left-[9px] top-0 bottom-0 w-px bg-zinc-200/80 dark:bg-zinc-700/60" />
+                <SidebarArticleList
+                  articles={categoryArticles}
+                  selectedArticle={selectedArticle}
+                  primaryColor={config.primary_color}
+                  getArticleUrl={getArticleUrl}
+                  onArticleSelect={onArticleSelect}
+                />
               </div>
             </motion.div>
           )}
@@ -338,13 +172,10 @@ export function HelpCenterSidebar({
           {/* Category header row — sticky as user scrolls */}
           <div
             className={cn(
-              'flex items-center sticky top-0 z-30 -mx-1 px-1',
+              'flex items-center sticky top-0 z-30 -mx-1 px-1 pb-1.5',
             )}
             style={{
-              background: isDark
-                ? 'linear-gradient(to bottom, #0D0D0D 70%, transparent 100%)'
-                : 'linear-gradient(to bottom, hsl(var(--background)) 70%, transparent 100%)',
-              paddingBottom: '6px',
+              background: 'linear-gradient(to bottom, hsl(var(--background)) 70%, transparent 100%)',
             }}
           >
             <button
@@ -362,46 +193,13 @@ export function HelpCenterSidebar({
 
           {/* Children — always visible */}
           <div>
-
-            {/* Articles directly in this category */}
-            {categoryArticles.map((article, i) => {
-              const isActive = selectedArticle?.id === article.id;
-              const url = getArticleUrl(article);
-              const { method, displayTitle } = parseApiTitle(article);
-              return (
-                <motion.a
-                  key={article.id}
-                  href={url}
-                  initial={{ x: -6, opacity: 0 }}
-                  animate={{ x: 0, opacity: 1 }}
-                  transition={{ delay: i * 0.03, duration: 0.15, ease: 'easeOut' }}
-                  onClick={(e) => {
-                    if (onArticleSelect) {
-                      e.preventDefault();
-                      onArticleSelect(article);
-                    }
-                  }}
-                  className={cn(
-                    'flex items-center gap-1.5 py-1.5 pr-1 text-sm transition-colors min-w-0',
-                    isActive
-                      ? 'font-medium'
-                      : isDark
-                      ? 'text-zinc-400 hover:text-zinc-200'
-                      : 'text-zinc-500 hover:text-zinc-800'
-                  )}
-                  style={isActive ? { color: config.primary_color } : {}}
-                  whileHover={{ x: 2 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  {method ? (
-                    <SidebarMethodBadge method={method} />
-                  ) : article.icon ? (
-                    <Icon icon={article.icon} className="h-4 w-4 flex-shrink-0 opacity-70" />
-                  ) : null}
-                  <span className="truncate">{displayTitle}</span>
-                </motion.a>
-              );
-            })}
+            <SidebarArticleList
+              articles={categoryArticles}
+              selectedArticle={selectedArticle}
+              primaryColor={config.primary_color}
+              getArticleUrl={getArticleUrl}
+              onArticleSelect={onArticleSelect}
+            />
 
             {/* Sub-categories */}
             {subCategories.length > 0 && (
@@ -436,13 +234,11 @@ export function HelpCenterSidebar({
           sidebarStyle === 'underline' && 'rounded-none border-b-2 border-transparent pb-3',
           isSelected
             ? sidebarStyle === 'bordered'
-              ? isDark ? 'border-l-zinc-500 text-zinc-200' : 'border-l-zinc-400 text-zinc-900'
+              ? 'border-l-zinc-400 text-zinc-900 dark:border-l-zinc-500 dark:text-zinc-200'
               : sidebarStyle === 'underline'
-              ? isDark ? 'border-b-zinc-500 text-zinc-200' : 'border-b-zinc-400 text-zinc-900'
-              : isDark ? 'bg-zinc-800 text-white' : 'bg-zinc-100 text-zinc-900'
-            : isDark
-            ? 'text-zinc-400 hover:bg-zinc-800/50 hover:text-zinc-200'
-            : 'text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900'
+              ? 'border-b-zinc-400 text-zinc-900 dark:border-b-zinc-500 dark:text-zinc-200'
+              : 'bg-zinc-100 text-zinc-900 dark:bg-zinc-800 dark:text-white'
+            : 'text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800/50 dark:hover:text-zinc-200'
         )}
       >
         {renderCategoryIcon(category.icon)}
@@ -455,26 +251,22 @@ export function HelpCenterSidebar({
 
   return (
     <aside className={cn(
-      'w-full lg:w-64 flex-shrink-0 flex flex-col lg:border-r overflow-hidden sticky top-0',
+      'w-full lg:w-64 flex-shrink-0 flex flex-col lg:border-r overflow-hidden sticky top-0 h-screen',
       'border-border/50 bg-transparent'
     )}
-    style={{ height: '100vh' }}
     >
       {/* Top fade overlay */}
       <div
         className="absolute left-0 right-0 top-0 h-12 pointer-events-none z-20"
         style={{
-          background: isDark
-            ? 'linear-gradient(to bottom, #0D0D0D 40%, transparent 100%)'
-            : 'linear-gradient(to bottom, hsl(var(--background)) 40%, transparent 100%)',
+          background: 'linear-gradient(to bottom, hsl(var(--background)) 40%, transparent 100%)',
         }}
       />
       <div
-        className="flex-1 overflow-y-auto pt-2 pb-24 pl-3 pr-3 custom-scrollbar"
+        className="flex-1 overflow-y-auto pt-2 pb-24 pl-3 pr-3 h-full custom-scrollbar"
         style={{
           scrollbarWidth: 'thin',
-          scrollbarColor: isDark ? 'rgb(63 63 70) transparent' : 'rgb(212 212 216) transparent',
-          height: '100%',
+          scrollbarColor: 'var(--scrollbar-thumb) transparent',
         }}
       >
         {/* Top navigation links */}
@@ -489,7 +281,7 @@ export function HelpCenterSidebar({
                   rel={link.url.startsWith('http') ? 'noopener noreferrer' : undefined}
                   className={cn(
                     'flex items-center gap-3 py-2.5 text-sm font-medium transition-colors',
-                    isDark ? 'text-zinc-300 hover:text-zinc-100' : 'text-zinc-700 hover:text-zinc-900'
+                    'text-zinc-700 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-zinc-100'
                   )}
                 >
                   <Icon icon={link.icon || 'hugeicons:link-01'} className="h-4 w-4 text-muted-foreground" />
@@ -515,13 +307,11 @@ export function HelpCenterSidebar({
                 sidebarStyle === 'underline' && 'rounded-none border-b-2 border-transparent pb-3',
                 !selectedCategory
                   ? sidebarStyle === 'bordered'
-                    ? isDark ? 'border-l-zinc-500 text-zinc-200' : 'border-l-zinc-400 text-zinc-900'
+                    ? 'border-l-zinc-400 text-zinc-900 dark:border-l-zinc-500 dark:text-zinc-200'
                     : sidebarStyle === 'underline'
-                    ? isDark ? 'border-b-zinc-500 text-zinc-200' : 'border-b-zinc-400 text-zinc-900'
-                    : isDark ? 'bg-zinc-800/50 text-zinc-200' : 'bg-zinc-100 text-zinc-900'
-                  : isDark
-                  ? 'text-zinc-400 hover:bg-zinc-800/30 hover:text-zinc-200'
-                  : 'text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900'
+                    ? 'border-b-zinc-400 text-zinc-900 dark:border-b-zinc-500 dark:text-zinc-200'
+                    : 'bg-zinc-100 text-zinc-900 dark:bg-zinc-800/50 dark:text-zinc-200'
+                  : 'text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800/30 dark:hover:text-zinc-200'
               )}
             >
               <Icon icon="hugeicons:home-01" className={sidebarStyle === 'compact' ? 'h-4 w-4' : 'h-5 w-5'} />
@@ -536,10 +326,7 @@ export function HelpCenterSidebar({
                 sidebarStyle !== 'icon-only' &&
                 sidebarStyle !== 'underline' &&
                 sidebarStyle !== 'default' && (
-                  <p className={cn(
-                    'px-3 mb-2 text-xs font-medium uppercase tracking-wider',
-                    isDark ? 'text-zinc-500' : 'text-zinc-400'
-                  )}>
+                  <p className="px-3 mb-2 text-xs font-medium uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
                     Categories
                   </p>
                 )}
