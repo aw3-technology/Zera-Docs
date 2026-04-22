@@ -9,22 +9,27 @@ const [articles, categories, faqs, config, folders] = await Promise.all([
   getArticles(), getCategories(), getFaqs(), getHelpCenterConfig(), getFolders(),
 ]);
 const projectId = 'local';
+const defaultFolder = folders.find((f: any) => f.is_default) || folders[0] || null;
 ---
 
 <BaseLayout
-  title={`${config.portal_name} | ${config.meta_title || 'Help Center'}`}
+  title={config.meta_title || config.portal_name}
   description={config.meta_description || config.welcome_subtitle}
   config={config}
   projectId={projectId}
   ogImage={config.og_image_url ?? undefined}
   ogType="website"
+  folders={folders}
+  noIndex={true}
 >
   <HelpCenterHome
     client:only="react"
     config={config}
     articles={articles}
     categories={categories}
+    folders={folders}
     faqs={faqs}
     projectId={projectId}
+    initialFolderId={defaultFolder?.id}
   />
 </BaseLayout>

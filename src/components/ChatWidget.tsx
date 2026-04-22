@@ -6,7 +6,7 @@ interface ChatWidgetProps {
   darkMode?: boolean;
 }
 
-export default function ChatWidget({ projectId, primaryColor = '#f04438', darkMode = false }: ChatWidgetProps) {
+export default function ChatWidget({ projectId, primaryColor = '#D97706', darkMode = false }: ChatWidgetProps) {
   useEffect(() => {
     // Load the Gately widget script
     const script = document.createElement('script');

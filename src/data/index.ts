@@ -1,11 +1,7 @@
 /**
- * Central data registry
+ * Central data registry — ZERA Network Documentation
  * Import categories, articles, and folders from their individual files.
  * localData.ts consumes these exports.
- *
- * To add content:
- *   1. Create a file in src/data/categories/, src/data/articles/<category>/, or src/data/folders.ts
- *   2. Import and add it to the arrays below
  */
 
 // ─── Folders ──────────────────────────────────────────────────────────────────
@@ -13,86 +9,218 @@ export { folders } from './folders';
 
 // ─── Categories ──────────────────────────────────────────────────────────────
 import { gettingStartedCategory } from './categories/getting-started';
-import { componentsCategory } from './categories/components';
-import { guidesCategory } from './categories/guides';
-import { apiReferenceCategory } from './categories/api-reference';
-import { troubleshootingCategory } from './categories/troubleshooting';
+import { governanceCategory } from './categories/governance';
+import { treasuryCategory } from './categories/treasury';
+import { decentralizationCategory } from './categories/decentralization';
+import { regulatoryResilienceCategory } from './categories/regulatory-resilience';
+import { technologyCategory } from './categories/technology';
+import { aceCategory } from './categories/ace';
+import { legalCategory } from './categories/legal';
+import { tokenomicsCategory } from './categories/tokenomics';
+import { forTokensCategory } from './categories/for-tokens';
+import { programsCategory } from './categories/programs';
+import { developersCategory } from './categories/developers';
+import { daoCategory } from './categories/dao';
+import { institutionsCategory } from './categories/institutions';
+import { visionCategory } from './categories/vision';
+import { compareCategory } from './categories/compare';
 import { blogCategory } from './categories/blog';
+import { goSdkCategory } from './categories/go-sdk';
 
 export const categories = [
   gettingStartedCategory,
-  componentsCategory,
-  guidesCategory,
-  apiReferenceCategory,
-  troubleshootingCategory,
+  governanceCategory,
+  treasuryCategory,
+  decentralizationCategory,
+  regulatoryResilienceCategory,
+  technologyCategory,
+  aceCategory,
+  legalCategory,
+  tokenomicsCategory,
+  forTokensCategory,
+  programsCategory,
+  developersCategory,
+  daoCategory,
+  institutionsCategory,
+  visionCategory,
+  compareCategory,
   blogCategory,
+  goSdkCategory,
 ];
 
 // ─── Articles: Getting Started ────────────────────────────────────────────────
-import { welcomeArticle } from './articles/getting-started/welcome';
-import { installationArticle } from './articles/getting-started/installation';
-import { quickStartArticle } from './articles/getting-started/quick-start';
+import { whatIsZeraArticle } from './articles/getting-started/what-is-zera';
+import { zeraOverviewArticle } from './articles/getting-started/zera-overview';
+import { gettingStartedArticle } from './articles/getting-started/getting-started';
 
-// ─── Articles: Template Components ───────────────────────────────────────────
-import { componentsOverviewArticle } from './articles/components/overview';
-import { heroBlockArticle } from './articles/components/hero-block';
-import { textBlockArticle } from './articles/components/text-block';
-import { codeBlockArticle } from './articles/components/code-block';
-import { ctaBlockArticle } from './articles/components/cta-block';
-import { faqBlockArticle } from './articles/components/faq-block';
-import { sidebarBlockArticle } from './articles/components/sidebar-block';
-import { searchBlockArticle } from './articles/components/search-block';
+// ─── Articles: Governance ─────────────────────────────────────────────────────
+import { governanceOverviewArticle } from './articles/governance/governance-overview';
+import { lifecycleModelsArticle } from './articles/governance/lifecycle-models';
+import { protocolUpgradesArticle } from './articles/governance/protocol-upgrades';
+import { iitBackgroundArticle } from './articles/governance/iit-background';
+import { zmtBackgroundArticle } from './articles/governance/zmt-background';
+import { zipBackgroundArticle } from './articles/governance/zip-background';
 
-// ─── Articles: Guides ─────────────────────────────────────────────────────────
-import { configurationArticle } from './articles/guides/configuration';
-import { themingArticle } from './articles/guides/theming';
-import { addingContentArticle } from './articles/guides/adding-content';
+// ─── Articles: Treasury ───────────────────────────────────────────────────────
+import { treasuryOverviewArticle } from './articles/treasury/treasury-overview';
+import { fundingSourcesArticle } from './articles/treasury/funding-sources';
+import { fundingWhatMattersArticle } from './articles/treasury/funding-what-matters';
+import { bitcoinVsZeraArticle } from './articles/treasury/bitcoin-vs-zera';
+import { treasuryDiversificationArticle } from './articles/treasury/treasury-diversification';
 
-// ─── Articles: API Reference ──────────────────────────────────────────────────
-import { apiIntroductionArticle } from './articles/api-reference/introduction';
-import { apiAuthenticationArticle } from './articles/api-reference/authentication';
+// ─── Articles: Decentralization & Autonomy ────────────────────────────────────
+import { decentralizationOverviewArticle } from './articles/decentralization/decentralization-overview';
 
-// ─── Articles: Troubleshooting ────────────────────────────────────────────────
-import { commonErrorsArticle } from './articles/troubleshooting/common-errors';
-import { performanceArticle } from './articles/troubleshooting/performance';
+// ─── Articles: Regulatory Resilience ──────────────────────────────────────────
+import { regulatoryResilienceOverviewArticle } from './articles/regulatory-resilience/regulatory-resilience-overview';
+
+// ─── Articles: Technology ─────────────────────────────────────────────────────
+import { technologyOverviewArticle } from './articles/technology/technology-overview';
+import { smartContractsOverviewArticle } from './articles/technology/smart-contracts-overview';
+import { techStackOverviewArticle } from './articles/technology/tech-stack-overview';
+import { feesOverviewArticle } from './articles/technology/fees-overview';
+import { bridgesOverviewArticle } from './articles/technology/bridges-overview';
+
+// ─── Articles: ACE ────────────────────────────────────────────────────────────
+import { aceOverviewArticle } from './articles/ace/ace-overview';
+
+// ─── Articles: Legal ─────────────────────────────────────────────────────────
+import { termsOfServiceArticle } from './articles/legal/terms-of-service';
+import { privacyPolicyArticle } from './articles/legal/privacy-policy';
+import { disclaimerArticle } from './articles/legal/disclaimer';
+import { recognitionDisclaimerArticle } from './articles/legal/recognition-disclaimer';
+
+// ─── Articles: Tokenomics ─────────────────────────────────────────────────────
+import { zraOverviewArticle } from './articles/tokenomics/zra-overview';
+import { aceIntegrationArticle } from './articles/tokenomics/ace-integration';
+import { supplyManagementArticle } from './articles/tokenomics/supply-management';
+import { feeStructureArticle } from './articles/tokenomics/fee-structure';
+import { howToBuyWzraArticle } from './articles/tokenomics/how-to-buy-wzra';
+import { tokenBenefitsArticle } from './articles/tokenomics/token-benefits';
+
+// ─── Articles: Why Tokens Come to ZERA ────────────────────────────────────────
+import { forTokensOverviewArticle } from './articles/for-tokens/for-tokens-overview';
+
+// ─── Articles: Programs ───────────────────────────────────────────────────────
+import { programsOverviewArticle } from './articles/programs/programs-overview';
+
+// ─── Articles: Developers ─────────────────────────────────────────────────────
+import { whyBuildOnZeraArticle } from './articles/developers/why-build-on-zera';
+import { smartContractsArticle } from './articles/developers/smart-contracts';
+import { smartContractEngineArticle } from './articles/developers/smart-contract-engine';
+import { developerPathwaysArticle } from './articles/developers/developer-pathways';
+import { interoperabilityArticle } from './articles/developers/interoperability';
+import { sdkArchitectureArticle } from './articles/developers/sdk-architecture';
+import { sdkModulesArticle } from './articles/developers/sdk-modules';
+import { sdkInternalsArticle } from './articles/developers/sdk-internals';
+import { buildingWithZerajsArticle } from './articles/developers/building-with-zerajs';
+
+// ─── Articles: DAOs ───────────────────────────────────────────────────────────
+import { daoOverviewArticle } from './articles/dao/dao-overview';
+
+// ─── Articles: Institutions ───────────────────────────────────────────────────
+import { institutionsOverviewArticle } from './articles/institutions/institutions-overview';
+
+// ─── Articles: Vision ─────────────────────────────────────────────────────────
+import { visionOverviewArticle } from './articles/vision/vision-overview';
+import { visionDemocracyArticle } from './articles/vision/vision-democracy';
+
+// ─── Articles: Compare ────────────────────────────────────────────────────────
+import { compareOverviewArticle } from './articles/compare/compare-overview';
+
+// ─── Articles: Go SDK ────────────────────────────────────────────────────────
+import { goSdkOverviewArticle } from './articles/go-sdk/overview';
+import { goSdkCoreConceptsArticle } from './articles/go-sdk/core-concepts';
+import { goSdkWalletAndHelpersArticle } from './articles/go-sdk/wallet-and-helpers';
+import { goSdkTransactionsArticle } from './articles/go-sdk/transactions';
+import { goSdkContractsArticle } from './articles/go-sdk/contracts';
+import { goSdkExamplesArticle } from './articles/go-sdk/examples-and-errors';
 
 // ─── Articles: Blog ───────────────────────────────────────────────────────────
-import { introducingHelioArticle } from './articles/blog/introducing-helio';
-import { buildingDocsWithBlocksArticle } from './articles/blog/building-docs-with-blocks';
-import { seoForDocsArticle } from './articles/blog/seo-for-docs';
-import { deployingToCloudflareArticle } from './articles/blog/deploying-to-cloudflare';
-import { darkModeThemingArticle } from './articles/blog/dark-mode-theming';
-import { writingGreatDocsArticle } from './articles/blog/writing-great-docs';
+import { zeraForDummiesArticle } from './articles/blog/zera-for-dummies';
+import { zeraExplainedArticle } from './articles/blog/zera-explained';
+import { decentralizationByDesignArticle } from './articles/blog/decentralization-by-design';
+import { tokenomicsBackgroundArticle } from './articles/blog/tokenomics-background';
+import { zeraVsSolanaArticle } from './articles/blog/zera-vs-solana';
+import { zeraNetworkBackgroundArticle } from './articles/blog/zera-network-background';
 
 export const articles = [
   // Getting Started
-  welcomeArticle,
-  installationArticle,
-  quickStartArticle,
-  // Template Components
-  componentsOverviewArticle,
-  heroBlockArticle,
-  textBlockArticle,
-  codeBlockArticle,
-  ctaBlockArticle,
-  faqBlockArticle,
-  sidebarBlockArticle,
-  searchBlockArticle,
-  // Guides
-  configurationArticle,
-  themingArticle,
-  addingContentArticle,
-  // API Reference
-  apiIntroductionArticle,
-  apiAuthenticationArticle,
-  // Troubleshooting
-  commonErrorsArticle,
-  performanceArticle,
+  whatIsZeraArticle,
+  zeraOverviewArticle,
+  gettingStartedArticle,
+  // Governance
+  governanceOverviewArticle,
+  lifecycleModelsArticle,
+  protocolUpgradesArticle,
+  iitBackgroundArticle,
+  zmtBackgroundArticle,
+  zipBackgroundArticle,
+  // Treasury
+  treasuryOverviewArticle,
+  fundingSourcesArticle,
+  fundingWhatMattersArticle,
+  bitcoinVsZeraArticle,
+  treasuryDiversificationArticle,
+  // Decentralization & Autonomy
+  decentralizationOverviewArticle,
+  // Regulatory Resilience
+  regulatoryResilienceOverviewArticle,
+  // Technology
+  technologyOverviewArticle,
+  smartContractsOverviewArticle,
+  techStackOverviewArticle,
+  feesOverviewArticle,
+  bridgesOverviewArticle,
+  // ACE
+  aceOverviewArticle,
+  // Legal
+  termsOfServiceArticle,
+  privacyPolicyArticle,
+  disclaimerArticle,
+  recognitionDisclaimerArticle,
+  // Tokenomics
+  zraOverviewArticle,
+  aceIntegrationArticle,
+  supplyManagementArticle,
+  feeStructureArticle,
+  howToBuyWzraArticle,
+  tokenBenefitsArticle,
+  // Why Tokens Come to ZERA
+  forTokensOverviewArticle,
+  // Programs
+  programsOverviewArticle,
+  // Developers
+  whyBuildOnZeraArticle,
+  smartContractsArticle,
+  smartContractEngineArticle,
+  developerPathwaysArticle,
+  interoperabilityArticle,
+  sdkArchitectureArticle,
+  sdkModulesArticle,
+  sdkInternalsArticle,
+  buildingWithZerajsArticle,
+  // DAOs
+  daoOverviewArticle,
+  // Institutions
+  institutionsOverviewArticle,
+  // Vision
+  visionOverviewArticle,
+  visionDemocracyArticle,
+  // Compare
+  compareOverviewArticle,
+  // Go SDK
+  goSdkOverviewArticle,
+  goSdkCoreConceptsArticle,
+  goSdkWalletAndHelpersArticle,
+  goSdkTransactionsArticle,
+  goSdkContractsArticle,
+  goSdkExamplesArticle,
   // Blog
-  introducingHelioArticle,
-  buildingDocsWithBlocksArticle,
-  seoForDocsArticle,
-  deployingToCloudflareArticle,
-  darkModeThemingArticle,
-  writingGreatDocsArticle,
+  zeraForDummiesArticle,
+  zeraExplainedArticle,
+  decentralizationByDesignArticle,
+  tokenomicsBackgroundArticle,
+  zeraVsSolanaArticle,
+  zeraNetworkBackgroundArticle,
 ];

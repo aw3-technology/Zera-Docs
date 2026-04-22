@@ -1,19 +1,30 @@
 import type { APIRoute } from 'astro';
-import { getArticles, getCategories } from '../lib/localData';
+import { getArticles, getCategories, getFolders, getHelpCenterConfig } from '../lib/localData';
 
 export const GET: APIRoute = async ({ request, url }) => {
-  const [articles, categories] = await Promise.all([
+  const [articles, categories, folders, config] = await Promise.all([
     getArticles(),
     getCategories(),
+    getFolders(),
+    getHelpCenterConfig(),
   ]);
 
-  // Respect proxied custom domains
+  // Respect proxied custom domains and sub-path deployments
   const forwardedHost =
     request.headers.get('X-Forwarded-Host') ||
     request.headers.get('X-Original-Host');
-  const baseUrl = forwardedHost
+  const actualOrigin = forwardedHost
     ? `${url.protocol}//${forwardedHost}`
     : url.origin;
+
+  const configAny = config as any;
+  const subPathDomain = configAny.sub_path_domain || null;
+  const subPath = configAny.sub_path || '';
+  const publicOrigin = subPathDomain
+    ? `${url.protocol}//${subPathDomain}`
+    : actualOrigin;
+  const publicPathPrefix = subPathDomain && subPath ? subPath : '';
+  const baseUrl = `${publicOrigin}${publicPathPrefix}`;
 
   const now = new Date().toISOString();
 
@@ -27,6 +38,18 @@ export const GET: APIRoute = async ({ request, url }) => {
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>`);
+
+  // Folder pages (non-default folders with names)
+  for (const folder of folders) {
+    if (folder.is_default || !folder.slug || !folder.name) continue;
+    urls.push(`
+  <url>
+    <loc>${baseUrl}/${folder.slug}</loc>
+    <lastmod>${now}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>`);
+  }
 
   // Category pages
   for (const cat of categories) {

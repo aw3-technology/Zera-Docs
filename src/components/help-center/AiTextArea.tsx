@@ -24,7 +24,7 @@ export function AiTextArea({
   onSubmit,
   placeholder = 'Ask, search, explain...',
   title = 'Ask our assistant anything',
-  primaryColor = '#3b82f6',
+  primaryColor = '#D97706',
   disabled = false,
   className,
   minRows = 1,

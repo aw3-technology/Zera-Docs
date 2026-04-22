@@ -17,7 +17,7 @@ export default defineConfig({
     sessions: false
   }),
   build: {
-    assets: '_gately', // output /_gately/ instead of /_astro/ — cleaner and hides implementation
+    assets: '_helio',
   },
   integrations: [
     react(),
@@ -33,6 +33,14 @@ export default defineConfig({
     defaultStrategy: 'tap'
   },
   vite: {
+    optimizeDeps: {
+      include: [
+        '@blocknote/core',
+        '@blocknote/react',
+        '@blocknote/shadcn',
+        '@blocknote/xl-multi-column',
+      ],
+    },
     ssr: {
       noExternal: ['@iconify/react'],
       external: ['react-syntax-highlighter']

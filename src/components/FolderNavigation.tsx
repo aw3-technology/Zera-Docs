@@ -45,45 +45,13 @@ export function FolderNavigation({
     return null;
   }
 
-  // Get first article in a folder
-  const getFirstArticleInFolder = (folderId: string, isDefault: boolean) => {
-    // Default folder should go to root, not first article
-    if (isDefault) {
-      return null;
-    }
-    
-    // Get categories in this folder
-    const folderCategories = categories.filter(cat => cat.folder_id === folderId);
-    const folderCategoryIds = new Set(folderCategories.map(c => c.id));
-    
-    // Get articles in these categories, sorted by display_order
-    const folderArticles = articles
-      .filter(article => article.category_id && folderCategoryIds.has(article.category_id))
-      .sort((a, b) => {
-        const orderA = a.display_order ?? Number.MAX_SAFE_INTEGER;
-        const orderB = b.display_order ?? Number.MAX_SAFE_INTEGER;
-        return orderA - orderB;
-      });
-    
-    return folderArticles[0] || null;
-  };
-
   const handleFolderClick = (folder: Folder) => {
-    // Default folder goes to root
     if (folder.is_default) {
       window.location.href = '/';
       return;
     }
-    
-    const firstArticle = getFirstArticleInFolder(folder.id, folder.is_default);
-    
-    if (firstArticle) {
-      // Redirect to first article in folder
-      window.location.href = `/article/${firstArticle.slug}`;
-    } else {
-      // No articles, just select the folder
-      onFolderSelect(folder.id);
-    }
+
+    window.location.href = `/${folder.slug}`;
   };
 
   return (

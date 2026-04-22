@@ -149,11 +149,11 @@ const formattedDate = article?.created_at
 const getArticleExcerpt = () => {
   if (!article) return '';
   if (article.excerpt) return article.excerpt;
-  
-  const tempDiv = typeof document !== 'undefined' ? document.createElement('div') : null;
-  if (tempDiv) {
-    tempDiv.innerHTML = article.content || '';
-    const textContent = tempDiv.textContent || tempDiv.innerText || '';
+
+  // Strip HTML tags server-side to extract plain text for meta description
+  const content = article.content || '';
+  const textContent = content.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+  if (textContent.length > 0) {
     return textContent.slice(0, 160).trim() + (textContent.length > 160 ? '...' : '');
   }
   return article.title;
@@ -167,7 +167,7 @@ const articleUrl = article ? `${Astro.url.origin}${Astro.url.pathname}` : '';
 {pageType === 'folder' && folder && (
   <BaseLayout 
     title={`${folder.name} - ${helpCenterConfig.portal_name}`}
-    description={folder.description || `Browse ${folder.name} articles`}
+    description={folder.description || `Browse ${folder.name} articles and guides in the ${helpCenterConfig.portal_name || 'Zera Docs'} help center.`}
     config={helpCenterConfig}
     projectId={projectId}
     folders={folders}
@@ -190,7 +190,7 @@ const articleUrl = article ? `${Astro.url.origin}${Astro.url.pathname}` : '';
 
 {pageType === 'article' && article && (
   <BaseLayout 
-    title={article.title}
+    title={`${article.title} | ${helpCenterConfig.portal_name}`}
     description={articleExcerpt}
     config={helpCenterConfig}
     projectId={projectId}
@@ -222,12 +222,13 @@ const articleUrl = article ? `${Astro.url.origin}${Astro.url.pathname}` : '';
 )}
 
 {pageType === 'category' && category && (
-  <BaseLayout 
+  <BaseLayout
     title={`${category.name} - ${helpCenterConfig.portal_name}`}
-    description={category.description || `Browse ${category.name} articles`}
+    description={category.description || `Browse ${category.name} articles and guides in the ${helpCenterConfig.portal_name || 'Zera Docs'} help center.`}
     config={helpCenterConfig}
     projectId={projectId}
     folders={folders}
+    ogImage={helpCenterConfig.og_image_url ?? undefined}
   >
     <CategoryPageWrapper
       client:only="react"

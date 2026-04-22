@@ -91,14 +91,14 @@ export const cardBlockSpec = createReactBlockSpec(
           {imageUrl && <img src={imageUrl} alt="" className="w-full h-36 object-cover rounded-t-2xl" />}
           <div className="p-5 flex flex-col flex-1">
             {icon && (
-              <span className="mb-2 block" style={{ color: 'var(--viewer-primary, #3b82f6)' }}>
+              <span className="mb-2 block" style={{ color: 'var(--viewer-primary, #D97706)' }}>
                 <iconify-icon icon={icon} width="24" height="24" />
               </span>
             )}
             {cardTitle && <div className="font-semibold text-base text-foreground mb-1">{cardTitle}</div>}
             {cardBody  && <div className="text-sm text-muted-foreground leading-relaxed">{cardBody}</div>}
             {href && (
-              <div className="mt-3 flex items-center gap-1 text-xs opacity-60" style={{ color: 'var(--viewer-primary, #3b82f6)' }}>
+              <div className="mt-3 flex items-center gap-1 text-xs opacity-60" style={{ color: 'var(--viewer-primary, #D97706)' }}>
                 <iconify-icon icon="hugeicons:link-01" width="12" height="12" />
                 <span className="truncate max-w-[200px]">{href}</span>
               </div>
@@ -233,7 +233,7 @@ export const tabsBlockSpec = createReactBlockSpec(
                 onClick={() => setActive(i)}
                 className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
                   active === i
-                    ? 'border-[var(--viewer-primary,#3b82f6)] text-foreground bg-background'
+                    ? 'border-[var(--viewer-primary,#D97706)] text-foreground bg-background'
                     : 'border-transparent text-muted-foreground hover:text-foreground'
                 }`}
               >
@@ -544,14 +544,14 @@ export const cardGroupBlockSpec = createReactBlockSpec(
                   )}
                   <div className="p-4 flex flex-col flex-1">
                     {card.icon && (
-                      <span className="mb-2 block" style={{ color: 'var(--viewer-primary, #3b82f6)' }}>
+                      <span className="mb-2 block" style={{ color: 'var(--viewer-primary, #D97706)' }}>
                         <iconify-icon icon={card.icon} width="24" height="24" />
                       </span>
                     )}
                     {card.title && <div className="font-semibold text-sm text-foreground mb-1">{card.title}</div>}
                     {card.body && <div className="text-xs text-muted-foreground leading-relaxed">{card.body}</div>}
                     {card.href && (
-                      <div className="mt-2 flex items-center gap-1 text-xs" style={{ color: 'var(--viewer-primary, #3b82f6)' }}>
+                      <div className="mt-2 flex items-center gap-1 text-xs" style={{ color: 'var(--viewer-primary, #D97706)' }}>
                         <iconify-icon icon="hugeicons:link-01" width="12" height="12" />
                         <span className="truncate opacity-60">{card.href}</span>
                       </div>

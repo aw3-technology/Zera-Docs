@@ -1,17 +1,30 @@
 import type { APIRoute } from 'astro';
+import { getHelpCenterConfig } from '../lib/localData';
 
 export const GET: APIRoute = async ({ request, url }) => {
+  const config = await getHelpCenterConfig();
+
   const forwardedHost =
     request.headers.get('X-Forwarded-Host') ||
     request.headers.get('X-Original-Host');
-  const baseUrl = forwardedHost
+  const actualOrigin = forwardedHost
     ? `${url.protocol}//${forwardedHost}`
     : url.origin;
 
-  const robots = `# Helio Help Center
+  const configAny = config as any;
+  const subPathDomain = configAny.sub_path_domain || null;
+  const subPath = configAny.sub_path || '';
+  const publicOrigin = subPathDomain
+    ? `${url.protocol}//${subPathDomain}`
+    : actualOrigin;
+  const publicPathPrefix = subPathDomain && subPath ? subPath : '';
+  const baseUrl = `${publicOrigin}${publicPathPrefix}`;
+
+  const robots = `# Zera Docs
 User-agent: *
 Allow: /
 Disallow: /api/
+Disallow: /_helio/
 
 # Sitemap
 Sitemap: ${baseUrl}/sitemap.xml

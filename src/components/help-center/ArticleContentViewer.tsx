@@ -82,7 +82,7 @@ interface ArticleContentViewerProps {
 }
 
 export function ArticleContentViewer({
-  content, initialBlocks: initialBlocksProp, isDark = false, primaryColor = '#3b82f6', className,
+  content, initialBlocks: initialBlocksProp, isDark = false, primaryColor = '#D97706', className,
   showToc = false, onTocGenerated, scrollContainerRef,
   headingFont, bodyFont, showFeedback = false,
   articleId, projectId, horizontalFeedback = false,

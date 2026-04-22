@@ -400,12 +400,20 @@ export default function HelpCenterHome({
                 {/* Hero Section */}
                 <div className="py-8 md:py-12">
                   <div className="max-w-2xl text-left">
-                    <h1 className="text-2xl md:text-4xl font-bold tracking-tight mb-3" style={{ fontFamily: config.heading_font || 'system-ui, sans-serif' }}>
-                      {config.welcome_title}
-                    </h1>
-                    <p className={cn("text-lg mb-6", isDark ? "text-zinc-400" : "text-zinc-600")}>
-                      {config.welcome_subtitle}
-                    </p>
+                    {(() => {
+                      const activeFolder = activeFolderId ? folders.find(f => f.id === activeFolderId) : null;
+                      const isNonDefaultFolder = activeFolder && !activeFolder.is_default;
+                      return (
+                        <>
+                          <h1 className="text-2xl md:text-4xl font-bold tracking-tight mb-3" style={{ fontFamily: config.heading_font || 'system-ui, sans-serif' }}>
+                            {isNonDefaultFolder ? activeFolder.name : config.welcome_title}
+                          </h1>
+                          <p className={cn("text-lg mb-6", isDark ? "text-zinc-400" : "text-zinc-600")}>
+                            {isNonDefaultFolder && activeFolder.description ? activeFolder.description : config.welcome_subtitle}
+                          </p>
+                        </>
+                      );
+                    })()}
 
                     {/* Search Bar with AI Button */}
                     <div className="relative">

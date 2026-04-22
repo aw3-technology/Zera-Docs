@@ -33,7 +33,7 @@ export function CodeBlock({
   className, 
   language, 
   showCopy = true,
-  primaryColor = '#3b82f6'
+  primaryColor = '#D97706'
 }: CodeBlockProps) {
   const [copied, setCopied] = useState(false);
 

@@ -2,9 +2,9 @@
 
 :root {
   /* Override Starlight's default colors with your brand colors */
-  --sl-color-accent-low: #fef3f2;
-  --sl-color-accent: #f04438;
-  --sl-color-accent-high: #7a271a;
+  --sl-color-accent-low: #fef7ed;
+  --sl-color-accent: #D97706;
+  --sl-color-accent-high: #7c4a03;
   --sl-color-white: #ffffff;
   --sl-color-gray-1: #f9fafb;
   --sl-color-gray-2: #f3f4f6;
@@ -17,9 +17,9 @@
 
 /* Dark mode colors */
 :root[data-theme='dark'] {
-  --sl-color-accent-low: #2d1a1a;
-  --sl-color-accent: #f97066;
-  --sl-color-accent-high: #fecdca;
+  --sl-color-accent-low: #2d1f0e;
+  --sl-color-accent: #F59E0B;
+  --sl-color-accent-high: #FDE68A;
   --sl-color-white: #111827;
   --sl-color-gray-1: #1f2937;
   --sl-color-gray-2: #374151;

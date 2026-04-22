@@ -86,7 +86,7 @@ export default function FolderNavigationWrapper({
       folders={folders}
       activeFolderId={activeFolderId}
       isDark={isDark}
-      primaryColor={config.primary_color || '#3b82f6'}
+      primaryColor={config.primary_color || '#D97706'}
       articles={articles}
       categories={categories}
       onFolderSelect={(folderId) => {

@@ -55,12 +55,11 @@ const formattedDate = article?.created_at
 // Extract article excerpt for SEO
 const getArticleExcerpt = () => {
   if (article.excerpt) return article.excerpt;
-  
-  // Extract text from HTML content and truncate
-  const tempDiv = typeof document !== 'undefined' ? document.createElement('div') : null;
-  if (tempDiv) {
-    tempDiv.innerHTML = article.content || '';
-    const textContent = tempDiv.textContent || tempDiv.innerText || '';
+
+  // Strip HTML tags server-side to extract plain text for meta description
+  const content = article.content || '';
+  const textContent = content.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+  if (textContent.length > 0) {
     return textContent.slice(0, 160).trim() + (textContent.length > 160 ? '...' : '');
   }
   return article.title;
@@ -90,7 +89,7 @@ const articleUrl = `${Astro.url.origin}${Astro.url.pathname}`;
 ---
 
 <BaseLayout 
-  title={article.title}
+  title={`${article.title} | ${helpCenterConfig.portal_name}`}
   description={articleExcerpt}
   config={helpCenterConfig}
   projectId={projectId}

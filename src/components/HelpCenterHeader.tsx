@@ -52,15 +52,6 @@ export function HelpCenterHeader({
     if (activeFolderId) setFolder(activeFolderId);
   }, [activeFolderId]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const getFirstArticleInFolder = (folderId: string, isDefault: boolean) => {
-    if (isDefault) return null;
-    const folderCategories = categories.filter((cat: any) => cat.folder_id === folderId);
-    const folderCategoryIds = new Set(folderCategories.map((c: any) => c.id));
-    return articles
-      .filter((a: any) => a.category_id && folderCategoryIds.has(a.category_id))
-      .sort((a: any, b: any) => (a.display_order ?? 999) - (b.display_order ?? 999))[0] || null;
-  };
-
   const handleFolderSelect = (folderId: string | null) => {
     setFolder(folderId);
     if (onFolderChange) onFolderChange(folderId);
@@ -107,18 +98,13 @@ export function HelpCenterHeader({
             {/* Logo */}
             <a
               href={typeof window !== 'undefined' ? window.location.origin : '/'}
-              className="flex items-center gap-2 hover:opacity-80 flex-shrink-0"
+              className="flex items-center hover:opacity-80 flex-shrink-0"
             >
-              {config.logo_url ? (
-                <img src={config.logo_url} alt="Logo" className="h-6 w-auto object-contain max-w-[120px]" />
-              ) : (
-                <div className="h-7 w-7 rounded-lg flex items-center justify-center" style={{ backgroundColor: `${config.primary_color}15` }}>
-                  <Icon icon="hugeicons:book-open-01" className="h-4 w-4" style={{ color: config.primary_color }} />
-                </div>
-              )}
-              <span className="font-semibold text-sm hidden sm:block" style={{ fontFamily: config.heading_font || 'system-ui, sans-serif' }}>
-                {config.portal_name}
-              </span>
+              <img
+                src={isDark ? "/zera-logo-dark.png" : "/zera-logo-light.png"}
+                alt="Zera"
+                className="h-7 w-auto object-contain"
+              />
             </a>
           </div>
 
@@ -230,12 +216,9 @@ export function HelpCenterHeader({
         >
           <div className="flex items-center gap-1 md:gap-4 w-full h-full" style={{ maxWidth: '1400px', margin: '0 auto' }}>
             {folders.map((folder) => {
-              const firstArticle = getFirstArticleInFolder(folder.id, folder.is_default);
               const folderHref = folder.is_default
                 ? (basePath || '/')
-                : firstArticle
-                  ? `${basePath}/article/${firstArticle.slug}`
-                  : `${basePath}/${folder.slug}`;
+                : `${basePath}/${folder.slug}`;
               const isActive = localActiveFolderId === folder.id;
               return (
                 <a

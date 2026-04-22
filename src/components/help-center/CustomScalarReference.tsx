@@ -15,7 +15,7 @@ interface CustomScalarReferenceProps {
 export function CustomScalarReference({
   projectId,
   isDark = false,
-  primaryColor = '#f04438',
+  primaryColor = '#D97706',
   headingFont,
   bodyFont,
 }: CustomScalarReferenceProps) {

@@ -60,7 +60,7 @@ function MethodBadge({ method }: { method: string }) {
 
 export function CustomApiReference({ 
   specUrl, 
-  primaryColor = '#f04438', 
+  primaryColor = '#D97706',
   isDark = false,
   headingFont,
   bodyFont,

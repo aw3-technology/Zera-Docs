@@ -19,7 +19,7 @@ interface AIIndexingPanelProps {
   primaryColor?: string;
 }
 
-export function AIIndexingPanel({ projectId, isDark = false, primaryColor = '#3b82f6' }: AIIndexingPanelProps) {
+export function AIIndexingPanel({ projectId, isDark = false, primaryColor = '#D97706' }: AIIndexingPanelProps) {
   const [status, setStatus] = useState<IndexingStatus | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isIndexing, setIsIndexing] = useState(false);

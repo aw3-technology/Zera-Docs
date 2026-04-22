@@ -4,7 +4,7 @@ interface NavigationLoadingBarProps {
   primaryColor?: string;
 }
 
-export function NavigationLoadingBar({ primaryColor = '#3b82f6' }: NavigationLoadingBarProps) {
+export function NavigationLoadingBar({ primaryColor = '#D97706' }: NavigationLoadingBarProps) {
   const barRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const animationRef = useRef<number>();

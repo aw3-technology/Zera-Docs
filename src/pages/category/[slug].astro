@@ -41,12 +41,13 @@ const config = configData;
 const categoryName = category.name;
 ---
 
-<BaseLayout 
+<BaseLayout
   title={`${categoryName} - ${config.portal_name}`}
-  description={category.description || `Browse ${categoryName} articles`}
+  description={category.description || `Browse ${categoryName} articles and guides in the ${config.portal_name || 'Zera Docs'} help center.`}
   config={config}
   projectId={projectId}
   folders={folders}
+  ogImage={config.og_image_url ?? undefined}
 >
   <CategoryPageWrapper
     client:only="react"

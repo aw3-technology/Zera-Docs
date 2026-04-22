@@ -9,6 +9,7 @@ interface Props {
   projectId: string;
   ogImage?: string;
   ogType?: string;
+  noIndex?: boolean;
   article?: {
     publishedTime?: string;
     modifiedTime?: string;
@@ -18,11 +19,11 @@ interface Props {
   folders?: any[];
 }
 
-const { title, description, config, projectId, ogImage, ogType = 'website', article, folders = [] } = Astro.props;
+const { title, description, config, projectId, ogImage, ogType = 'website', noIndex = false, article, folders = [] } = Astro.props;
 
 // Extract theme variables
-const primaryColor = config.primary_color || '#3b82f6';
-const secondaryColor = config.secondary_color || '#6366f1';
+const primaryColor = config.primary_color || '#D97706';
+const secondaryColor = config.secondary_color || '#B45309';
 const headingFont = config.heading_font || 'system-ui, sans-serif';
 const bodyFont = config.body_font || 'system-ui, sans-serif';
 const isDark = config.theme_mode === 'dark';
@@ -44,8 +45,8 @@ const publicOrigin = subPathDomain
 const publicPathPrefix = subPathDomain && subPath ? subPath : '';
 const actualUrl = `${publicOrigin}${publicPathPrefix}${Astro.url.pathname}${Astro.url.search}`;
 
-// SEO metadata
-const metaTitle = config.meta_title || title;
+// SEO metadata — use page-specific title; fall back to config only if no title provided
+const metaTitle = title || config.meta_title;
 const metaDescription = description || config.meta_description || config.welcome_subtitle;
 const ogImageUrl = ogImage || config.og_image_url || config.logo_url;
 const ogLogoUrl = config.logo_url;
@@ -241,7 +242,7 @@ const baseUrl = subPathDomain ? `${publicOrigin}${publicPathPrefix}` : (config.s
     {ogImageUrl && <meta property="og:image:width" content="1200" />}
     {ogImageUrl && <meta property="og:image:height" content="630" />}
     {ogLogoUrl && <meta property="og:logo" content={ogLogoUrl} />}
-    <meta property="og:site_name" content={config.portal_name || 'Helio'} />
+    <meta property="og:site_name" content={config.portal_name || 'Zera Docs'} />
     
     {/* Article-specific Open Graph tags */}
     {article && (
@@ -261,9 +262,18 @@ const baseUrl = subPathDomain ? `${publicOrigin}${publicPathPrefix}` : (config.s
     {ogImageUrl && <meta name="twitter:image" content={ogImageUrl} />}
     
     {/* Robots */}
-    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
-    <meta name="googlebot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
-    <meta name="bingbot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+    {noIndex ? (
+      <>
+        <meta name="robots" content="noindex, nofollow" />
+        <meta name="googlebot" content="noindex, nofollow" />
+      </>
+    ) : (
+      <>
+        <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+        <meta name="googlebot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+        <meta name="bingbot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+      </>
+    )}
     
     {/* Geo-targeting */}
     {config.geo_region && <meta name="geo.region" content={config.geo_region} />}
@@ -276,9 +286,9 @@ const baseUrl = subPathDomain ? `${publicOrigin}${publicPathPrefix}` : (config.s
     <meta name="language" content="English" />
     
     {/* Additional SEO */}
-    <meta name="author" content={config.portal_name || 'Help Center'} />
-    <meta name="publisher" content={config.portal_name || 'Help Center'} />
-    <meta name="copyright" content={`© ${new Date().getFullYear()} ${config.portal_name || 'Help Center'}`} />
+    <meta name="author" content={config.portal_name || 'Zera Docs'} />
+    <meta name="publisher" content={config.portal_name || 'Zera Docs'} />
+    <meta name="copyright" content={`© ${new Date().getFullYear()} ${config.portal_name || 'Zera Docs'}`} />
     <meta name="revisit-after" content="7 days" />
     <meta name="distribution" content="global" />
     <meta name="rating" content="general" />
@@ -287,7 +297,7 @@ const baseUrl = subPathDomain ? `${publicOrigin}${publicPathPrefix}` : (config.s
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-    <meta name="apple-mobile-web-app-title" content={config.portal_name || 'Help Center'} />
+    <meta name="apple-mobile-web-app-title" content={config.portal_name || 'Zera Docs'} />
     
     {/* Theme color */}
     <meta name="theme-color" content={primaryColor} />
@@ -307,7 +317,7 @@ const baseUrl = subPathDomain ? `${publicOrigin}${publicPathPrefix}` : (config.s
     <script type="application/ld+json" set:html={JSON.stringify({
       "@context": "https://schema.org",
       "@type": ogType === 'article' ? 'Article' : 'WebSite',
-      "name": config.portal_name || 'Help Center',
+      "name": config.portal_name || 'Zera Docs',
       "url": canonicalUrl,
       ...(metaDescription && { "description": metaDescription }),
       ...(config.logo_url && {
@@ -322,11 +332,11 @@ const baseUrl = subPathDomain ? `${publicOrigin}${publicPathPrefix}` : (config.s
         "dateModified": article.modifiedTime || article.publishedTime,
         "author": {
           "@type": "Organization",
-          "name": config.portal_name || 'Help Center'
+          "name": config.portal_name || 'Zera Docs'
         },
         "publisher": {
           "@type": "Organization",
-          "name": config.portal_name || 'Help Center',
+          "name": config.portal_name || 'Zera Docs',
           ...(config.logo_url && {
             "logo": {
               "@type": "ImageObject",
@@ -384,7 +394,7 @@ const baseUrl = subPathDomain ? `${publicOrigin}${publicPathPrefix}` : (config.s
     <script type="application/ld+json" set:html={JSON.stringify({
       "@context": "https://schema.org",
       "@type": "Organization",
-      "name": config.portal_name || 'Help Center',
+      "name": config.portal_name || 'Zera Docs',
       "url": baseUrl,
       ...(config.logo_url && {
         "logo": config.logo_url
@@ -524,8 +534,8 @@ const baseUrl = subPathDomain ? `${publicOrigin}${publicPathPrefix}` : (config.s
     <script is:inline define:vars={{ config, projectId, subPath, subPathDomain }}>
       // Apply styles function
       function applyStyles() {
-        const primaryColor = config.primary_color || '#3b82f6';
-        const secondaryColor = config.secondary_color || '#6366f1';
+        const primaryColor = config.primary_color || '#D97706';
+        const secondaryColor = config.secondary_color || '#B45309';
         const headingFont = config.heading_font || 'system-ui, sans-serif';
         const bodyFont = config.body_font || 'system-ui, sans-serif';
         

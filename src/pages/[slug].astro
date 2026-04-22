@@ -32,28 +32,7 @@ if (!folder && !category && !article) {
   return new Response(null, { status: 404, statusText: 'Not found' });
 }
 
-// Non-default folders redirect to their first article instead of showing the home page
-if (folder && !folder.is_default) {
-  // Find categories belonging to this folder, sorted by display_order
-  const folderCategories = categories
-    .filter((c: any) => c.folder_id === folder.id)
-    .sort((a: any, b: any) => (a.display_order ?? 999) - (b.display_order ?? 999));
-
-  // Find the first article across those categories (in category order)
-  let firstArticle: any = null;
-  for (const cat of folderCategories) {
-    const catArticles = articles.filter((a: any) => a.category_id === cat.id);
-    if (catArticles.length > 0) {
-      firstArticle = catArticles[0];
-      break;
-    }
-  }
-
-  if (firstArticle) {
-    return Astro.redirect(`/${folder.slug}/article/${firstArticle.slug}`, 302);
-  }
-  // If no articles found, fall through and render the home page for this folder
-}
+// Non-default folders render their home page (filtered by folder)
 
 // Article helpers (only needed when article matched)
 const getCategoryName = (categoryId: string | null) => {
@@ -63,7 +42,16 @@ const getCategoryName = (categoryId: string | null) => {
 const formattedDate = article?.created_at
   ? new Date(article.created_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
   : '';
-const articleExcerpt = article?.excerpt || article?.title || '';
+const articleExcerpt = (() => {
+  if (!article) return '';
+  if (article.excerpt) return article.excerpt;
+  const content = article.content || '';
+  const textContent = content.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+  if (textContent.length > 0) {
+    return textContent.slice(0, 160).trim() + (textContent.length > 160 ? '...' : '');
+  }
+  return article.title;
+})();
 const categoryName = article ? getCategoryName(article.category_id) : '';
 const articleUrl = article ? Astro.url.href : '';
 
@@ -73,7 +61,7 @@ const config = configData;
 {folder && (
   <BaseLayout 
     title={`${folder.name} - ${config.portal_name}`}
-    description={folder.description || `Browse ${folder.name} articles`}
+    description={folder.description || `Browse ${folder.name} articles and guides in the ${config.portal_name || 'Zera Docs'} help center.`}
     config={config}
     projectId={projectId}
     folders={folders}
@@ -97,10 +85,11 @@ const config = configData;
 {category && (
   <BaseLayout
     title={`${category.name} - ${config.portal_name}`}
-    description={category.description || `Browse ${category.name} articles`}
+    description={category.description || `Browse ${category.name} articles and guides in the ${config.portal_name || 'Zera Docs'} help center.`}
     config={config}
     projectId={projectId}
     folders={folders}
+    ogImage={config.og_image_url ?? undefined}
   >
     <CategoryPageWrapper
       client:only="react"
@@ -119,7 +108,7 @@ const config = configData;
 
 {article && (
   <BaseLayout
-    title={article.title}
+    title={`${article.title} | ${config.portal_name}`}
     description={articleExcerpt}
     config={config}
     projectId={projectId}
