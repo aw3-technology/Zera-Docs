@@ -46,12 +46,12 @@ export function ChatMessage({
       <div className={cn(
         message.role === 'user'
           ? "max-w-[85%] rounded-xl px-3 py-2 text-white break-words"
-          : "w-full max-w-full rounded-xl px-3 py-2 text-foreground overflow-hidden"
+          : "w-full max-w-full min-w-0 rounded-xl px-3 py-2 text-foreground overflow-hidden"
       )}
       style={message.role === 'user' ? { backgroundColor: primaryColor } : {}}
       >
         {message.role === 'assistant' ? (
-          <div className="w-full">
+          <div className="w-full min-w-0 overflow-hidden">
             {/* Search Process Card */}
             {searchProcessVisible && isLastAssistant && (
               <SearchResultsAccordion
@@ -62,7 +62,7 @@ export function ChatMessage({
             )}
 
             {/* Assistant Response */}
-            <div className="prose prose-sm max-w-none dark:prose-invert text-sm prose-ul:list-disc prose-ol:list-decimal prose-li:ml-4 prose-table:table-auto prose-th:border prose-td:border prose-th:px-2 prose-th:py-1 prose-td:px-2 prose-td:py-1 w-full">
+            <div className="prose prose-sm max-w-none dark:prose-invert text-sm prose-ul:list-disc prose-ol:list-decimal prose-li:ml-4 prose-table:table-auto prose-th:border prose-td:border prose-th:px-2 prose-th:py-1 prose-td:px-2 prose-td:py-1 w-full overflow-hidden break-words">
               <ChatMarkdownRenderer content={message.content} primaryColor={primaryColor} />
 
               {message.links && message.links.length > 0 && (

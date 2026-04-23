@@ -76,7 +76,7 @@ export function AIChatPanel({
   return (
     <div
       className={cn(
-        "w-96 flex-shrink-0 flex flex-col h-screen border-l",
+        "w-full md:w-96 flex-shrink-0 flex flex-col h-screen border-l overflow-hidden",
         "border-border/30"
       )}
       style={{
@@ -123,7 +123,7 @@ export function AIChatPanel({
 
       {/* Messages */}
       <ScrollArea className="flex-1 min-h-0">
-        <div className="p-4 pb-0 space-y-4 w-full">
+        <div className="p-4 pb-0 space-y-4 w-full overflow-hidden">
           {chat.messages.length === 0 ? (
             <ChatEmptyState primaryColor={primaryColor} portalName={portalName} />
           ) : (

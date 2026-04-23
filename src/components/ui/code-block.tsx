@@ -51,7 +51,7 @@ export function CodeBlock({
   return (
     <>
       <style dangerouslySetInnerHTML={{ __html: monoFontStyle }} />
-      <div className={cn("relative group my-4 max-w-full overflow-hidden", className)}>
+      <div className={cn("relative group my-4 max-w-full overflow-hidden w-full", className)} style={{ minWidth: 0 }}>
         <div 
           className="border overflow-hidden dark:border-zinc-800"
           style={{ 
@@ -100,7 +100,7 @@ export function CodeBlock({
           
           {/* Code content */}
           <div className="px-4 py-4 overflow-x-auto">
-            <pre className="code-block-mono text-[13px] whitespace-pre-wrap break-words leading-relaxed m-0" style={{ color: 'hsl(var(--foreground))' }}>
+            <pre className="code-block-mono text-[13px] whitespace-pre-wrap break-all leading-relaxed m-0" style={{ color: 'hsl(var(--foreground))', overflowWrap: 'anywhere' }}>
               <code className="code-block-mono">
                 {children}
               </code>
