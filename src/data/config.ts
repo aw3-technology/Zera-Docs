@@ -5,8 +5,8 @@
 export const helpCenterConfig = {
   // Branding
   portal_name: 'Zera Docs',
-  primary_color: '#D97706',
-  secondary_color: '#B45309',
+  primary_color: '#E6560A',
+  secondary_color: '#C44A08',
   welcome_title: 'Zera Docs',
   welcome_subtitle: 'Community-Governed. Treasury-Supported. Explore the governance-first blockchain.',
   theme_mode: 'dark' as 'light' | 'dark' | 'auto',
