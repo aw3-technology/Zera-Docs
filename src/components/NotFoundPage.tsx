@@ -4,11 +4,13 @@ import { Icon } from './ui/icon';
 import { HelpCenterProvider } from '@/contexts/HelpCenterContext';
 import { HelpCenterHeader } from './HelpCenterHeader';
 import { HelpCenterSidebar } from './HelpCenterSidebar';
+import { SearchModal } from './SearchModal';
 import { NavigationLoadingBar } from './NavigationLoadingBar';
 import { BaseLayoutWrapper } from './BaseLayoutWrapper';
 import { useGoogleFonts } from '@/hooks/useGoogleFonts';
 import { useTheme } from '@/hooks/useTheme';
 import { useAiChat } from '@/hooks/useAiChat';
+import { useSearchShortcut } from '@/hooks/useSearchShortcut';
 import { SESSION_KEYS } from '@/lib/storageKeys';
 
 interface NotFoundPageProps {
@@ -28,9 +30,11 @@ export default function NotFoundPage({
 }: NotFoundPageProps) {
   const { isDark, toggleTheme } = useTheme();
   const { aiChatOpen, openAiChat, closeAiChat, toggleAiChat } = useAiChat();
+  const [searchModalOpen, setSearchModalOpen] = useState(false);
   const [activeFolderId, setActiveFolderId] = useState<string | null>(null);
 
   useGoogleFonts(config.heading_font, config.body_font);
+  useSearchShortcut(setSearchModalOpen);
 
   useEffect(() => {
     const savedFolderId = sessionStorage.getItem(SESSION_KEYS.ACTIVE_FOLDER_ID);
@@ -63,7 +67,7 @@ export default function NotFoundPage({
 
         <div data-astro-transition-persist="header">
           <HelpCenterHeader
-            onSearchOpen={() => {}}
+            onSearchOpen={() => setSearchModalOpen(true)}
             onAIOpen={openAiChat}
             folders={folders}
             activeFolderId={activeFolderId}
@@ -116,6 +120,20 @@ export default function NotFoundPage({
           </div>
         </div>
       </div>
+      <SearchModal
+        isOpen={searchModalOpen}
+        onClose={() => setSearchModalOpen(false)}
+        articles={articles}
+        categories={categories}
+        primaryColor={config.primary_color}
+        aiEnabled={config.ai_answer_enabled}
+        onAskAI={(query) => {
+          const url = new URL(window.location.href);
+          url.searchParams.set('ai_query', query.trim());
+          window.history.pushState({}, '', url.toString());
+          openAiChat();
+        }}
+      />
     </BaseLayoutWrapper>
     </HelpCenterProvider>
   );

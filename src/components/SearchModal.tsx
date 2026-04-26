@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { cn, getBasePath } from '@/lib/utils';
 import { DELAY_AI_REDIRECT } from '@/lib/constants';
 import { Icon } from './ui/icon';
@@ -26,6 +26,7 @@ export function SearchModal({
   const [query, setQuery] = useState('');
   const [isRedirectingToAI, setIsRedirectingToAI] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const redirectTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     if (isOpen && inputRef.current) {
@@ -33,43 +34,71 @@ export function SearchModal({
     }
     if (!isOpen) {
       setQuery('');
+      setIsRedirectingToAI(false);
+      if (redirectTimerRef.current) {
+        clearTimeout(redirectTimerRef.current);
+        redirectTimerRef.current = null;
+      }
     }
   }, [isOpen]);
 
   useEffect(() => {
+    if (!isOpen) return;
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [onClose]);
+  }, [isOpen, onClose]);
 
-  const handleSearch = (searchQuery: string) => {
-    const results = articles.filter((article) =>
-      article.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      article.content.toLowerCase().includes(searchQuery.toLowerCase())
+  // Pure filtering — no side effects
+  const filteredArticles = useMemo(() => {
+    if (!query.trim()) return [];
+    const q = query.toLowerCase();
+    return articles.filter((article) =>
+      (article.title || '').toLowerCase().includes(q) ||
+      (article.content || '').toLowerCase().includes(q)
     );
+  }, [query, articles]);
 
-    // If no results found and AI is enabled, automatically ask AI
-    if (results.length === 0 && searchQuery.trim() && aiEnabled && onAskAI && !isRedirectingToAI) {
+  // AI auto-redirect as a side effect, separate from filtering
+  useEffect(() => {
+    if (
+      filteredArticles.length === 0 &&
+      query.trim() &&
+      aiEnabled &&
+      onAskAI &&
+      !isRedirectingToAI
+    ) {
       setIsRedirectingToAI(true);
-      // Small delay to show "redirecting to AI" message before switching
-      setTimeout(() => {
-        // Add query to URL for AI to pick up
+      redirectTimerRef.current = setTimeout(() => {
         const url = new URL(window.location.href);
-        url.searchParams.set('ai_query', searchQuery.trim());
+        url.searchParams.set('ai_query', query.trim());
         window.history.pushState({}, '', url.toString());
-
-        onAskAI(searchQuery);
+        onAskAI(query);
         onClose();
         setIsRedirectingToAI(false);
+        redirectTimerRef.current = null;
       }, DELAY_AI_REDIRECT);
     }
+    // Reset redirect state when results appear again
+    if (filteredArticles.length > 0 && isRedirectingToAI) {
+      setIsRedirectingToAI(false);
+      if (redirectTimerRef.current) {
+        clearTimeout(redirectTimerRef.current);
+        redirectTimerRef.current = null;
+      }
+    }
+  }, [filteredArticles.length, query, aiEnabled, onAskAI, isRedirectingToAI, onClose]);
 
-    return results;
-  };
-
-  const filteredArticles = handleSearch(query);
+  // Cleanup timer on unmount
+  useEffect(() => {
+    return () => {
+      if (redirectTimerRef.current) {
+        clearTimeout(redirectTimerRef.current);
+      }
+    };
+  }, []);
 
   const getCategoryName = (categoryId: string | null) => {
     if (!categoryId) return 'General';
@@ -79,11 +108,9 @@ export function SearchModal({
 
   const handleAskAI = () => {
     if (query.trim() && onAskAI) {
-      // Add query to URL for AI to pick up
       const url = new URL(window.location.href);
       url.searchParams.set('ai_query', query.trim());
       window.history.pushState({}, '', url.toString());
-
       onAskAI(query);
       onClose();
     }

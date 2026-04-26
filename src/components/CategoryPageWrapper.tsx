@@ -3,10 +3,12 @@ import { cn, getBasePath, sortCategories, filterCategoriesByFolder } from '@/lib
 import { HelpCenterSidebar } from './HelpCenterSidebar';
 import { HelpCenterProvider } from '@/contexts/HelpCenterContext';
 import { HelpCenterHeader } from './HelpCenterHeader';
+import { SearchModal } from './SearchModal';
 import { Icon } from './ui/icon';
 import { useGoogleFonts } from '@/hooks/useGoogleFonts';
 import { useTheme } from '@/hooks/useTheme';
 import { useAiChat } from '@/hooks/useAiChat';
+import { useSearchShortcut } from '@/hooks/useSearchShortcut';
 import { useFolderSync } from '@/hooks/useFolderSync';
 import { NavigationLoadingBar } from './NavigationLoadingBar';
 import { BaseLayoutWrapper } from './BaseLayoutWrapper';
@@ -33,7 +35,10 @@ export default function CategoryPageWrapper({
 }: CategoryPageWrapperProps) {
   const { isDark, toggleTheme } = useTheme();
   const { aiChatOpen, openAiChat, closeAiChat, toggleAiChat } = useAiChat();
+  const [searchModalOpen, setSearchModalOpen] = useState(false);
   const { activeFolderId, setFolder: setActiveFolderId } = useFolderSync();
+
+  useSearchShortcut(setSearchModalOpen);
 
   // Sort and filter categories by folder (no subcategory inclusion on category page)
   const sortedCategories = sortCategories(allCategories);
@@ -68,7 +73,7 @@ export default function CategoryPageWrapper({
       {/* Header - persists across navigation */}
       <div data-astro-transition-persist="header">
         <HelpCenterHeader
-          onSearchOpen={() => {}}
+          onSearchOpen={() => setSearchModalOpen(true)}
           onAIOpen={openAiChat}
           showBackButton={false}
           folders={folders}
@@ -179,6 +184,20 @@ export default function CategoryPageWrapper({
       </div>
 
       </div>
+      <SearchModal
+        isOpen={searchModalOpen}
+        onClose={() => setSearchModalOpen(false)}
+        articles={allArticles}
+        categories={allCategories}
+        primaryColor={config.primary_color}
+        aiEnabled={config.ai_answer_enabled}
+        onAskAI={(query) => {
+          const url = new URL(window.location.href);
+          url.searchParams.set('ai_query', query.trim());
+          window.history.pushState({}, '', url.toString());
+          openAiChat();
+        }}
+      />
     </BaseLayoutWrapper>
     </HelpCenterProvider>
   );
