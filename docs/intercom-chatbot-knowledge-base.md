@@ -317,8 +317,10 @@ ZERA's model is compared to Visa/Mastercard — a payment network that generates
 ### Zera.js SDK (TypeScript) — Stable
 
 - **Package**: `@zera-os/zera.js` (v1.0.1)
-- **License**: MIT
+- **License**: Apache 2.0
 - **Requirements**: Node.js >= 20.0.0, ESM (dual CJS/ESM distribution)
+- **Repository**: https://github.com/zera-os/zera.js
+- **Org**: https://github.com/zera-os
 
 **Capabilities:**
 

@@ -15,7 +15,14 @@ export const sdkArchitectureArticle = {
   content: bn([
     p('Zera.js is a TypeScript SDK for the ZERA Network — a Layer-1 blockchain with native support for tokens, smart contracts, governance, and cross-chain bridging to Solana. The SDK abstracts away low-level concerns (protobuf serialization, gRPC transport, fee calculation, cryptographic signing) and exposes a clean, typed API surface.'),
 
-    callout('info', 'Package: @zera-os/zera.js · Version: 1.0.1 · License: MIT · Node.js: >=20.0.0 · Module system: ESM (dual CJS/ESM distribution)'),
+    callout('info', 'Package: @zera-os/zera.js · Version: 1.0.1 · License: Apache 2.0 · Node.js: >=20.0.0 · Module system: ESM (dual CJS/ESM distribution)'),
+
+    h2('Source Code & Repositories'),
+    p('Zera.js is open source under the Apache License 2.0. The full source, issue tracker, and release history are available on GitHub.'),
+    cardGroup(2, [
+      { icon: 'hugeicons:github', title: 'zera-os/zera.js', body: 'TypeScript SDK for the ZERA Network — wallets, transactions, smart contracts, DEX, bridge, governance.', href: 'https://github.com/zera-os/zera.js' },
+      { icon: 'hugeicons:github', title: 'zera-os', body: 'ZERA Network open-source organization — all official SDKs, tooling, and reference implementations.', href: 'https://github.com/zera-os' },
+    ]),
 
     h2('Core Capabilities'),
     cardGroup(3, [
