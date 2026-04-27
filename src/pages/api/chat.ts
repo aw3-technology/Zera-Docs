@@ -29,6 +29,38 @@ function blocksToText(blocks: any[]): string {
     if (block.props?.text) parts.push(block.props.text);
     if (block.props?.body) parts.push(block.props.body);
     if (block.props?.title) parts.push(block.props.title);
+    if (block.props?.cardTitle) parts.push(block.props.cardTitle);
+    if (block.props?.cardBody) parts.push(block.props.cardBody);
+    if (block.props?.href) parts.push(block.props.href);
+    if (block.props?.accordionTitle) parts.push(block.props.accordionTitle);
+    if (block.props?.accordionBody) parts.push(block.props.accordionBody);
+    if (block.props?.stepTitle) parts.push(block.props.stepTitle);
+    for (let i = 0; i < 4; i++) {
+      const label = block.props?.[`tab${i}label`];
+      const body = block.props?.[`tab${i}body`];
+      if (label) parts.push(label);
+      if (body) parts.push(body);
+    }
+    if (typeof block.props?.cards === 'string') {
+      try {
+        const cards = JSON.parse(block.props.cards);
+        if (Array.isArray(cards)) {
+          for (const c of cards) {
+            if (c.title) parts.push(c.title);
+            if (c.body) parts.push(c.body);
+            if (c.href) parts.push(c.href);
+          }
+        }
+      } catch {
+        // ignore malformed cards JSON
+      }
+    }
+    if (Array.isArray(block.props?.tabs)) {
+      for (const tab of block.props.tabs) {
+        if (tab.label) parts.push(tab.label);
+        if (tab.code) parts.push(tab.code);
+      }
+    }
     if (block.props?.items) {
       for (const item of block.props.items) {
         if (item.title) parts.push(item.title);

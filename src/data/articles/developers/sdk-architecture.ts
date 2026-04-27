@@ -18,7 +18,7 @@ export const sdkArchitectureArticle = {
     callout('info', 'Package: @zera-os/zera.js · Version: 1.0.1 · License: Apache 2.0 · Node.js: >=20.0.0 · Module system: ESM (dual CJS/ESM distribution)'),
 
     h2('Source Code & Repositories'),
-    p('Zera.js is open source under the Apache License 2.0. The full source, issue tracker, and release history are available on GitHub.'),
+    p('Zera.js is open source under the Apache License 2.0. SDK repository: https://github.com/zera-os/zera.js. ZERA open-source organization (all official SDKs, tooling, and reference implementations): https://github.com/zera-os.'),
     cardGroup(2, [
       { icon: 'hugeicons:github', title: 'zera-os/zera.js', body: 'TypeScript SDK for the ZERA Network — wallets, transactions, smart contracts, DEX, bridge, governance.', href: 'https://github.com/zera-os/zera.js' },
       { icon: 'hugeicons:github', title: 'zera-os', body: 'ZERA Network open-source organization — all official SDKs, tooling, and reference implementations.', href: 'https://github.com/zera-os' },
