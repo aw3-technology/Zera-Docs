@@ -26,6 +26,7 @@ import { visionCategory } from './categories/vision';
 import { compareCategory } from './categories/compare';
 import { blogCategory } from './categories/blog';
 import { goSdkCategory } from './categories/go-sdk';
+import { rustScCategory } from './categories/rust-sc';
 
 export const categories = [
   gettingStartedCategory,
@@ -46,6 +47,7 @@ export const categories = [
   compareCategory,
   blogCategory,
   goSdkCategory,
+  rustScCategory,
 ];
 
 // ─── Articles: Getting Started ────────────────────────────────────────────────
@@ -136,6 +138,16 @@ import { goSdkTransactionsArticle } from './articles/go-sdk/transactions';
 import { goSdkContractsArticle } from './articles/go-sdk/contracts';
 import { goSdkExamplesArticle } from './articles/go-sdk/examples-and-errors';
 
+// ─── Articles: Rust SC SDK ───────────────────────────────────────────────────
+import { rustScOverviewArticle } from './articles/rust-sc/overview';
+import { rustScEntryPointsArticle } from './articles/rust-sc/entry-points';
+import { rustScTransfersWalletsArticle } from './articles/rust-sc/transfers-wallets';
+import { rustScStateQueryArticle } from './articles/rust-sc/state-query';
+import { rustScCallsTxnsArticle } from './articles/rust-sc/calls-txns';
+import { rustScContextCryptoArticle } from './articles/rust-sc/context-crypto';
+import { rustScTypesReferenceArticle } from './articles/rust-sc/types-reference';
+import { rustScConceptsArticle } from './articles/rust-sc/concepts';
+
 // ─── Articles: Blog ───────────────────────────────────────────────────────────
 import { zeraForDummiesArticle } from './articles/blog/zera-for-dummies';
 import { zeraExplainedArticle } from './articles/blog/zera-explained';
@@ -219,6 +231,15 @@ export const articles = [
   goSdkTransactionsArticle,
   goSdkContractsArticle,
   goSdkExamplesArticle,
+  // Rust SC SDK
+  rustScOverviewArticle,
+  rustScEntryPointsArticle,
+  rustScTransfersWalletsArticle,
+  rustScStateQueryArticle,
+  rustScCallsTxnsArticle,
+  rustScContextCryptoArticle,
+  rustScTypesReferenceArticle,
+  rustScConceptsArticle,
   // Blog
   zeraForDummiesArticle,
   zeraExplainedArticle,
