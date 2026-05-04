@@ -31,6 +31,7 @@ export const helpCenterConfig = {
     { label: 'Wallet', url: 'https://apps.apple.com/us/app/vision-hub-zera-web3-wallet/id6758921523', icon: 'hugeicons:wallet-01' },
     { label: 'Telegram', url: 'https://t.me/ZeraNetwork', icon: 'hugeicons:telegram' },
     { label: 'DexScreener', url: 'https://dexscreener.com/solana/CpaXrJhnLesjnBt893WaBbNkYAEQvpqFZmGExvvA1njg', icon: 'hugeicons:chart-line-data-01' },
+    { label: 'GeckoTerminal', url: 'https://www.geckoterminal.com/solana/pools/CpaXrJhnLesjnBt893WaBbNkYAEQvpqFZmGExvvA1njg', icon: 'hugeicons:analytics-01' },
     { label: 'Linktree', url: 'https://linktr.ee/zerachain', icon: 'hugeicons:link-01' },
   ],
   show_primary_button: true,

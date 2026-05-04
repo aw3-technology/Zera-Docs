@@ -153,7 +153,7 @@ export const howToBuyWzraArticle = {
     p('Check your Vision Hub or Phantom wallet — wZRA should appear in your token list automatically after the swap. If it doesn\'t show, look for an option to add a custom token and enter the contract address.'),
 
     step(1, 'Verify on Solscan', 'You can verify your transaction by searching your wallet address on solscan.io — Solana\'s public block explorer. Every trade is permanently and publicly recorded.'),
-    step(2, 'Track the price', 'Track wZRA\'s price and trading activity on DEX Screener or Birdeye. These show live price charts and trading volume for the wZRA/USDC pair.'),
+    step(2, 'Track the price', 'Track wZRA\'s price and trading activity on DEX Screener, GeckoTerminal (CoinGecko), or Birdeye. These show live price charts and trading volume for the wZRA/USDC pair.'),
     step(3, 'Keep your wallet safe', 'Your wZRA is now in your wallet — you fully own it. Keep your seed phrase safe and offline. Never share it. Consider a hardware wallet (like Ledger) for larger amounts.'),
 
     callout('success', 'You\'re all set! Start with Vision Hub, fund with USDC, and swap for wZRA in minutes.'),
