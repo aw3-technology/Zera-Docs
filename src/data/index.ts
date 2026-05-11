@@ -28,6 +28,7 @@ import { blogCategory } from './categories/blog';
 import { jsSdkCategory } from './categories/js-sdk';
 import { goSdkCategory } from './categories/go-sdk';
 import { rustScCategory } from './categories/rust-sc';
+import { projectsOnZeraCategory } from './categories/projects-on-zera';
 
 export const categories = [
   gettingStartedCategory,
@@ -50,6 +51,7 @@ export const categories = [
   jsSdkCategory,
   goSdkCategory,
   rustScCategory,
+  projectsOnZeraCategory,
 ];
 
 // ─── Articles: Getting Started ────────────────────────────────────────────────
@@ -114,7 +116,9 @@ import { smartContractsArticle } from './articles/developers/smart-contracts';
 import { smartContractEngineArticle } from './articles/developers/smart-contract-engine';
 import { developerPathwaysArticle } from './articles/developers/developer-pathways';
 import { interoperabilityArticle } from './articles/developers/interoperability';
-import { projectsOnZeraArticle } from './articles/developers/projects-on-zera';
+
+// ─── Articles: Projects on ZERA ──────────────────────────────────────────────
+import { projectsOnZeraArticle } from './articles/projects-on-zera/projects-on-zera';
 
 // ─── Articles: JS SDK ────────────────────────────────────────────────────────
 import { sdkArchitectureArticle } from './articles/js-sdk/architecture';
@@ -216,12 +220,13 @@ export const articles = [
   smartContractEngineArticle,
   developerPathwaysArticle,
   interoperabilityArticle,
-  projectsOnZeraArticle,
   // JS SDK
   sdkArchitectureArticle,
   sdkModulesArticle,
   sdkInternalsArticle,
   buildingWithZerajsArticle,
+  // Projects on ZERA
+  projectsOnZeraArticle,
   // DAOs
   daoOverviewArticle,
   // Institutions
