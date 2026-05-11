@@ -25,6 +25,7 @@ import { institutionsCategory } from './categories/institutions';
 import { visionCategory } from './categories/vision';
 import { compareCategory } from './categories/compare';
 import { blogCategory } from './categories/blog';
+import { jsSdkCategory } from './categories/js-sdk';
 import { goSdkCategory } from './categories/go-sdk';
 import { rustScCategory } from './categories/rust-sc';
 
@@ -46,6 +47,7 @@ export const categories = [
   visionCategory,
   compareCategory,
   blogCategory,
+  jsSdkCategory,
   goSdkCategory,
   rustScCategory,
 ];
@@ -112,11 +114,13 @@ import { smartContractsArticle } from './articles/developers/smart-contracts';
 import { smartContractEngineArticle } from './articles/developers/smart-contract-engine';
 import { developerPathwaysArticle } from './articles/developers/developer-pathways';
 import { interoperabilityArticle } from './articles/developers/interoperability';
-import { sdkArchitectureArticle } from './articles/developers/sdk-architecture';
-import { sdkModulesArticle } from './articles/developers/sdk-modules';
-import { sdkInternalsArticle } from './articles/developers/sdk-internals';
-import { buildingWithZerajsArticle } from './articles/developers/building-with-zerajs';
 import { projectsOnZeraArticle } from './articles/developers/projects-on-zera';
+
+// ─── Articles: JS SDK ────────────────────────────────────────────────────────
+import { sdkArchitectureArticle } from './articles/js-sdk/architecture';
+import { sdkModulesArticle } from './articles/js-sdk/modules';
+import { sdkInternalsArticle } from './articles/js-sdk/internals';
+import { buildingWithZerajsArticle } from './articles/js-sdk/project-ideas';
 
 // ─── Articles: DAOs ───────────────────────────────────────────────────────────
 import { daoOverviewArticle } from './articles/dao/dao-overview';
@@ -212,11 +216,12 @@ export const articles = [
   smartContractEngineArticle,
   developerPathwaysArticle,
   interoperabilityArticle,
+  projectsOnZeraArticle,
+  // JS SDK
   sdkArchitectureArticle,
   sdkModulesArticle,
   sdkInternalsArticle,
   buildingWithZerajsArticle,
-  projectsOnZeraArticle,
   // DAOs
   daoOverviewArticle,
   // Institutions
