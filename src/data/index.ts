@@ -116,6 +116,7 @@ import { sdkArchitectureArticle } from './articles/developers/sdk-architecture';
 import { sdkModulesArticle } from './articles/developers/sdk-modules';
 import { sdkInternalsArticle } from './articles/developers/sdk-internals';
 import { buildingWithZerajsArticle } from './articles/developers/building-with-zerajs';
+import { projectsOnZeraArticle } from './articles/developers/projects-on-zera';
 
 // ─── Articles: DAOs ───────────────────────────────────────────────────────────
 import { daoOverviewArticle } from './articles/dao/dao-overview';
@@ -215,6 +216,7 @@ export const articles = [
   sdkModulesArticle,
   sdkInternalsArticle,
   buildingWithZerajsArticle,
+  projectsOnZeraArticle,
   // DAOs
   daoOverviewArticle,
   // Institutions
